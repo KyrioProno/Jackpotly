@@ -1,0 +1,5 @@
+# Dépendances de développement (outils de test uniquement)
+node_modules/
+# Fichiers temporaires
+*.log
+.DS_Store
