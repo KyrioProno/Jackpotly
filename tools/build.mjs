@@ -10,7 +10,8 @@
    Aucune dépendance externe : tout est en ligne, aucune requête réseau.
    Usage : node tools/build.mjs
    ========================================================================= */
-import { readFileSync, writeFileSync, readdirSync, existsSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, copyFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -32,11 +33,13 @@ const js = jsFiles.map((f) => {
 }).join('\n\n');
 
 const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
-const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+// Empreinte déterministe du contenu : deux builds des mêmes sources sont identiques
+// (pas d'horodatage) et l'empreinte identifie précisément la version livrée.
+const fingerprint = createHash('sha256').update(head + css + body + js).digest('hex').slice(0, 12);
 
 const html = [
   head,
-  '/* JACKPOTLY v' + version + ' — fichier unique généré le ' + stamp + ' (ne pas éditer : voir src/) */\n',
+  '/* JACKPOTLY v' + version + ' — build ' + fingerprint + ' — fichier généré, ne pas éditer (voir src/) */\n',
   css.trimEnd(),
   '</style>\n</head>\n<body>',
   body.trimEnd(),
@@ -64,7 +67,7 @@ const checks = [
   ['aucune dépendance marquée TODO', !/À COMPLÉTER|TODO:|FIXME/i.test(codeOnly)]
 ];
 
-console.log('JACKPOTLY — build v' + version);
+console.log('JACKPOTLY — build v' + version + ' (' + fingerprint + ')');
 console.log('Modules JS : ' + jsFiles.length + ' → ' + jsFiles.join(', '));
 let ok = true;
 for (const [label, pass] of checks) {
