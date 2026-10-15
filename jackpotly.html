@@ -13,7 +13,7 @@
 <title>JACKPOTLY — Casino Social (jetons virtuels, 18+)</title>
 <style>
 
-/* JACKPOTLY v0.1.0 — build de2ab0f25f51 — fichier généré, ne pas éditer (voir src/) */
+/* JACKPOTLY v0.2.0 — build 3d6f162ee10b — fichier généré, ne pas éditer (voir src/) */
 
 /* =========================================================================
    JACKPOTLY — DESIGN SYSTEM (dark premium, ambiance Stake)
@@ -644,6 +644,8 @@ table.data td.name{ font-family:var(--font); }
 @keyframes feedIn{ from{ opacity:0; transform:translateX(-18px) } to{ opacity:1; transform:none } }
 @keyframes feedOut{ to{ opacity:0; transform:translateY(-10px) } }
 @keyframes spinSlow{ to{ transform:rotate(360deg) } }
+@keyframes kenoPop{ 0%{ transform:scale(.55) } 60%{ transform:scale(1.12) } 100%{ transform:scale(1) } }
+@keyframes floorRise{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
 @keyframes pulseGlow{ 0%,100%{ box-shadow:0 0 0 0 rgba(0,227,122,.45) } 50%{ box-shadow:0 0 0 12px rgba(0,227,122,0) } }
 .pulse-glow{ animation:pulseGlow 1.8s infinite; }
 
@@ -654,6 +656,137 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:.01s !important; transition-duration:.08s !important; }
 }
+
+/* =========================================================================
+   VAGUE 2 — STYLES DES NOUVEAUX JEUX
+   Limbo · Coin Flip · Hi-Lo · Keno · Tower · Wheel
+   ========================================================================= */
+
+/* ------------------------------------------------------------------ LIMBO */
+.limbo-stage{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:16px; }
+.limbo-num{
+  font:900 58px/1 var(--mono); letter-spacing:-.02em;
+  background:linear-gradient(180deg,#fff,#b8c6de); -webkit-background-clip:text; background-clip:text; color:transparent;
+  transition:transform .12s var(--ease-back);
+}
+.limbo-num.win{ background:linear-gradient(180deg,#8dffc4,var(--green)); -webkit-background-clip:text; background-clip:text; }
+.limbo-num.lose{ background:linear-gradient(180deg,#ffb0b8,var(--red)); -webkit-background-clip:text; background-clip:text; }
+.limbo-num.pop{ transform:scale(1.08); }
+.limbo-target{
+  display:flex; align-items:center; gap:8px; padding:7px 14px; border-radius:var(--r-pill);
+  background:rgba(255,255,255,.05); border:1px solid var(--line); font-size:12.5px; font-weight:700;
+}
+.limbo-target b{ color:var(--gold); font-family:var(--mono); }
+.chips{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{
+  padding:6px 11px; border-radius:var(--r-pill); background:rgba(255,255,255,.05);
+  border:1px solid var(--line); font:700 12px var(--mono); color:var(--txt-2);
+}
+.chip:active{ transform:scale(.94); }
+.chip.is-on{ background:rgba(0,227,122,.14); border-color:rgba(0,227,122,.5); color:var(--green); }
+
+/* -------------------------------------------------------------- COIN FLIP */
+.coinflip-stage{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:14px; }
+.coin3d{ width:128px; height:128px; perspective:900px; }
+.coin3d .inner{
+  position:relative; width:100%; height:100%; transform-style:preserve-3d;
+  transition:transform 1.05s cubic-bezier(.25,1.3,.4,1);
+}
+.coin3d .face{
+  position:absolute; inset:0; border-radius:50%; display:grid; place-items:center;
+  font-weight:900; font-size:40px; backface-visibility:hidden; box-shadow:0 10px 26px rgba(0,0,0,.5);
+}
+.coin3d .f-head{ background:radial-gradient(circle at 34% 30%, #fff5cf, var(--gold) 52%, #c98d00); color:#4a3200; }
+.coin3d .f-tail{ background:radial-gradient(circle at 34% 30%, #eef4ff, #a8bbdb 52%, #6b83a8); color:#16223a; transform:rotateX(180deg); }
+.coinflip-streak{ display:flex; gap:6px; }
+.streak-dot{ width:11px; height:11px; border-radius:50%; background:rgba(255,255,255,.14); }
+.streak-dot.on{ background:var(--green); box-shadow:0 0 10px rgba(0,227,122,.7); }
+.coinflip-res{ font:800 21px var(--mono); }
+
+/* ------------------------------------------------------------------ HI-LO */
+.hilo-stage{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:14px; }
+.hilo-card{
+  width:96px; height:134px; border-radius:13px; background:linear-gradient(170deg,#fff,#e6edfa);
+  color:#0b1424; padding:9px; box-shadow:0 10px 26px rgba(0,0,0,.55);
+  display:flex; flex-direction:column; justify-content:space-between; font-weight:900;
+}
+.hilo-card.red{ color:#d32036; }
+.hilo-card .rank{ font-size:26px; line-height:1; }
+.hilo-card .suit{ font-size:26px; align-self:flex-end; }
+.hilo-card .mid{ align-self:center; font-size:38px; opacity:.9; }
+.hilo-deck{ font:700 11px var(--mono); color:var(--muted); }
+.hilo-choices{ display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; }
+.hilo-choice{
+  padding:10px; border-radius:var(--r-sm); border:1px solid var(--line); background:rgba(255,255,255,.045);
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.hilo-choice:active{ transform:scale(.97); }
+.hilo-choice b{ font:700 13px var(--mono); color:var(--green); }
+.hilo-choice small{ font-size:9.5px; color:var(--muted); }
+.hilo-choice:disabled{ opacity:.35; }
+.hilo-history{ display:flex; gap:5px; flex-wrap:wrap; justify-content:center; }
+.hilo-mini{
+  width:26px; height:36px; border-radius:5px; background:#fff; color:#0b1424;
+  display:grid; place-items:center; font:800 11px var(--mono);
+}
+.hilo-mini.red{ color:#d32036; }
+
+/* ------------------------------------------------------------------ KENO */
+.keno-wrap{ flex:1; display:flex; flex-direction:column; padding:8px; gap:8px; }
+.keno-grid{ display:grid; grid-template-columns:repeat(8,1fr); gap:4px; }
+.keno-cell{
+  aspect-ratio:1/1; border-radius:8px; display:grid; place-items:center;
+  font:700 11px var(--mono); color:var(--txt-2);
+  background:linear-gradient(180deg,#182441,#131d33); border:1px solid var(--line);
+  transition:transform .12s var(--ease-back), background .18s;
+}
+.keno-cell:active{ transform:scale(.92); }
+.keno-cell.sel{ background:linear-gradient(180deg,#00e37a,#00b862); color:#052e16; border-color:rgba(0,227,122,.6); }
+.keno-cell.hit{ background:linear-gradient(180deg,#ffd76a,#d99b00); color:#3c2a00; animation:kenoPop .35s var(--ease-back); }
+.keno-cell.hit-sel{ background:linear-gradient(180deg,#00f085,#00b862); color:#052e16; box-shadow:0 0 0 2px var(--gold) inset; }
+.keno-cell.dim{ opacity:.35; }
+.keno-balls{ display:flex; gap:5px; flex-wrap:wrap; justify-content:center; min-height:26px; }
+.keno-ball{
+  width:26px; height:26px; border-radius:50%; display:grid; place-items:center;
+  font:800 10.5px var(--mono); background:linear-gradient(180deg,#fff,#cbd7ea); color:#0b1424;
+  animation:kenoPop .3s var(--ease-back);
+}
+.keno-ball.hit{ background:linear-gradient(180deg,#ffe08a,var(--gold)); color:#3c2a00; }
+.keno-pay{ display:flex; gap:5px; overflow-x:auto; padding:4px 0; }
+.keno-pay div{
+  flex:0 0 auto; min-width:52px; text-align:center; padding:5px 7px; border-radius:9px;
+  background:rgba(255,255,255,.045); border:1px solid var(--line); font:700 10.5px var(--mono);
+}
+.keno-pay div.best{ border-color:rgba(0,227,122,.5); color:var(--green); }
+.keno-pay div span{ display:block; font-size:8.5px; color:var(--muted); font-weight:600; }
+
+/* ----------------------------------------------------------------- TOWER */
+.tower-wrap{ flex:1; display:flex; flex-direction:column; padding:8px 10px; min-height:0; }
+.tower-floors{ display:flex; flex-direction:column-reverse; gap:4px; flex:1; min-height:0; justify-content:flex-start; }
+.tower-floor{ display:grid; gap:6px; flex:0 0 auto; }
+.tower-floor .tower-tile{
+  height:32px; border-radius:9px; display:grid; place-items:center; font-size:15px;
+  background:linear-gradient(180deg,#1a2742,#141e33); border:1px solid var(--line);
+  transition:transform .12s var(--ease-back), background .18s;
+}
+.tower-floor.current .tower-tile{ box-shadow:0 0 0 1px rgba(0,227,122,.35), 0 0 16px rgba(0,227,122,.12); }
+.tower-floor.done .tower-tile{ opacity:.42; }
+.tower-floor.locked .tower-tile{ opacity:.25; }
+.tower-tile.safe{ background:linear-gradient(180deg,rgba(0,212,114,.4),rgba(0,184,98,.18)); border-color:rgba(0,227,122,.5); opacity:1 !important; }
+.tower-tile.trap{ background:linear-gradient(180deg,rgba(255,77,94,.4),rgba(201,39,58,.22)); border-color:rgba(255,77,94,.5); opacity:1 !important; }
+.tower-tile:active{ transform:scale(.95); }
+.tower-side{ display:flex; justify-content:space-between; font-size:11px; padding:4px 2px 0; }
+
+/* ------------------------------------------------------------------ WHEEL */
+.wheel-game-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:8px; }
+#wgCv{ max-width:100%; }
+.wheel-target{ display:flex; gap:6px; overflow-x:auto; padding:4px 2px; width:100%; }
+.wheel-target button{
+  flex:0 0 auto; padding:7px 11px; border-radius:9px; background:rgba(255,255,255,.05);
+  border:1px solid var(--line); font:700 12px var(--mono); color:var(--txt-2);
+}
+.wheel-target button.is-on{ background:rgba(0,227,122,.14); border-color:rgba(0,227,122,.5); color:var(--green); }
+.wheel-target button small{ display:block; font-size:8.5px; opacity:.75; font-weight:600; }
 </style>
 </head>
 <body>
@@ -839,7 +972,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
   /** Espace de noms unique du jeu. Tous les modules s'y rattachent. */
   const J = (window.JACKPOTLY = window.JACKPOTLY || {});
-  J.VERSION = '0.1.0';           // vague 1 : socle + 4 jeux
+  J.VERSION = '0.2.0';           // vague 2 : 10 jeux jouables + boutique complète
   J.SAVE_KEY = 'jackpotly.state.v1';
 
   /* ------------------------------------------------------------------ UTIL */
@@ -991,7 +1124,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       freeChips: { day: '', used: 0, readyAt: 0 },
       shop: { firstPurchaseUsed: false, purchased: {} },
       spend: { month: '', total: 0, limit: null },   // limite de dépenses mensuelle (achats simulés)
-      fair: { serverSeed: '', serverSeedHash: '', prevSeed: '', prevHash: '', clientSeed: '', nonce: 0, rotatedAt: 0 },
+      fair: { serverSeed: '', serverSeedHash: '', prevSeed: '', prevHash: '', clientSeed: '', nonce: 0, cursor: 0, rotatedAt: 0 },
       session: { startedAt: Date.now(), lastPauseAt: Date.now(), rounds: 0 }
     };
   }
@@ -1222,7 +1355,10 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
         }
         st.serverSeedHash = J.crypto.sha256Hex(st.serverSeed);       // resynchronise
         if (!st.clientSeed) st.clientSeed = hexId(8);
-        if (typeof st.cursor !== 'number') st.cursor = 0;
+        // Attention : `typeof NaN === 'number'`. On teste donc la finitude réelle,
+        // sinon un curseur corrompu figerait tous les tirages sur la même valeur.
+        if (!Number.isFinite(st.nonce)) st.nonce = 0;
+        if (!Number.isFinite(st.cursor)) st.cursor = 0;
         J.Store.save();
         return st;
       },
@@ -1246,19 +1382,26 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       /** Ouvre un nouveau pari : nouveau nonce, curseur remis à zéro. */
       beginBet() {
         const st = J.Store.state.fair;
-        st.nonce = (st.nonce || 0) + 1;
+        st.nonce = (Number.isFinite(st.nonce) ? st.nonce : 0) + 1;
         st.cursor = 0;
         J.Store.save();
         return st.nonce;
       },
 
+      /** Curseur courant, toujours un entier fini (protection contre NaN). */
+      _cursor() {
+        const st = J.Store.state.fair;
+        const c = Number.isFinite(st.cursor) ? st.cursor : 0;
+        return c < 0 ? 0 : Math.floor(c);
+      },
+
       /** Float suivant du flux (avance le curseur). */
       float() {
         const st = J.Store.state.fair;
-        const f = floatsFrom(st.serverSeed, `${st.clientSeed}:${st.nonce}:${st.cursor}`)[0];
-        st.cursor++;
+        const cursor = api._cursor();
+        st.cursor = cursor + 1;
         J.Store.save();
-        return f;
+        return floatsFrom(st.serverSeed, `${st.clientSeed}:${st.nonce || 0}:${cursor}`)[0];
       },
 
       /** n floats consécutifs */
@@ -1267,9 +1410,10 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       /** Entier uniforme dans [min,max] inclus, via 4 octets (biais négligeable) */
       int(min, max) {
         const st = J.Store.state.fair;
-        const bytes = hmac(enc.encode(st.serverSeed), enc.encode(`${st.clientSeed}:${st.nonce}:${st.cursor}`));
-        st.cursor++;
+        const cursor = api._cursor();
+        st.cursor = cursor + 1;
         J.Store.save();
+        const bytes = hmac(enc.encode(st.serverSeed), enc.encode(`${st.clientSeed}:${st.nonce || 0}:${cursor}`));
         const v = ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]) >>> 0;
         return min + (v % (max - min + 1));
       },
@@ -1646,6 +1790,9 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       if (amount <= 0) return null;
       if (amount > st.balance) return null;
 
+      // Chaque pari ouvre un nouveau nonce provably fair : le joueur peut
+      // vérifier tirage par tirage à partir des graines révélées.
+      J.Fair.beginBet();
       st.balance -= amount;
       st.stats.bets++;
       st.stats.wagered += amount;
@@ -3070,64 +3217,101 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     const st = J.Store.state;
     const packs = J.Shop.PACKS;
     const money = (v) => v.toFixed(2).replace('.', ',') + ' €';
+    const firstUsed = st.shop.firstPurchaseUsed;
+
+    /** Une carte de pack : prix, contenu, économie affichée. */
+    function packCard(p) {
+      const total = p.tokens + (p.bonus || 0);
+      const rate = Math.round(total / p.price);
+      const available = J.Shop.canBuy(p);
+      const bestValue = rate >= 9000;
+      return '<div class="card pad" style="margin-bottom:8px;' +
+          (p.firstOnly ? 'border-color:rgba(255,197,49,.45)' : bestValue ? 'border-color:rgba(0,227,122,.35)' : '') + '">' +
+        '<div class="row between">' +
+          '<div class="row grow">' +
+            '<div style="width:40px;height:40px;border-radius:12px;display:grid;place-items:center;' +
+              'background:rgba(255,197,49,.12);color:var(--gold);font-weight:900;font-size:17px">J</div>' +
+            '<div><div style="font-weight:800">' + U.fmt(total) + ' jetons</div>' +
+              '<div class="sub">' + (p.bonus ? '+' + U.fmt(p.bonus) + ' bonus · ' : '') + p.label + '</div>' +
+              '<div class="sub" style="font-size:9.5px">' + U.fmt(rate) + ' jetons par euro</div></div>' +
+          '</div>' +
+          '<div class="center"><div class="mono" style="font-weight:800;font-size:15px">' + money(p.price) + '</div>' +
+            (p.tag ? '<span class="badge ' + (p.firstOnly ? 'gold' : '') + '" style="font-size:8.5px">' +
+              (p.firstOnly && firstUsed ? 'déjà utilisé' : p.tag) + '</span>' : '') + '</div>' +
+        '</div>' +
+        '<button class="btn ' + (p.firstOnly ? 'gold' : available ? 'ghost' : 'ghost') + ' block mt" data-buy="' + p.id + '"' +
+          (available ? '' : ' disabled') + '>' +
+          (available ? (p.firstOnly ? '🎁 Acheter à prix réduit' : 'Acheter (simulé)') : '🔒 Indisponible (limite atteinte)') + '</button>' +
+      '</div>';
+    }
 
     $('shopBody').innerHTML =
-      '<div class="note warn mt">Paiement <b>simulé</b> dans cette version de démonstration : aucun débit réel ' +
-      'n\'est effectué. L\'architecture (catalogue, limite de dépenses, adaptateur de paiement) est prête pour ' +
-      'brancher Apple / Google In-App Purchase en vague 2.</div>' +
-
+      // Packs
       '<div class="section"><div class="section-head"><div class="h2">🛒 Packs de jetons</div>' +
         '<span class="sub">' + (spend.limit == null ? 'aucune limite' : 'limite ' + money(spend.limit) + '/mois') + '</span></div>' +
-        packs.map((p) => {
-          const total = p.tokens + (p.bonus || 0);
-          const locked = !J.Shop.canBuy(p);
-          return '<div class="card pad" style="margin-bottom:8px;' + (p.firstOnly ? 'border-color:rgba(255,197,49,.4)' : '') + '">' +
-            '<div class="row between">' +
-              '<div class="row grow">' +
-                '<div style="width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,197,49,.12);color:var(--gold);font-weight:900">J</div>' +
-                '<div><div style="font-weight:800">' + U.fmt(total) + ' jetons</div>' +
-                '<div class="sub">' + (p.bonus ? '+' + U.fmt(p.bonus) + ' bonus · ' : '') + p.label + '</div></div>' +
-              '</div>' +
-              '<div class="center"><div class="mono" style="font-weight:800">' + money(p.price) + '</div>' +
-              (p.tag ? '<span class="badge ' + (p.firstOnly ? 'gold' : '') + '" style="font-size:8.5px">' + p.tag + '</span>' : '') + '</div>' +
-            '</div>' +
-            '<button class="btn ' + (p.firstOnly ? 'gold' : 'ghost') + ' block mt" data-buy="' + p.id + '"' + (locked ? ' disabled' : '') + '>' +
-              (locked ? 'Indisponible' : 'Acheter (simulé)') + '</button>' +
-          '</div>';
-        }).join('') +
-        '<div class="sub">Vague 2 : branchement du paiement réel via les adaptateurs App Store / Play Store. ' +
-        'Les jetons achetés restent virtuels et non remboursables.</div>' +
+        packs.map(packCard).join('') +
+        '<div class="note"><b>Paiement simulé.</b> Aucun débit réel dans cette version : le tunnel d\'achat, les reçus ' +
+        'et la limite de dépenses sont déjà en place, il ne reste qu\'à enregistrer l\'adaptateur Apple / Google ' +
+        'In-App Purchase via <span class="mono">J.Shop.registerProvider()</span>.</div>' +
       '</div>' +
 
-      '<div class="section"><div class="section-head"><div class="h2">🎁 Jetons gratuits</div></div>' +
+      // Jetons gratuits
+      '<div class="section"><div class="section-head"><div class="h2">🎁 Jetons gratuits</div>' +
+        '<span class="sub">aucune dépense requise</span></div>' +
         '<div class="card pad">' +
           '<div class="kv"><span class="k">Bonus quotidien</span><span class="v ' + (J.Rewards.canClaimDaily() ? 'up' : '') + '">' +
             (J.Rewards.canClaimDaily() ? 'disponible' : 'demain') + '</span></div>' +
           '<div class="kv"><span class="k">Roue de la chance</span><span class="v ' + (J.Rewards.canSpinWheel() ? 'up' : '') + '">' +
             (J.Rewards.canSpinWheel() ? '1 tour gratuit' : 'demain') + '</span></div>' +
-          '<div class="kv"><span class="k">Recharges gratuites restantes</span><span class="v">' + J.Rewards.rechargeState().left + ' / ' + J.CONST.FREE_CHIPS_PER_DAY + '</span></div>' +
+          '<div class="kv"><span class="k">Recharges gratuites restantes</span><span class="v">' + J.Rewards.rechargeState().left +
+            ' / ' + J.CONST.FREE_CHIPS_PER_DAY + '</span></div>' +
+          '<div class="kv"><span class="k">Missions du jour</span><span class="v up">' +
+            U.fmt(J.Quests.items().reduce((a, x) => a + (x.claimed ? 0 : x.reward), 0)) + ' J à gagner</span></div>' +
           '<button class="btn ghost block mt" data-shop="free">Recharger gratuitement ' + U.fmt(J.CONST.FREE_CHIPS) + ' jetons</button>' +
+          '<div class="sub center mt-s">Tous les jeux restent accessibles sans jamais dépenser d\'argent réel.</div>' +
         '</div>' +
       '</div>' +
 
+      // Contrôle des dépenses
       '<div class="section"><div class="section-head"><div class="h2">🛡️ Contrôle des dépenses</div></div>' +
         '<div class="card pad">' +
-          '<div class="note">Tu choisis toi-même ta limite mensuelle de dépenses réelles. Une fois atteinte, ' +
-          'les achats sont bloqués jusqu\'au mois suivant (elle peut toujours être baissée, jamais relevée dans le même mois).</div>' +
+          '<div class="note">Tu choisis ta limite mensuelle de dépenses. Une fois atteinte, les achats sont bloqués ' +
+          'jusqu\'au mois suivant. Elle peut toujours être <b>baissée immédiatement</b> ; toute hausse est différée ' +
+          'au mois suivant (garde-fou anti-impulsion).</div>' +
           '<div class="kv mt"><span class="k">Dépensé ce mois-ci (simulé)</span><span class="v">' + money(spend.total) + '</span></div>' +
-          '<div class="kv"><span class="k">Limite mensuelle</span><span class="v">' + (spend.limit == null ? 'non définie' : money(spend.limit)) + '</span></div>' +
-          (st.spend.pendingLimit ? '<div class="kv"><span class="k">Hausse programmée (' + U.esc(st.spend.pendingMonth) + ')</span><span class="v gold">' + money(st.spend.pendingLimit) + '</span></div>' : '') +
+          '<div class="kv"><span class="k">Limite mensuelle</span><span class="v">' +
+            (spend.limit == null ? 'non définie' : money(spend.limit)) + '</span></div>' +
+          '<div class="progress thin mt-s"><i style="width:' +
+            (spend.limit ? U.clamp((spend.total / spend.limit) * 100, 0, 100).toFixed(0) : 0) + '%"></i></div>' +
+          (st.spend.pendingLimit ? '<div class="kv mt"><span class="k">Hausse programmée (' + U.esc(st.spend.pendingMonth) + ')</span>' +
+            '<span class="v gold">' + money(st.spend.pendingLimit) + '</span></div>' : '') +
           '<button class="btn ghost block mt" data-shop="limit">Définir ma limite mensuelle</button>' +
         '</div>' +
       '</div>' +
+
+      // Historique des achats
+      (Object.keys(st.shop.purchased).length
+        ? '<div class="section"><div class="section-head"><div class="h2">🧾 Mes achats (simulés)</div></div>' +
+          '<div class="card pad"><table class="data"><thead><tr><th>Pack</th><th>Qté</th><th>Jetons</th></tr></thead><tbody>' +
+          Object.keys(st.shop.purchased).map((id) => {
+            const p = packs.find((x) => x.id === id);
+            if (!p) return '';
+            return '<tr><td class="name">' + U.esc(p.label) + '</td><td>' + st.shop.purchased[id] + '</td>' +
+              '<td class="gold">' + U.fmt((p.tokens + (p.bonus || 0)) * st.shop.purchased[id]) + '</td></tr>';
+          }).join('') + '</tbody></table>' +
+          (st.shop.lastTransaction ? '<div class="sub mt-s">Dernière transaction : <span class="mono">' +
+            U.esc(st.shop.lastTransaction) + '</span></div>' : '') +
+          '</div></div>'
+        : '') +
 
       '<div class="note danger mt-l">' +
         '<b>Jetons virtuels sans valeur monétaire. Divertissement uniquement. 18+.</b><br>' +
         'Aucun retrait, aucune conversion en argent ou en cadeaux, aucun échange entre joueurs. ' +
         'Les jetons ne peuvent pas être gagnés en argent réel et ne servent qu\'à jouer dans l\'application.' +
       '</div>' +
-      '<div class="sub center mt">Version ' + J.VERSION + ' · vague 1 (socle + 4 jeux)</div>';
+      '<div class="sub center mt">Version ' + J.VERSION + ' · 10 jeux jouables</div>';
 
+    /* --- Liaisons --- */
     $('shopBody').querySelectorAll('[data-shop]').forEach((b) => {
       b.onclick = () => {
         const a = b.dataset.shop;
@@ -3136,39 +3320,48 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       };
     });
 
-    // Achats : la vague 1 utilise l'adaptateur de paiement simulé
     $('shopBody').querySelectorAll('[data-buy]').forEach((b) => {
       b.onclick = () => {
         const id = b.dataset.buy;
         const pack = J.Shop.PACKS.find((p) => p.id === id);
         if (!pack) return;
         J.Sfx.click();
-        J.UI.modal({
-          title: 'Confirmer l\'achat (simulé)',
-          sub: U.fmt(pack.tokens + (pack.bonus || 0)) + ' jetons virtuels',
-          body:
-            '<div class="note warn">Aucun paiement réel n\'est effectué : cette version utilise un <b>module de paiement simulé</b>. ' +
-            'En production, cette étape passe par Apple/Google In-App Purchase.</div>' +
-            '<div class="kv mt"><span class="k">Prix affiché</span><span class="v">' + money(pack.price) + '</span></div>' +
-            '<div class="kv"><span class="k">Jetons crédités</span><span class="v gold">' + U.fmt(pack.tokens + (pack.bonus || 0)) + '</span></div>' +
-            '<div class="kv"><span class="k">Dépense du mois après achat</span><span class="v">' + money(spend.total + pack.price) + ' / ' + (spend.limit == null ? '∞' : money(spend.limit)) + '</span></div>' +
-            '<div class="note mt">Les jetons sont virtuels, sans valeur monétaire : aucun retrait, aucune conversion, aucun remboursement.</div>',
-          actions: [
-            { label: 'Annuler', cls: 'ghost' },
-            { label: 'Confirmer (simulé)', cls: 'gold', keepOpen: true, onClick: (e) => {
-              const btn = document.querySelector('#modalBox [data-actions] .btn.gold');
-              if (btn) { btn.disabled = false; btn.textContent = 'Paiement en cours…'; }
-              J.Shop.purchase(pack.id).then((res) => {
-                J.UI.closeModal();
-                if (!res.ok) { J.Sfx.error(); J.toast(res.error || 'Achat impossible', 'ko'); return; }
-                J.Screen.renderShop();
-                J.Screen.renderProfile();
-              });
-            } }
-          ]
-        });
+        openPurchase(pack);
       };
     });
+
+    /* --- Tunnel d'achat (paiement simulé, prêt pour l'IAP) --- */
+    function openPurchase(pack) {
+      const total = pack.tokens + (pack.bonus || 0);
+      const after = spend.total + pack.price;
+      J.UI.modal({
+        title: 'Confirmer l\'achat',
+        sub: U.fmt(total) + ' jetons virtuels · ' + money(pack.price),
+        body:
+          '<div class="note warn">Paiement <b>simulé</b> : aucun débit réel n\'a lieu dans cette version. ' +
+          'Le tunnel est identique à celui d\'un achat intégré (confirmation, reçu, crédit des jetons).</div>' +
+          '<div class="kv mt"><span class="k">Pack</span><span class="v">' + U.esc(pack.label) + '</span></div>' +
+          '<div class="kv"><span class="k">Jetons crédités</span><span class="v gold">' + U.fmt(total) + '</span></div>' +
+          '<div class="kv"><span class="k">Prix (simulé)</span><span class="v">' + money(pack.price) + '</span></div>' +
+          '<div class="kv"><span class="k">Dépense du mois après achat</span><span class="v">' + money(after) +
+            ' / ' + (spend.limit == null ? '∞' : money(spend.limit)) + '</span></div>' +
+          '<div class="note mt">Les jetons sont virtuels et sans valeur monétaire : aucun retrait, aucune conversion, ' +
+          'aucun remboursement. Ils servent uniquement à jouer dans l\'application.</div>',
+        actions: [
+          { label: 'Annuler', cls: 'ghost' },
+          { label: 'Confirmer ' + money(pack.price), cls: 'gold', keepOpen: true, onClick: () => {
+            const btn = document.querySelector('#modalBox [data-actions] .btn.gold');
+            if (btn) { btn.disabled = true; btn.textContent = 'Paiement en cours…'; }
+            J.Shop.purchase(pack.id).then((res) => {
+              J.UI.closeModal();
+              if (!res.ok) { J.Sfx.error(); J.toast(res.error || 'Achat impossible', 'ko'); return; }
+              J.Screen.renderShop();
+              J.Screen.renderProfile();
+            });
+          } }
+        ]
+      });
+    }
   };
 
   /* ============================================================ PROFIL */
@@ -3404,16 +3597,15 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       J.Sfx.error();
       J.UI.modal({
         title: def.name + ' — bientôt',
-        sub: 'Prévu dans la ' + (def.wave === 2 ? 'vague 2' : 'vague 3') + ' du développement',
-        body: '<div class="note">Ce jeu fait partie de la feuille de route : ' +
-          (def.wave === 2 ? 'les autres Originals (Limbo, Coin Flip, Hi-Lo, Keno, Tower, Wheel).' :
-            'les classiques (Roulette, Blackjack, Baccarat, Machines à sous, Video Poker, Poker).') +
-          '</div>' +
+        sub: 'Prévu dans la vague 3 du développement (jeux classiques)',
+        body: '<div class="note">Ce jeu fait partie de la feuille de route : les classiques ' +
+          '(Roulette européenne, Blackjack, Baccarat, Machines à sous, Video Poker, Texas Hold\'em). ' +
+          'Les 10 Originals sont déjà jouables dès maintenant.</div>' +
           '<div class="kv mt"><span class="k">RTP prévu</span><span class="v up">' + def.rtp + ' %</span></div>' +
           '<div class="kv"><span class="k">Catégorie</span><span class="v">' + (def.category === 'classics' ? 'Classique' : 'Original') + '</span></div>' +
           (def.hint ? '<div class="note mt-l">' + def.hint + '</div>' : ''),
         actions: [
-          { label: 'Jouer à un jeu dispo', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
+          { label: 'Voir les 10 jeux jouables', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
           { label: 'Fermer', cls: 'ghost' }
         ]
       });
@@ -3883,7 +4075,11 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
    Déclaration des jeux non encore développés : ils apparaissent dans le
    catalogue avec leur RTP prévu, leur règle et leur vague de livraison,
    ce qui garde une seule source de vérité pour tout le lobby.
-   Vague 2 = autres Originals · Vague 3 = jeux classiques.
+
+   Vague 1 (livrée)  : Crash, Dice, Mines, Plinko
+   Vague 2 (livrée)  : Limbo, Coin Flip, Hi-Lo, Keno, Tower, Wheel
+   Vague 3 (ici)     : Roulette, Blackjack, Baccarat, Machines à sous,
+                       Video Poker, Texas Hold'em
    ========================================================================= */
 (function () {
   'use strict';
@@ -3899,40 +4095,10 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     });
   }
 
-  /* -------------------------------------------------- VAGUE 2 : ORIGINALS */
-  soon('limbo', 'Limbo', 'limbo', '#8b5cf6', 99, 'Vise un multiplicateur',
-    'Tirage uniforme : résultat = 0,99 / (1 − u). Tu choisis un multiplicateur cible, le jeu tire et compare. ' +
-    'Simple, rapide, parfait pour l\'auto-bet.',
-    2, 'originals', 'Volatilité au choix');
-
-  soon('coinflip', 'Coin Flip', 'coin', '#22d3ee', 99, 'Pile ou face en série',
-    'Pile ou face à 50/50 (1,98x) avec compteur de série : chaque victoire consécutive augmente le gain du multiplicateur choisi.',
-    2, 'originals', 'Volatilité faible');
-
-  soon('hilo', 'Hi-Lo', 'hilo', '#00e37a', 99, 'Plus haut ou plus bas',
-    'Devine si la carte suivante est plus haute ou plus basse que la carte courante. Plus la probabilité est faible, plus le gain est élevé. ' +
-    'Tu peux enchaîner plusieurs prédictions ou encaisser à tout moment.',
-    2, 'originals', 'Volatilité progressive');
-
-  soon('keno', 'Keno', 'keno', '#f97316', 97.5, 'Tire tes numéros',
-    'Choisis 1 à 10 numéros sur 40 (ou « pick aléatoire »), le tirage révèle 10 boules. Ton gain dépend du nombre de correspondances, ' +
-    'avec un tableau de gains par taille de sélection et niveau de risque.',
-    2, 'originals', 'Volatilité au choix');
-
-  soon('tower', 'Tower', 'tower', '#ff4fa3', 98.5, 'Monte les étages',
-    'Une tour de 8 à 9 étages : à chaque étage, choisis une case parmi 3 (ou 4). Une seule est sûre. ' +
-    'Chaque étage augmente le multiplicateur, avec encaissement à tout moment.',
-    2, 'originals', 'Volatilité progressive');
-
-  soon('wheel', 'Wheel', 'wheel', '#ffc531', 97, 'La roue des multiplicateurs',
-    'Roue de 10 à 60 segments selon le risque, avec un multiplicateur cible choisi par le joueur (« target multiplier »). ' +
-    'Animation fluide, RTP constant.',
-    2, 'originals', 'Volatilité au choix');
-
   /* -------------------------------------------------- VAGUE 3 : CLASSIQUES */
   soon('roulette', 'Roulette', 'roulette', '#c9273a', 97.3, 'Européenne, un seul zéro',
     'Roulette européenne (un seul zéro) : plein, cheval, carré, ligne, colonne, douzaine, rouge/noir, pair/impair, manque/passe. ' +
-    'Voisinage du cylindre et mises annoncées incluses.',
+    'Voisinage du cylindre et mises annoncées incluses. Historique chaud/froid et relance de la dernière mise.',
     3, 'classics', 'Volatilité moyenne');
 
   soon('blackjack', 'Blackjack', 'blackjack', '#00b862', 99.5, 'Battez le croupier',
@@ -3952,7 +4118,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
   soon('videopoker', 'Video Poker', 'videopoker', '#3b82f6', 99.5, 'Jacks or Better',
     'Video Poker Jacks or Better en 9/6 : tu conserves les cartes de ton choix puis le tirage complète la main. ' +
-    'Table de gains complète (paire de valets → quinte flush royale).',
+    'Table de gains complète (paire de valets → quinte flush royale), avec stratégie automatique optionnelle.',
     3, 'classics', 'Volatilité moyenne');
 
   soon('poker', 'Texas Hold\'em', 'poker', '#34d399', 98, 'Contre des bots',
@@ -4533,7 +4699,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
         const cur = multFor(g.picked.length, g.mineCount);
         const gain = Math.round(g.bet * cur);
         return [
-          { label: g.picked.length === 0 ? 'Révèle une case…' : '💰 Encaisser ' + U.fmtMult(cur) + ' · +' + U.fmt(gain - g.bet),
+          { label: g.picked.length === 0 ? 'Révèle une case…' : '💰 Encaisser · +' + U.fmt(gain),
             cls: 'primary wide-lg grow', act: 'cashout', alsoWhenBusy: true, disabled: g.picked.length === 0 },
           { label: '⏹', cls: 'ghost', onClick: (gg) => J.Games.stopAuto(gg, 'Arrêt demandé'), alsoWhenBusy: true }
         ];
@@ -4559,18 +4725,24 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       J.Games.updateHints(g);
       J.Sfx.bet();
 
-      // Mode auto : révéler automatiquement N cases puis encaisser
+      // Mode auto : révéler automatiquement N cases, PUIS encaisser
       if (g.auto.on) {
         const speed = Math.max(60, g.auto.speed * 0.6);
-        for (let i = 0; i < g.autoPicks; i++) {
+        const picks = Math.min(g.autoPicks, TILES - g.mineCount);   // jamais plus que de cases sûres
+        for (let i = 0; i < picks; i++) {
           J.Games.schedule(g, () => {
             if (!g.active) return;
             const hidden = [];
-            g.gridEl.querySelectorAll('[data-tile]').forEach((t) => { if (!t.classList.contains('picked') && !t.classList.contains('bomb')) hidden.push(parseInt(t.dataset.tile, 10)); });
+            g.gridEl.querySelectorAll('[data-tile]').forEach((t) => {
+              if (!t.classList.contains('picked') && !t.classList.contains('bomb')) hidden.push(parseInt(t.dataset.tile, 10));
+            });
             if (!hidden.length) return;
             pick(g, hidden[J.Fair.int(0, hidden.length - 1)], true);
           }, i * speed);
         }
+        // Encaissement automatique une fois les cases révélées (sinon la série resterait bloquée).
+        // Note : `cashout` est une méthode de la définition du jeu, pas une fonction du module.
+        J.Games.schedule(g, () => { if (g.active) g.def.cashout(g); }, picks * speed + 90);
       }
     },
 
@@ -4625,7 +4797,12 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     else J.Sfx.coin();
     updateStats(g);
     J.Games.updateHints(g);
-    J.Games.renderActions(g);
+    // Mise à jour du montant encaissable sans reconstruire le bouton
+    const cash = g.panelEl.querySelector('[data-act="cashout"]');
+    if (cash) {
+      const cur2 = multFor(g.picked.length, g.mineCount);
+      cash.innerHTML = '💰 Encaisser · +' + U.fmt(Math.round(g.ticket.bet * cur2));
+    }
   }
 
   /** À la fin de la partie, on montre toutes les mines (transparence). */
@@ -5179,7 +5356,1570 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   });
 })();
 
-/* ===== 40-boot.js ====================================================== */
+/* ===== 35-game-limbo.js ================================================ */
+/* =========================================================================
+   JEU 5 — LIMBO
+   Tu choisis un multiplicateur cible, le jeu tire un résultat.
+   Tirage : risultato = 0,99 / (1 − u)  →  P(résultat ≥ cible) = 0,99 / cible
+   donc RTP = cible × P(gagner) = 99 %, quel que soit le multiplicateur visé.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+
+  const TARGETS = [1.2, 1.5, 2, 3, 5, 10, 25, 100, 1000];
+
+  /** Résultat tiré à partir d'un aléa uniforme (arrondi 2 décimales, jamais < 1). */
+  const rollFrom = (u) => Math.max(1.00, Math.floor(99 / (1 - u)) / 100);
+
+  /** Probabilité de gagner pour une cible donnée. */
+  const winChance = (target) => U.clamp(0.99 / target, 0, 1);
+
+  J.Games.register({
+    id: 'limbo',
+    name: 'Limbo',
+    icon: 'limbo',
+    color: '#8b5cf6',
+    rtp: 99,
+    category: 'originals',
+    tagline: 'Vise un multiplicateur',
+    volatility: 'Volatilité au choix',
+    rules:
+      'Choisis un <b>multiplicateur cible</b> puis lance le tirage. Le résultat est un nombre tiré entre 1,00x et l\'infini, ' +
+      'selon la formule <b>0,99 / (1 − u)</b> où u est un aléa uniforme vérifiable (Fair Play).<br><br>' +
+      'Tu gagnes si le résultat est <b>supérieur ou égal</b> à ta cible, et tu es payé à hauteur de la cible. ' +
+      'Viser 2x gagne dans 49,5 % des cas ; viser 100x gagne dans 0,99 % des cas. Le RTP reste de 99 % dans tous les cas : ' +
+      'seuls la fréquence et le montant des gains changent.',
+    playLabel: 'Lancer le tirage 🎯',
+
+    /* ---------------------------------------------------------------- ÉTAT */
+    state(g) {
+      g.target = g.target || 2;
+      g.mult = 1;
+      g.phase = 'idle';
+    },
+
+    /* ------------------------------------------------------------- OPTIONS */
+    controls(g) {
+      return '<div class="row between"><span class="bet-label">Multiplicateur cible</span>' +
+          '<span class="mono up" id="lbChance">' + U.fmtPct(winChance(g.target) * 100) + ' de chances</span></div>' +
+        '<div class="field mt-s"><span class="suffix">CIBLE</span>' +
+          '<input id="lbTarget" type="number" min="1.01" step="0.1" value="' + g.target.toFixed(2) + '">' +
+          '<span class="suffix">x</span></div>' +
+        '<div class="chips mt-s" id="lbChips">' +
+          TARGETS.map((t) => '<button class="chip' + (t === g.target ? ' is-on' : '') + '" data-target="' + t + '">' + t + 'x</button>').join('') +
+        '</div>';
+    },
+
+    payoutHint(g) {
+      const c = winChance(g.target);
+      return 'Gain : <b class="up">+' + U.fmt(Math.round(g.bet * g.target) - g.bet) + ' J</b> · ' +
+        'probabilité ' + U.fmtPct(c * 100, 2);
+    },
+
+    /* --------------------------------------------------------------- SCÈNE */
+    stage() {
+      return '<div class="limbo-stage">' +
+        '<div class="limbo-num" id="lbNum">1,00x</div>' +
+        '<div class="limbo-target">Cible : <b id="lbTargetLbl">2,00x</b></div>' +
+        '<div class="sub center" id="lbMsg">Règle ton multiplicateur puis lance le tirage</div>' +
+      '</div>';
+    },
+
+    mount(g) {
+      g.numEl = document.getElementById('lbNum');
+      g.msgEl = document.getElementById('lbMsg');
+
+      const input = g.panelEl.querySelector('#lbTarget');
+      input.onchange = () => { setTarget(g, parseFloat(input.value) || 2); };
+      g.panelEl.querySelectorAll('#lbChips [data-target]').forEach((b) => {
+        b.onclick = () => { J.Sfx.click(); setTarget(g, parseFloat(b.dataset.target)); };
+      });
+      syncLabels(g);
+    },
+
+    /* --------------------------------------------------------- BOUTONS */
+    actions(g) {
+      if (g.phase === 'roll') return [{ label: 'Tirage en cours…', cls: 'ghost wide-lg grow', act: 'none', disabled: true }];
+      return [{ label: g.auto.on ? 'Série en cours…' : 'Lancer le tirage 🎯', cls: 'primary wide-lg grow', act: 'play', disabled: g.auto.on }];
+    },
+
+    /* -------------------------------------------------------- TOUR DE JEU */
+    start(g) {
+      const target = g.target;
+      // Tirage provably fair AVANT l'animation
+      const result = rollFrom(J.Fair.float());
+      const win = result >= target;
+      g.phase = 'roll';
+      g.mult = result;
+      J.Games.renderActions(g);
+      J.Sfx.bet();
+
+      const dur = g.auto.on ? Math.max(80, Math.min(380, g.auto.speed * 0.5)) : 560;
+      const t0 = performance.now();
+      g.numEl.className = 'limbo-num pop';
+      g.msgEl.textContent = 'Tirage…';
+
+      const frame = (t) => {
+        if (!g.ticket) return;
+        const p = Math.min(1, (t - t0) / dur);
+        if (p < 1) {
+          g.numEl.textContent = U.fmtMult(rollFrom(Math.random() * 0.999));
+          requestAnimationFrame(frame);
+        } else {
+          finish(g, result, target, win);
+        }
+      };
+      requestAnimationFrame(frame);
+    }
+  });
+
+  /* ----------------------------------------------------------- AFFICHAGE */
+  function syncLabels(g) {
+    const el = g.panelEl.querySelector('#lbChance');
+    if (el) el.textContent = U.fmtPct(winChance(g.target) * 100) + ' de chances';
+    const lbl = document.getElementById('lbTargetLbl');
+    if (lbl) lbl.textContent = U.fmtMult(g.target);
+    g.panelEl.querySelectorAll('#lbChips [data-target]').forEach((b) => {
+      b.classList.toggle('is-on', parseFloat(b.dataset.target) === g.target);
+    });
+    J.Games.updateHints(g);
+  }
+
+  /** Change la cible (autorisé uniquement hors tirage en cours). */
+  function setTarget(g, t) {
+    if (g.phase === 'roll' && g.ticket) { J.toast('Attends la fin du tirage', 'ko'); return; }
+    g.target = U.clamp(Number(t) || 2, 1.01, 1000000);
+    const input = g.panelEl.querySelector('#lbTarget');
+    if (input) input.value = g.target.toFixed(2);
+    syncLabels(g);
+  }
+
+  /** Résout la manche. */
+  function finish(g, result, target, win) {
+    g.phase = 'idle';
+    g.numEl.className = 'limbo-num ' + (win ? 'win pop' : 'lose');
+    setTimeout(() => g.numEl.classList.remove('pop'), 140);
+    g.numEl.textContent = U.fmtMult(result);
+    J.Games.renderActions(g);
+
+    if (win) {
+      const payout = Math.round(g.ticket.bet * target);
+      J.Sfx.win(target); J.haptic.win(target);
+      g.msgEl.innerHTML = '🎉 <b class="up">Gagné</b> — ' + U.fmtMult(result) + ' ≥ cible ' + U.fmtMult(target);
+      J.floatText('+' + U.fmt(payout - g.ticket.bet), { el: g.numEl, color: 'var(--green)', size: 24 });
+      J.FX.confetti({ count: target >= 10 ? 90 : 30, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 90 });
+      if (target >= 10) J.Live.playerWin('limbo', target, payout);
+    } else {
+      J.Sfx.lose(); J.haptic.lose();
+      g.msgEl.innerHTML = '❌ <b class="down">Perdu</b> — ' + U.fmtMult(result) + ' < cible ' + U.fmtMult(target);
+      J.shake(g.stageEl);
+    }
+    J.Games.finish(g, win ? target : 0, { detail: U.fmtMult(result) + ' vs cible ' + U.fmtMult(target) });
+  }
+})();
+
+/* ===== 36-game-coinflip.js ============================================= */
+/* =========================================================================
+   JEU 6 — COIN FLIP
+   Pile ou face en série. Chaque victoire consécutive multiplie le gain :
+     mult(n) = 0,99 × 2ⁿ   (n = victoires d'affilée)
+   Comme P(n victoires d'affilée) = 1/2ⁿ, on a pour tout point d'arrêt :
+     P × mult = 0,99  →  RTP 99 % que tu encaisses après 1, 3 ou 8 lancers.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+
+  const MAX_STREAK = 12;                       // 0,99 × 2¹² = 4 055x
+  const multOf = (n) => 0.99 * Math.pow(2, n);
+
+  J.Games.register({
+    id: 'coinflip',
+    name: 'Coin Flip',
+    icon: 'coin',
+    color: '#22d3ee',
+    rtp: 99,
+    category: 'originals',
+    tagline: 'Pile ou face en série',
+    volatility: 'Volatilité progressive',
+    rules:
+      'Choisis <b>Pile</b> ou <b>Face</b>, puis lance la pièce. À chaque victoire consécutive, le multiplicateur progresse : ' +
+      '1 victoire = 1,98x · 2 = 3,96x · 3 = 7,92x · 5 = 31,68x · 8 = 253,44x.<br><br>' +
+      'Tu peux <b>encaisser après chaque lancer réussi</b> : ton gain est mise × multiplicateur courant. Une seule perte ' +
+      'remet la série à zéro et fait perdre la mise. Chaque face a exactement 50 % de chances (tirage vérifiable).',
+    playLabel: 'Lancer la pièce 🪙',
+
+    /* ---------------------------------------------------------------- ÉTAT */
+    state(g) {
+      g.side = g.side || 'head';               // 'head' (pile) ou 'tail' (face)
+      g.streak = 0;                            // victoires d'affilée
+      g.phase = 'idle';                        // idle | flipped
+      g.lastFlip = null;
+    },
+
+    /* ------------------------------------------------------------- OPTIONS */
+    controls(g) {
+      return '<div class="seg green" id="cfSide">' +
+          '<button data-side="head"' + (g.side === 'head' ? ' class="is-on"' : '') + '>🪙 Pile (0,5)</button>' +
+          '<button data-side="tail"' + (g.side === 'tail' ? ' class="is-on"' : '') + '>🪙 Face (0,5)</button>' +
+        '</div>' +
+        '<div class="row between mt-s"><span class="sub">Série en cours</span>' +
+          '<span class="mono up" id="cfStreakLbl">0 victoire · ' + U.fmtMult(0.99) + ' avant gain</span></div>' +
+        '<div class="sub mt-s">En mode Auto-bet, la série s\'arrête au multiplicateur indiqué par « STOP SI MULT ≥ ».';
+    },
+
+    payoutHint(g) {
+      const cur = g.streak > 0 ? multOf(g.streak) : 0;
+      const next = multOf(g.streak + 1);
+      return g.streak > 0
+        ? 'Encaissement : <b class="up">' + U.fmtMult(cur) + '</b> · prochain lancer ' + U.fmtMult(next)
+        : 'Première victoire : <b class="up">' + U.fmtMult(multOf(1)) + '</b>';
+    },
+
+    /* --------------------------------------------------------------- SCÈNE */
+    stage() {
+      return '<div class="coinflip-stage">' +
+        '<div class="coin3d"><div class="inner" id="cfCoin">' +
+          '<div class="face f-head">P</div><div class="face f-tail">F</div>' +
+        '</div></div>' +
+        '<div class="coinflip-streak" id="cfDots"></div>' +
+        '<div class="coinflip-res" id="cfRes">Prêt</div>' +
+        '<div class="sub center" id="cfMsg">Choisis ta face puis lance la pièce</div>' +
+      '</div>';
+    },
+
+    mount(g) {
+      g.coinEl = document.getElementById('cfCoin');
+      g.resEl = document.getElementById('cfRes');
+      g.msgEl = document.getElementById('cfMsg');
+      g.dotsEl = document.getElementById('cfDots');
+      g.angle = 0;
+
+      g.panelEl.querySelectorAll('#cfSide [data-side]').forEach((b) => {
+        b.onclick = () => {
+          if (g.phase === 'flipped' && g.ticket) { J.toast('Termine la série en cours', 'ko'); return; }
+          J.Sfx.click();
+          g.side = b.dataset.side;
+          g.panelEl.querySelectorAll('#cfSide [data-side]').forEach((x) => x.classList.toggle('is-on', x === b));
+        };
+      });
+      renderDots(g);
+      syncStreakLabel(g);
+    },
+
+    /* ---------------------------------------------------------- BOUTONS */
+    actions(g) {
+      if (g.phase === 'flipped' && g.ticket) {
+        const cur = multOf(g.streak);
+        const bet = g.ticket.bet;
+        return [
+          { label: '💰 Encaisser ' + U.fmtMult(cur) + ' · +' + U.fmt(Math.round(bet * cur) - bet),
+            cls: 'primary wide-lg grow', act: 'cashout', alsoWhenBusy: true },
+          { label: '↻ Relancer', cls: 'ghost', alsoWhenBusy: true,
+            onClick: (gg) => { if (!gg.auto.on) flip(gg); } }
+        ];
+      }
+      return [{ label: g.auto.on ? 'Série en cours…' : 'Lancer la pièce 🪙', cls: 'primary wide-lg grow', act: 'play', disabled: g.auto.on }];
+    },
+
+    /* -------------------------------------------------------- TOUR DE JEU */
+    start(g) {
+      g.streak = 0;
+      renderDots(g);
+      flip(g);
+    },
+
+    cashout(g) { return cashout(g); }
+  });
+
+  /* -------------------------------------------------------------- LANCER */
+  /** Lance la pièce : le résultat est tiré via Fair Play avant l'animation. */
+  function flip(g) {
+    if (!g.ticket) return;
+    const head = J.Fair.float() < 0.5;                     // 50/50 vérifiable
+    const won = (g.side === 'head') === head;
+    g.phase = 'flipped';
+    g.lastFlip = head ? 'head' : 'tail';
+    J.Sfx.bet();
+
+    // Animation : la pièce tourne puis se pose sur la face tirée
+    g.angle += 720 + (head ? 0 : 180);
+    if (g.coinEl) g.coinEl.style.transform = 'rotateX(' + g.angle + 'deg)';
+    g.resEl.textContent = '…';
+    g.msgEl.textContent = 'La pièce tourne…';
+
+    const animMs = g.auto.on ? Math.max(120, g.auto.speed * 0.75) : 1050;
+    J.Games.schedule(g, () => resolve(g, won), animMs);
+  }
+
+  /** Résultat du lancer : victoire (série continue) ou perte (fin de manche). */
+  function resolve(g, won) {
+    if (!g || !g.ticket) return;
+    const face = g.lastFlip === 'head' ? 'Pile' : 'Face';
+    g.resEl.textContent = '🪙 ' + face;
+
+    if (!won) {
+      g.phase = 'idle';
+      g.streak = 0;
+      renderDots(g);
+      syncStreakLabel(g);
+      g.msgEl.innerHTML = '❌ <b class="down">' + face + '</b> — la série s\'arrête là';
+      J.Sfx.lose(); J.haptic.lose(); J.shake(g.stageEl);
+      J.Games.finish(g, 0, { detail: face + ' (perdu)' });
+      return;
+    }
+
+    g.streak++;
+    renderDots(g);
+    syncStreakLabel(g);
+    J.Sfx.reveal(true); J.haptic.tap();
+    g.msgEl.innerHTML = '✅ <b class="up">' + face + '</b> — ' + g.streak + ' victoire(s) d\'affilée';
+
+    // En mode Auto-bet : on encaisse au multiplicateur cible du panneau auto
+    const target = g.auto.on ? (g.auto.stopMult || 0) : 0;
+    const cur = multOf(g.streak);
+    if (target > 0 && cur >= target) { cashout(g); return; }
+    if (g.streak >= MAX_STREAK) { cashout(g); return; }
+    J.Games.renderActions(g);
+    J.Games.updateHints(g);
+
+    // Sans auto-bet, le joueur décide : encaisser ou relancer (boutons mis à jour)
+    if (g.auto.on) {
+      J.Games.schedule(g, () => { if (g.ticket && g.auto.on) flip(g); }, g.auto.speed);
+    }
+  }
+
+  /** Encaisse le multiplicateur courant. */
+  function cashout(g) {
+    if (!g || !g.ticket || g.streak <= 0) return;
+    const mult = multOf(g.streak);
+    const payout = Math.round(g.ticket.bet * mult);
+    g.phase = 'idle';
+    g.msgEl.innerHTML = '💰 <b class="up">Encaissé</b> à ' + U.fmtMult(mult) + ' après ' + g.streak + ' lancer(s)';
+    J.Sfx.cashout(); J.haptic.win(mult);
+    J.floatText('+' + U.fmt(payout), { el: g.resEl, color: 'var(--green)', size: 24 });
+    if (mult >= 3.96) J.FX.confetti({ count: mult >= 30 ? 100 : 45, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 80 });
+    if (mult >= 7.92) J.Live.playerWin('coinflip', mult, payout);
+    const streakEnd = g.streak;
+    g.streak = 0;
+    renderDots(g);
+    syncStreakLabel(g);
+    J.Games.finish(g, mult, { detail: streakEnd + ' victoires' });
+  }
+
+  /* ----------------------------------------------------------- AFFICHAGE */
+  function renderDots(g) {
+    if (!g.dotsEl) return;
+    const shown = Math.max(6, g.streak);
+    g.dotsEl.innerHTML = '';
+    for (let i = 0; i < Math.min(shown, 12); i++) {
+      const d = document.createElement('span');
+      d.className = 'streak-dot' + (i < g.streak ? ' on' : '');
+      g.dotsEl.appendChild(d);
+    }
+  }
+
+  function syncStreakLabel(g) {
+    const el = g.panelEl.querySelector('#cfStreakLbl');
+    if (!el) return;
+    const cur = g.streak > 0 ? U.fmtMult(multOf(g.streak)) : '—';
+    el.textContent = g.streak + ' victoire' + (g.streak > 1 ? 's' : '') + ' · encaissement ' + cur;
+    J.Games.updateHints(g);
+  }
+})();
+
+/* ===== 37-game-hilo.js ================================================= */
+/* =========================================================================
+   JEU 7 — HI-LO
+   Devine si la carte suivante est plus haute ou plus basse. Les cartes sont
+   tirées d'un jeu de 52 cartes SANS remise : les probabilités affichées sont
+   donc exactes (elles évoluent au fil de la série).
+
+   Multiplicateur : mult(n) = 0,99 / P(n prédictions justes d'affilée)
+   → à tout moment, EV = 0,99 × mise : RTP 99 % quel que soit le point
+   d'encaissement. Une égalité (même hauteur) est perdante, comme au casino.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+
+  const RANKS = ['', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'V', 'D', 'R'];   // A=1 … R=13
+  const SUITS = [
+    { s: '♠', red: false }, { s: '♥', red: true }, { s: '♦', red: true }, { s: '♣', red: false }
+  ];
+  const HOUSE = 0.99;
+
+  /** Jeu neuf : 4 cartes par hauteur. */
+  function freshDeck() {
+    const counts = new Array(14).fill(4);
+    counts[0] = 0;
+    return { counts, remaining: 52 };
+  }
+
+  /** Tire une carte au hasard (distribution uniforme sur les cartes restantes). */
+  function drawCard(g) {
+    const idx = Math.floor(J.Fair.float() * g.deck.remaining);      // position dans le jeu restant
+    let seen = 0, rank = 1;
+    for (let r = 1; r <= 13; r++) {
+      if (seen + g.deck.counts[r] > idx) { rank = r; break; }
+      seen += g.deck.counts[r];
+    }
+    g.deck.counts[rank]--;
+    g.deck.remaining--;
+    const suit = SUITS[Math.floor(J.Fair.float() * 4)];
+    return { rank, suit: suit.s, red: suit.red };
+  }
+
+  /** Nombre de cartes restantes strictement au-dessus / en dessous d'une hauteur. */
+  function counts(g, rank) {
+    let higher = 0, lower = 0;
+    for (let r = rank + 1; r <= 13; r++) higher += g.deck.counts[r];
+    for (let r = 1; r < rank; r++) lower += g.deck.counts[r];
+    return { higher, lower };
+  }
+
+  J.Games.register({
+    id: 'hilo',
+    name: 'Hi-Lo',
+    icon: 'hilo',
+    color: '#00e37a',
+    rtp: 99,
+    category: 'originals',
+    tagline: 'Plus haut ou plus bas',
+    volatility: 'Volatilité progressive',
+    hot: true,
+    rules:
+      'Une carte est retournée. Devine si la suivante sera <b>plus haute</b> ou <b>plus basse</b>. ' +
+      'Les 52 cartes sont distribuées <b>sans remise</b> : les probabilités affichées sont donc exactes et évoluent ' +
+      'au fil de la série.<br><br>' +
+      'Chaque bonne prédiction augmente le multiplicateur (0,99 ÷ probabilité cumulée), et tu peux ' +
+      '<b>encaisser à tout moment</b>. Une <b>égalité</b> (même hauteur) est perdante. ' +
+      'En mode Auto-bet, le jeu choisit systématiquement l\'option la plus probable avant d\'encaisser.',
+    playLabel: 'Distribuer 🃏',
+
+    /* ---------------------------------------------------------------- ÉTAT */
+    state(g) {
+      const d = freshDeck();
+      g.deck = d;
+      g.card = null;
+      g.mult = HOUSE;
+      g.steps = 0;
+      g.chain = [];
+      g.phase = 'idle';           // idle | guess
+      g.autoSteps = g.autoSteps || 1;
+      g.lastOutcome = null;
+    },
+
+    /* ------------------------------------------------------------- OPTIONS */
+    controls(g) {
+      return '<div class="row between"><span class="bet-label">Prédictions auto</span>' +
+          '<span class="mono up" id="hlStepsLbl">' + g.autoSteps + '</span></div>' +
+        '<input type="range" id="hlSteps" min="1" max="9" step="1" value="' + g.autoSteps + '" class="thin mt-s">' +
+        '<div class="sub mt-s">Nombre de prédictions tentées automatiquement par partie en mode Auto-bet ' +
+        '(le jeu choisit toujours l\'option la plus probable).';
+    },
+
+    payoutHint(g) {
+      if (g.steps > 0) return 'Encaissement : <b class="up">' + U.fmtMult(g.mult) + '</b> après ' + g.steps + ' prédiction(s)';
+      return 'Multiplicateur de départ : 1,00x — encaisse quand tu veux';
+    },
+
+    /* --------------------------------------------------------------- SCÈNE */
+    stage() {
+      return '<div class="hilo-stage">' +
+        '<div class="hilo-card" id="hlCard"><div class="rank">—</div><div class="mid">🂠</div><div class="suit">—</div></div>' +
+        '<div class="hilo-history" id="hlChain"></div>' +
+        '<div class="hilo-choices" id="hlChoices">' +
+          '<button class="hilo-choice" id="hlHigh" disabled><span>▲ Plus haut</span><b id="hlHighMult">—</b><small id="hlHighP">—</small></button>' +
+          '<button class="hilo-choice" id="hlLow" disabled><span>▼ Plus bas</span><b id="hlLowMult">—</b><small id="hlLowP">—</small></button>' +
+        '</div>' +
+        '<div class="hilo-deck" id="hlDeck">52 cartes restantes</div>' +
+        '<div class="sub center" id="hlMsg">Distribue une carte pour commencer</div>' +
+      '</div>';
+    },
+
+    mount(g) {
+      g.cardEl = document.getElementById('hlCard');
+      g.chainEl = document.getElementById('hlChain');
+      g.deckEl = document.getElementById('hlDeck');
+      g.msgEl = document.getElementById('hlMsg');
+      g.highBtn = document.getElementById('hlHigh');
+      g.lowBtn = document.getElementById('hlLow');
+
+      g.highBtn.onclick = () => guess(g, 'higher');
+      g.lowBtn.onclick = () => guess(g, 'lower');
+
+      const range = g.panelEl.querySelector('#hlSteps');
+      range.oninput = () => {
+        g.autoSteps = U.clamp(parseInt(range.value, 10) || 1, 1, 9);
+        const lbl = g.panelEl.querySelector('#hlStepsLbl');
+        if (lbl) lbl.textContent = g.autoSteps;
+      };
+
+      renderCard(g);
+      renderChoices(g);
+      renderDeck(g);
+    },
+
+    /* ---------------------------------------------------------- BOUTONS */
+    actions(g) {
+      if (g.phase === 'guess' && g.steps > 0) {
+        const bet = g.ticket ? g.ticket.bet : g.bet;
+        return [
+          { label: '💰 Encaisser ' + U.fmtMult(g.mult) + ' · +' + U.fmt(Math.round(bet * g.mult) - bet),
+            cls: 'primary wide-lg grow', act: 'cashout', alsoWhenBusy: true },
+          { label: '↻ Prédire', cls: 'ghost', alsoWhenBusy: true, onClick: () => renderChoices(g) }
+        ];
+      }
+      if (g.phase === 'guess') {
+        return [{ label: 'Choisis « plus haut » ou « plus bas »', cls: 'ghost wide-lg grow', act: 'none', disabled: true }];
+      }
+      return [{ label: g.auto.on ? 'Série en cours…' : 'Distribuer 🃏', cls: 'primary wide-lg grow', act: 'play', disabled: g.auto.on }];
+    },
+
+    /* -------------------------------------------------------- TOUR DE JEU */
+    start(g) {
+      if (g.deck.remaining < 6) {                 // jeu presque épuisé : on rebat
+        g.deck = freshDeck();
+        J.toast('🃏 Jeu rebattu', 'ok');
+      }
+      g.mult = HOUSE;
+      g.steps = 0;
+      g.chain = [];
+      g.card = drawCard(g);
+      g.phase = 'guess';
+      g.autoLeft = g.autoSteps;
+      renderCard(g);
+      renderDeck(g);
+      renderChain(g);
+      renderChoices(g);
+      J.Games.renderActions(g);
+      J.Games.updateHints(g);
+      J.Sfx.bet();
+      g.msgEl.textContent = 'À toi de prédire la carte suivante';
+
+      // Mode auto : on enchaîne les prédictions les plus probables
+      if (g.auto.on) autoGuess(g);
+    },
+
+    cashout(g) { return cashout(g); }
+  });
+
+  /* ------------------------------------------------------------- ÉCRANS */
+  function renderCard(g) {
+    const c = g.card;
+    if (!c) return;
+    g.cardEl.className = 'hilo-card' + (c.red ? ' red' : '');
+    g.cardEl.innerHTML =
+      '<div class="rank">' + RANKS[c.rank] + '</div>' +
+      '<div class="mid">' + c.suit + '</div>' +
+      '<div class="suit">' + c.suit + '</div>';
+  }
+
+  function renderDeck(g) {
+    if (g.deckEl) g.deckEl.textContent = g.deck.remaining + ' cartes restantes · multiplicateur ' + U.fmtMult(g.mult);
+  }
+
+  function renderChain(g) {
+    if (!g.chainEl) return;
+    g.chainEl.innerHTML = g.chain.map((c) =>
+      '<span class="hilo-mini' + (c.red ? ' red' : '') + '">' + RANKS[c.rank] + c.suit + '</span>').join('');
+  }
+
+  /** Met à jour les deux boutons avec probabilités et multiplicateurs exacts. */
+  function renderChoices(g) {
+    if (!g.card) return;
+    const c = counts(g, g.card.rank);
+    const rem = g.deck.remaining;
+    const pHigh = rem ? c.higher / rem : 0;
+    const pLow = rem ? c.lower / rem : 0;
+    const multHigh = pHigh > 0 ? g.mult / pHigh : 0;
+    const multLow = pLow > 0 ? g.mult / pLow : 0;
+
+    g.highBtn.disabled = !(pHigh > 0) || g.phase !== 'guess';
+    g.lowBtn.disabled = !(pLow > 0) || g.phase !== 'guess';
+    const set = (btn, p, m, idM, idP) => {
+      document.getElementById(idM).textContent = p > 0 ? U.fmtMult(m) : '—';
+      document.getElementById(idP).textContent = p > 0 ? U.fmtPct(p * 100, 1) + ' · ' + (p > 0 ? Math.round(rem * p) : 0) + ' cartes' : 'aucune carte';
+    };
+    set(g.highBtn, pHigh, multHigh, 'hlHighMult', 'hlHighP');
+    set(g.lowBtn, pLow, multLow, 'hlLowMult', 'hlLowP');
+  }
+
+  /* -------------------------------------------------------------- JOUER */
+  /** Une prédiction : 'higher' ou 'lower'. */
+  function guess(g, dir, auto) {
+    if (!g.ticket || g.phase !== 'guess') return;
+    const c = counts(g, g.card.rank);
+    const rem = g.deck.remaining;
+    const p = dir === 'higher' ? c.higher / rem : c.lower / rem;
+    if (!(p > 0)) { if (!auto) J.toast('Aucune carte dans ce sens', 'ko'); return; }
+
+    const next = drawCard(g);
+    const won = dir === 'higher' ? next.rank > g.card.rank : next.rank < g.card.rank;
+    g.chain.push(g.card);
+    g.card = next;
+
+    if (won) {
+      g.mult = g.mult / p;                      // = 0,99 / P(cumulée)
+      g.steps++;
+      J.Sfx.reveal(true); J.haptic.tap();
+      g.msgEl.innerHTML = '✅ <b class="up">Bien vu</b> — ' + U.fmtMult(g.mult);
+    } else {
+      g.phase = 'idle';
+      renderCard(g); renderDeck(g); renderChain(g); renderChoices(g);
+      J.Sfx.lose(); J.haptic.lose(); J.shake(g.stageEl);
+      const equal = next.rank === g.card.rank;
+      g.msgEl.innerHTML = '❌ <b class="down">Perdu</b> — ' + (equal ? 'égalité (même hauteur)' : 'carte ' + (dir === 'higher' ? 'plus basse' : 'plus haute'));
+      J.Games.finish(g, 0, { detail: 'perdu après ' + g.steps + ' prédiction(s)' });
+      return;
+    }
+
+    renderCard(g); renderDeck(g); renderChain(g); renderChoices(g);
+    J.Games.updateHints(g);
+    J.Games.renderActions(g);
+
+    if (auto && g.auto.on) autoGuess(g);
+  }
+
+  /** Enchaîne automatiquement les prédictions les plus probables (mode auto). */
+  function autoGuess(g) {
+    if (!g.auto.on) return;
+    if (g.autoLeft <= 0) { cashout(g); return; }
+    if (!g.ticket) return;
+    const c = counts(g, g.card.rank);
+    const rem = g.deck.remaining;
+    const pHigh = c.higher / rem, pLow = c.lower / rem;
+    if (pHigh <= 0 && pLow <= 0) { cashout(g); return; }
+    const dir = pHigh >= pLow ? 'higher' : 'lower';
+    const p = Math.max(pHigh, pLow);
+    g.autoLeft--;
+    J.Games.schedule(g, () => { if (g.ticket) guess(g, dir, true); }, Math.max(90, (g.auto.speed || 400) * 0.6));
+  }
+
+  /** Encaisse le multiplicateur courant. */
+  function cashout(g) {
+    if (!g || !g.ticket || g.steps <= 0) return;
+    const mult = g.mult;
+    const payout = Math.round(g.ticket.bet * mult);
+    g.phase = 'idle';
+    renderChoices(g);
+    g.msgEl.innerHTML = '💰 <b class="up">Encaissé</b> à ' + U.fmtMult(mult) + ' après ' + g.steps + ' prédiction(s)';
+    J.Sfx.cashout(); J.haptic.win(mult);
+    J.floatText('+' + U.fmt(payout), { el: g.cardEl, color: 'var(--green)', size: 22 });
+    if (mult >= 4) J.FX.confetti({ count: mult >= 20 ? 100 : 45, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 80 });
+    if (mult >= 8) J.Live.playerWin('hilo', mult, payout);
+    const steps = g.steps;
+    g.steps = 0;
+    g.mult = HOUSE;
+    J.Games.finish(g, mult, { detail: steps + ' prédiction(s) juste(s)' });
+  }
+})();
+
+/* ===== 38-game-keno.js ================================================= */
+/* =========================================================================
+   JEU 8 — KENO
+   40 numéros, tu en choisis 1 à 10, le tirage en révèle 10.
+   Probabilités exactes (loi hypergéométrique) :
+     P(h correspondances | k choisis) = C(k,h)·C(40−k,10−h) / C(40,10)
+
+   Les tables de gains ci-dessous sont CONÇUES pour un RTP de 97,5 %
+   (générées et vérifiées par `node tools/design-tables.mjs`) : chaque
+   configuration affiche son RTP réel dans l'interface. Trois niveaux de
+   risque : Classique (paie souvent), Moyen, Élevé (paie rarement, très gros).
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+
+  const NUMBERS = 40;
+  const DRAWN = 10;
+  const RISK_LABEL = { classic: 'Classique', medium: 'Moyen', high: 'Élevé' };
+
+  /** Tables de gains : PAYTABLES[risque][numéros choisis][correspondances] */
+  const PAYTABLES = {
+    classic: {
+      1: [0, 3.9],                                                          // 97,50 %
+      2: [0, 1.93, 4.05],                                                   // 97,60 %
+      3: [0, 0, 6.01, 12.6],                                                // 97,42 %
+      4: [0, 0, 3.18, 6.67, 14],                                            // 97,60 %
+      5: [0, 0, 0, 9.64, 20.2, 42.5],                                       // 97,44 %
+      6: [0, 0, 0, 5.24, 11, 23.1, 48.5],                                   // 97,50 %
+      7: [0, 0, 0, 0, 16.4, 34.3, 72.1, 151],                               // 97,70 %
+      8: [0, 0, 0, 0, 8.99, 18.9, 39.6, 83.3, 175],                         // 97,52 %
+      9: [0, 0, 0, 0, 0, 29.8, 62.6, 132, 276, 580],                        // 97,44 %
+      10: [0, 0, 0, 0, 0, 16.4, 34.5, 72.4, 152, 319, 671]                  // 97,43 %
+    },
+    medium: {
+      1: [0, 3.9],                                                          // 97,50 %
+      2: [0, 1.79, 5],                                                      // 97,69 %
+      3: [0, 0, 5.71, 16],                                                  // 97,45 %
+      4: [0, 0, 2.85, 7.97, 22.3],                                          // 97,56 %
+      5: [0, 0, 0, 8.93, 25, 70],                                           // 97,46 %
+      6: [0, 0, 0, 0, 32.8, 91.8, 257],                                     // 97,55 %
+      7: [0, 0, 0, 0, 15, 42, 118, 329],                                    // 97,49 %
+      8: [0, 0, 0, 0, 0, 57.3, 160, 449, 1260],                             // 97,41 %
+      9: [0, 0, 0, 0, 0, 27.4, 76.7, 215, 601, 1680],                       // 97,53 %
+      10: [0, 0, 0, 0, 0, 0, 114, 318, 890, 2490, 6980]                     // 97,82 %
+    },
+    high: {
+      1: [0, 3.9],                                                          // 97,50 %
+      2: [0, 1.65, 5.93],                                                   // 97,67 %
+      3: [0, 0, 5.41, 19.5],                                                // 97,61 %
+      4: [0, 0, 0, 20.5, 73.6],                                             // 97,66 %
+      5: [0, 0, 0, 0, 89, 320],                                             // 97,47 %
+      6: [0, 0, 0, 0, 30.9, 111, 400],                                      // 97,59 %
+      7: [0, 0, 0, 0, 0, 136, 489, 1760],                                   // 97,62 %
+      8: [0, 0, 0, 0, 0, 0, 715, 2570, 9260],                               // 97,50 %
+      9: [0, 0, 0, 0, 0, 0, 252, 907, 3260, 11750],                         // 97,54 %
+      10: [0, 0, 0, 0, 0, 0, 0, 1470, 5300, 19070, 68660]                   // 97,41 %
+    }
+  };
+
+  /** RTP réel d'une configuration (affiché en jeu, vérifié par les tests). */
+  function rtpOf(k, risk) {
+    const table = PAYTABLES[risk][k];
+    const C = (n, x) => { let r = 1; for (let i = 0; i < x; i++) r = r * (n - i) / (i + 1); return r; };
+    const total = C(NUMBERS, DRAWN);
+    let ev = 0;
+    for (let h = 0; h <= k; h++) ev += (C(k, h) * C(NUMBERS - k, DRAWN - h) / total) * table[h];
+    return ev * 100;
+  }
+
+  J.Games.register({
+    id: 'keno',
+    name: 'Keno',
+    icon: 'keno',
+    color: '#f97316',
+    rtp: 97.5,
+    category: 'originals',
+    tagline: 'Choisis tes numéros',
+    volatility: 'Volatilité au choix',
+    rules:
+      'Choisis <b>1 à 10 numéros</b> parmi 40 (ou laisse le jeu en tirer au hasard), puis le tirage révèle 10 boules. ' +
+      'Ton gain dépend du nombre de correspondances et du niveau de risque.<br><br>' +
+      '<b>Classique</b> paie fréquemment de petits gains, <b>Élevé</b> ne paie que sur les grosses correspondances ' +
+      '(jusqu\'à 68 660x pour 10 sur 10) avec une probabilité infime. Le RTP est de 97,5 % en moyenne : ' +
+      'chaque configuration affiche son taux exact dans le panneau des gains.',
+    playLabel: 'Lancer le tirage 🎱',
+
+    /* ---------------------------------------------------------------- ÉTAT */
+    state(g) {
+      g.selected = g.selected || [];
+      g.risk = g.risk || 'classic';
+      g.k = g.selected.length || 5;
+      g.drawn = [];
+      g.hits = 0;
+    },
+
+    /* ------------------------------------------------------------- OPTIONS */
+    controls(g) {
+      const k = g.selected.length || g.k;
+      const table = PAYTABLES[g.risk][k];
+      const chips = table.map((m, h) => {
+        if (m === 0) return '';
+        const best = m === Math.max.apply(null, table);
+        return '<div class="' + (best ? 'best' : '') + '">' + U.fmtMult(m) + '<span>' + h + '/' + k + '</span></div>';
+      }).join('');
+
+      return '<div class="seg" id="knRisk">' +
+          Object.keys(RISK_LABEL).map((r) => '<button data-risk="' + r + '"' + (g.risk === r ? ' class="is-on"' : '') + '>' + RISK_LABEL[r] + '</button>').join('') +
+        '</div>' +
+        '<div class="row between mt"><span class="bet-label">Numéros choisis</span>' +
+          '<span class="mono up" id="knCountLbl">' + g.selected.length + ' / 10 · RTP ' + rtpOf(k, g.risk).toFixed(2) + ' %</span></div>' +
+        '<div class="keno-pay" id="knPay">' + chips + '</div>' +
+        '<div class="btn-row two">' +
+          '<button class="btn xs ghost" id="knRandom">🎲 Sélection aléatoire</button>' +
+          '<button class="btn xs ghost" id="knClear">Effacer</button>' +
+        '</div>';
+    },
+
+    payoutHint(g) {
+      const k = g.selected.length;
+      if (!k) return 'Choisis au moins 1 numéro sur la grille';
+      const table = PAYTABLES[g.risk][k];
+      return 'Gain max : <b class="up">' + U.fmtMult(Math.max.apply(null, table)) + '</b> (' + k + '/' + k + ')';
+    },
+
+    /* --------------------------------------------------------------- SCÈNE */
+    stage() {
+      return '<div class="keno-wrap">' +
+        '<div class="keno-balls" id="knBalls"></div>' +
+        '<div class="keno-grid" id="knGrid"></div>' +
+        '<div class="sub center" id="knMsg">Touche les numéros que tu veux jouer</div>' +
+      '</div>';
+    },
+
+    mount(g) {
+      g.gridEl = document.getElementById('knGrid');
+      g.ballsEl = document.getElementById('knBalls');
+      g.msgEl = document.getElementById('knMsg');
+
+      let html = '';
+      for (let n = 1; n <= NUMBERS; n++) html += '<button class="keno-cell" data-num="' + n + '">' + n + '</button>';
+      g.gridEl.innerHTML = html;
+      g.gridEl.querySelectorAll('[data-num]').forEach((c) => {
+        c.onclick = () => toggleNumber(g, parseInt(c.dataset.num, 10));
+      });
+
+      g.panelEl.querySelectorAll('#knRisk [data-risk]').forEach((b) => {
+        b.onclick = () => {
+          if (g.busy) { J.toast('Attends la fin du tirage', 'ko'); return; }
+          J.Sfx.click();
+          g.risk = b.dataset.risk;
+          g.panelEl.querySelectorAll('#knRisk [data-risk]').forEach((x) => x.classList.toggle('is-on', x === b));
+          J.Games.renderPanel(g);
+          if (g.def.mount) mountHandlers(g);
+        };
+      });
+      const btnR = g.panelEl.querySelector('#knRandom');
+      const btnC = g.panelEl.querySelector('#knClear');
+      if (btnR) btnR.onclick = () => { J.Sfx.click(); randomPick(g); };
+      if (btnC) btnC.onclick = () => { J.Sfx.click(); g.selected = []; paintGrid(g); J.Games.renderPanel(g); if (g.def.mount) mountHandlers(g); };
+
+      paintGrid(g);
+    },
+
+    /* ---------------------------------------------------------- BOUTONS */
+    actions(g) {
+      const none = g.selected.length === 0;
+      return [{
+        label: none ? '🎲 Lancer avec 5 numéros au hasard'
+                    : (g.auto.on ? 'Tirages en cours…' : 'Lancer le tirage 🎱'),
+        cls: 'primary wide-lg grow', act: 'play', disabled: g.auto.on
+      }];
+    },
+
+    /* -------------------------------------------------------- TOUR DE JEU */
+    start(g) {
+      // Aucun numéro choisi : le jeu en tire 5 au hasard (l'action reste possible)
+      if (g.selected.length === 0) {
+        const pool = [];
+        for (let i = 1; i <= NUMBERS; i++) pool.push(i);
+        for (let i = 0; i < 5; i++) g.selected.push(pool.splice(J.Fair.int(0, pool.length - 1), 1)[0]);
+        g.selected.sort((a, b) => a - b);
+        paintGrid(g);
+        J.toast('🎲 5 numéros tirés au hasard pour toi', 'ok');
+      }
+      const k = g.selected.length;
+      const table = PAYTABLES[g.risk][k];
+
+      // Tirage de 10 numéros distincts sur 40 (Fair Play, sans remise)
+      const pool = [];
+      for (let i = 1; i <= NUMBERS; i++) pool.push(i);
+      const drawn = [];
+      for (let i = 0; i < DRAWN; i++) drawn.push(pool.splice(J.Fair.int(0, pool.length - 1), 1)[0]);
+      g.drawn = drawn;
+      g.hits = drawn.filter((n) => g.selected.indexOf(n) > -1).length;
+      g.multiplier = table[g.hits];
+
+      // Remise à zéro de l'affichage puis révélation boule par boule
+      paintGrid(g);
+      g.ballsEl.innerHTML = '';
+      g.msgEl.textContent = 'Tirage en cours…';
+      J.Sfx.bet();
+
+      const step = g.auto.on ? Math.max(45, g.auto.speed * 0.22) : 210;
+      drawn.forEach((n, i) => {
+        J.Games.schedule(g, () => {
+          if (!g.ticket) return;
+          const ball = document.createElement('span');
+          ball.className = 'keno-ball' + (g.selected.indexOf(n) > -1 ? ' hit' : '');
+          ball.textContent = n;
+          g.ballsEl.appendChild(ball);
+          const cell = g.gridEl.querySelector('[data-num="' + n + '"]');
+          if (cell) cell.classList.add(g.selected.indexOf(n) > -1 ? 'hit-sel' : 'hit');
+          J.Sfx.coin();
+        }, i * step);
+      });
+      J.Games.schedule(g, () => land(g), drawn.length * step + 120);
+    }
+  });
+
+  /* ------------------------------------------------------- SÉLECTION */
+  function toggleNumber(g, n) {
+    if (g.busy) return;
+    const i = g.selected.indexOf(n);
+    if (i > -1) g.selected.splice(i, 1);
+    else {
+      if (g.selected.length >= 10) { J.toast('10 numéros maximum', 'ko'); return; }
+      g.selected.push(n);
+    }
+    J.Sfx.tap();
+    paintGrid(g);
+    J.Games.renderPanel(g);
+    mountHandlers(g);
+  }
+
+  function randomPick(g) {
+    const k = g.selected.length || g.k || 5;
+    const pool = [];
+    for (let i = 1; i <= NUMBERS; i++) pool.push(i);
+    g.selected = [];
+    for (let i = 0; i < k; i++) g.selected.push(pool.splice(J.Fair.int(0, pool.length - 1), 1)[0]);
+    g.selected.sort((a, b) => a - b);
+    paintGrid(g);
+    J.Games.renderPanel(g);
+    mountHandlers(g);
+    J.toast('🎲 ' + k + ' numéros tirés au hasard', 'ok');
+  }
+
+  /** Recolle les gestionnaires après un re-rendu du panneau (risque, sélection…). */
+  function mountHandlers(g) {
+    g.panelEl.querySelectorAll('#knRisk [data-risk]').forEach((b) => {
+      b.onclick = () => {
+        if (g.busy) { J.toast('Attends la fin du tirage', 'ko'); return; }
+        J.Sfx.click();
+        g.risk = b.dataset.risk;
+        J.Games.renderPanel(g);
+        mountHandlers(g);
+      };
+    });
+    const btnR = g.panelEl.querySelector('#knRandom');
+    const btnC = g.panelEl.querySelector('#knClear');
+    if (btnR) btnR.onclick = () => { J.Sfx.click(); randomPick(g); };
+    if (btnC) btnC.onclick = () => { J.Sfx.click(); g.selected = []; paintGrid(g); J.Games.renderPanel(g); mountHandlers(g); };
+  }
+
+  function paintGrid(g) {
+    if (!g.gridEl) return;
+    g.gridEl.querySelectorAll('[data-num]').forEach((c) => {
+      const n = parseInt(c.dataset.num, 10);
+      c.classList.remove('hit', 'hit-sel', 'dim');
+      c.classList.toggle('sel', g.selected.indexOf(n) > -1);
+      if (g.drawn.length && g.drawn.indexOf(n) > -1) c.classList.add(g.selected.indexOf(n) > -1 ? 'hit-sel' : 'hit');
+    });
+  }
+
+  /* ------------------------------------------------------------ RÉSOLUTION */
+  function land(g) {
+    if (!g || !g.ticket) return;
+    const mult = g.multiplier;
+    const hits = g.hits;
+    const k = g.selected.length;
+    const payout = Math.round(g.ticket.bet * mult);
+    paintGrid(g);
+
+    if (mult > 0) {
+      g.msgEl.innerHTML = '🎉 <b class="up">' + hits + ' / ' + k + '</b> correspondances — gain ' + U.fmtMult(mult);
+      J.Sfx.win(mult); J.haptic.win(mult);
+      J.floatText('+' + U.fmt(payout), { el: g.ballsEl, color: 'var(--green)', size: 22 });
+      J.FX.confetti({ count: mult >= 20 ? 110 : mult >= 5 ? 50 : 18, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 60 });
+      if (mult >= 50) J.Live.playerWin('keno', mult, payout);
+    } else {
+      g.msgEl.innerHTML = '❌ <b class="down">' + hits + ' / ' + k + '</b> correspondances — aucun gain';
+      J.Sfx.lose(); J.haptic.lose();
+    }
+    J.Games.finish(g, mult || 0, { detail: hits + '/' + k + ' numéros' });
+    // Nouvelle grille pour le tirage suivant
+    g.drawn = [];
+    J.Games.schedule(g, () => { paintGrid(g); }, 500);
+  }
+})();
+
+/* ===== 39-game-tower.js ================================================ */
+/* =========================================================================
+   JEU 9 — TOWER
+   8 étages. À chaque étage, tu choisis une ouverture parmi T ; certaines
+   cachent un piège. Un étage franchi augmente le multiplicateur :
+
+     p = (T − pièges) / T      (probabilité de passer un étage)
+     mult(f) = 0,99 / p^f      (f = étages franchis)
+
+   Comme P(f étages franchis) = p^f, on a mult × P = 0,99 : RTP 99 % quel que
+   soit l'étage où tu encaisses (même démonstration que Mines).
+   5 difficultés, de « Facile » (4 ouvertures, 1 piège) à « Maître » (4
+   ouvertures, 3 pièges → 3,96x dès le premier étage).
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+
+  const FLOORS = 8;
+  const HOUSE = 0.99;
+
+  /** Difficultés : ouvertures par étage et nombre de pièges. */
+  const LEVELS = [
+    { id: 'easy',   label: 'Facile',  tiles: 4, traps: 1, color: '#00e37a' },
+    { id: 'medium', label: 'Moyen',   tiles: 3, traps: 1, color: '#22d3ee' },
+    { id: 'hard',   label: 'Difficile', tiles: 2, traps: 1, color: '#ffc531' },
+    { id: 'expert', label: 'Expert',  tiles: 3, traps: 2, color: '#ff8a5b' },
+    { id: 'master', label: 'Maître',  tiles: 4, traps: 3, color: '#ff4d5e' }
+  ];
+
+  const levelById = (id) => LEVELS.find((l) => l.id === id) || LEVELS[0];
+
+  /** Probabilité de franchir un étage. */
+  const stepProb = (lvl) => (lvl.tiles - lvl.traps) / lvl.tiles;
+
+  /** Multiplicateur après f étages franchis. */
+  function multFor(f, lvl) {
+    if (f <= 0) return 1;
+    return HOUSE / Math.pow(stepProb(lvl), f);
+  }
+
+  J.Games.register({
+    id: 'tower',
+    name: 'Tower',
+    icon: 'tower',
+    color: '#ff4fa3',
+    rtp: 99,
+    category: 'originals',
+    tagline: 'Monte les étages',
+    volatility: 'Volatilité progressive',
+    rules:
+      'La tour compte <b>8 étages</b>. À chaque étage, choisis une ouverture : certaines cachent un piège. ' +
+      'Un étage franchi augmente le multiplicateur, et tu peux <b>encaisser à tout moment</b>. ' +
+      'Un piège met fin à la partie et fait perdre la mise.<br><br>' +
+      '<b>Facile</b> : 4 ouvertures, 1 piège (1,32x par étage). <b>Maître</b> : 4 ouvertures, 3 pièges — ' +
+      'le premier étage vaut déjà 3,96x, mais 3 ouvertures sur 4 sont piégées. Le RTP reste de 99 % ' +
+      'quel que soit l\'étage où tu encaisses.',
+    playLabel: 'Nouvelle ascension 🏗️',
+
+    /* ---------------------------------------------------------------- ÉTAT */
+    state(g) {
+      g.level = g.level || 'medium';
+      g.floor = 0;                 // étages franchis
+      g.active = false;
+      g.traps = [];                // positions des pièges par étage
+      g.autoFloors = g.autoFloors || 3;
+    },
+
+    /* ------------------------------------------------------------- OPTIONS */
+    controls(g) {
+      const lvl = levelById(g.level);
+      return '<div class="row between"><span class="bet-label">Difficulté</span>' +
+          '<span class="mono" id="twLvlLbl" style="color:' + lvl.color + '">' + lvl.label + '</span></div>' +
+        '<div class="chips mt-s" id="twLevels">' +
+          LEVELS.map((l) => '<button class="chip' + (l.id === g.level ? ' is-on' : '') + '" data-level="' + l.id + '">' + l.label + '</button>').join('') +
+        '</div>' +
+        '<div class="row between mt-s"><span class="sub">Prochain étage : <b class="up" id="twNext">' +
+          U.fmtMult(multFor(g.floor + 1, lvl)) + '</b></span>' +
+          '<span class="sub">Étages auto : <b id="twAutoLbl">' + g.autoFloors + '</b></span></div>' +
+        '<input type="range" id="twAuto" min="1" max="8" step="1" value="' + g.autoFloors + '" class="thin">' +
+        '<div class="sub">En mode Auto-bet, le jeu monte le nombre d\'étages indiqué puis encaisse.</div>';
+    },
+
+    payoutHint(g) {
+      if (!g.active) return 'Départ : ' + U.fmtMult(multFor(1, levelById(g.level))) + ' au premier étage';
+      return 'Actuel : <b class="up">' + U.fmtMult(multFor(g.floor, levelById(g.level))) + '</b> · ' +
+        'prochain étage ' + U.fmtMult(multFor(g.floor + 1, levelById(g.level)));
+    },
+
+    /* --------------------------------------------------------------- SCÈNE */
+    stage() {
+      return '<div class="tower-wrap">' +
+        '<div class="tower-sided row between"><span class="sub">Étage <b class="mono" id="twFloorLbl">0</b> / ' + FLOORS + '</span>' +
+        '<span class="sub">Multiplicateur <b class="mono gold" id="twMultLbl">1,00x</b></span></div>' +
+        '<div class="tower-floors" id="twFloors"></div>' +
+        '<div class="tower-side"><span class="sub" id="twMsg">Choisis une difficulté puis démarre l\'ascension</span></div>' +
+      '</div>';
+    },
+
+    mount(g) {
+      g.floorsEl = document.getElementById('twFloors');
+      g.floorLbl = document.getElementById('twFloorLbl');
+      g.multLbl = document.getElementById('twMultLbl');
+      g.msgEl = document.getElementById('twMsg');
+
+      bindControls(g);
+      buildFloors(g);
+      updateStats(g);
+    },
+
+    /* ---------------------------------------------------------- BOUTONS */
+    actions(g) {
+      if (g.active) {
+        const lvl = levelById(g.level);
+        const cur = multFor(g.floor, lvl);
+        const bet = g.ticket ? g.ticket.bet : g.bet;
+        return [
+          { label: g.floor === 0 ? 'Choisis une ouverture…' : '💰 Encaisser ' + U.fmtMult(cur) + ' · +' + U.fmt(Math.round(bet * cur) - bet),
+            cls: 'primary wide-lg grow', act: 'cashout', alsoWhenBusy: true, disabled: g.floor === 0 },
+          { label: '⏹', cls: 'ghost', onClick: (gg) => J.Games.stopAuto(gg, 'Arrêt demandé'), alsoWhenBusy: true }
+        ];
+      }
+      return [{ label: g.auto.on ? 'Ascension en cours…' : 'Nouvelle ascension 🏗️', cls: 'primary wide-lg grow', act: 'play', disabled: g.auto.on }];
+    },
+
+    /* -------------------------------------------------------- TOUR DE JEU */
+    start(g) {
+      const lvl = levelById(g.level);
+      g.floor = 0;
+      g.active = true;
+      // Pièges de chaque étage : tirage fair sans remise dans les ouvertures
+      g.traps = [];
+      for (let f = 0; f < FLOORS; f++) {
+        const pool = [];
+        for (let i = 0; i < lvl.tiles; i++) pool.push(i);
+        const traps = [];
+        for (let i = 0; i < lvl.traps; i++) traps.push(pool.splice(J.Fair.int(0, pool.length - 1), 1)[0]);
+        g.traps.push(traps);
+      }
+      buildFloors(g);
+      updateStats(g);
+      J.Games.renderActions(g);
+      J.Games.updateHints(g);
+      J.Sfx.bet();
+      g.msgEl.textContent = 'Étage 1 — choisis une ouverture';
+
+      if (g.auto.on) autoClimb(g);
+    },
+
+    cashout(g) { return cashout(g); }
+  });
+
+  /* --------------------------------------------------------- CONSTRUCTION */
+  /** Dessine la tour : un bloc par étage, celui du bas est le premier. */
+  function buildFloors(g) {
+    const lvl = levelById(g.level);
+    let html = '';
+    for (let f = 0; f < FLOORS; f++) {
+      let tiles = '';
+      for (let t = 0; t < lvl.tiles; t++) tiles += '<button class="tower-tile" data-floor="' + f + '" data-tile="' + t + '"></button>';
+      html += '<div class="tower-floor" data-f="' + f + '" style="grid-template-columns:repeat(' + lvl.tiles + ',1fr)">' + tiles + '</div>';
+    }
+    g.floorsEl.innerHTML = html;                 // colonne inversée via CSS (bas = étage 1)
+    g.floorsEl.querySelectorAll('.tower-floor').forEach((el) => {
+      const f = parseInt(el.dataset.f, 10);
+      el.classList.toggle('current', g.active && f === g.floor);
+      el.classList.toggle('locked', g.active && f > g.floor);
+      el.classList.toggle('done', g.active && f < g.floor);
+    });
+    g.floorsEl.querySelectorAll('[data-tile]').forEach((t) => {
+      t.onclick = () => {
+        if (!g.active) { J.Sfx.click(); return; }
+        pickFloor(g, parseInt(t.dataset.floor, 10), parseInt(t.dataset.tile, 10));
+      };
+    });
+  }
+
+  function bindControls(g) {
+    g.panelEl.querySelectorAll('#twLevels [data-level]').forEach((b) => {
+      b.onclick = () => setLevel(g, b.dataset.level);
+    });
+    const range = g.panelEl.querySelector('#twAuto');
+    if (range) range.oninput = () => {
+      g.autoFloors = U.clamp(parseInt(range.value, 10) || 1, 1, FLOORS);
+      const lbl = g.panelEl.querySelector('#twAutoLbl');
+      if (lbl) lbl.textContent = g.autoFloors;
+    };
+  }
+
+  /** Change la difficulté (hors ascension uniquement). */
+  function setLevel(g, id) {
+    if (g.active) { J.toast('Termine l\'ascension en cours', 'ko'); return; }
+    J.Sfx.click();
+    g.level = id;
+    const lvl = levelById(id);
+    g.panelEl.querySelectorAll('#twLevels [data-level]').forEach((x) => x.classList.toggle('is-on', x.dataset.level === id));
+    const lbl = g.panelEl.querySelector('#twLvlLbl');
+    if (lbl) { lbl.textContent = lvl.label; lbl.style.color = lvl.color; }
+    const next = g.panelEl.querySelector('#twNext');
+    if (next) next.textContent = U.fmtMult(multFor(1, lvl));
+    buildFloors(g);
+    updateStats(g);
+    J.Games.updateHints(g);
+  }
+
+  /* ------------------------------------------------------------- ASCENSION */
+  /** Franchit (ou non) l'étage f en ouvrant la case t. */
+  function pickFloor(g, f, t) {
+    if (!g.active || f !== g.floor) return;                  // on ne joue que l'étage courant
+    const lvl = levelById(g.level);
+    const isTrap = g.traps[f].indexOf(t) > -1;
+    const tile = g.floorsEl.querySelector('[data-floor="' + f + '"][data-tile="' + t + '"]');
+
+    if (isTrap) {
+      g.active = false;
+      if (tile) { tile.textContent = '💀'; tile.classList.add('trap'); }
+      revealFloor(g, f, true);
+      J.Sfx.reveal(false); J.haptic.lose(); J.shake(g.floorsEl); J.redFlash();
+      g.msgEl.innerHTML = '💀 Piège à l\'étage ' + (f + 1) + ' — mise perdue';
+      J.toast('💀 Piège ! Mise perdue.', 'ko');
+      J.Games.finish(g, 0, { detail: 'tombé à l\'étage ' + (f + 1) });
+      return;
+    }
+
+    if (tile) { tile.textContent = '✅'; tile.classList.add('safe'); }
+    g.floor++;
+    J.Sfx.reveal(true); J.haptic.tap();
+    buildFloors(g);
+    updateStats(g);
+    J.Games.renderActions(g);
+    J.Games.updateHints(g);
+
+    if (g.floor >= FLOORS) {                              // sommet atteint
+      g.msgEl.innerHTML = '🏆 Sommet atteint ! Encaissement automatique';
+      cashout(g);
+      return;
+    }
+    g.msgEl.textContent = 'Étage ' + (g.floor + 1) + ' — continue ou encaisse';
+    if (g.auto.on) autoClimb(g);
+  }
+
+  /** Mode auto : monte le nombre d'étages visé en choisissant au hasard, puis encaisse. */
+  function autoClimb(g) {
+    if (!g.auto.on || !g.active) return;
+    if (g.floor >= g.autoFloors) { cashout(g); return; }
+    const lvl = levelById(g.level);
+    const pick = J.Fair.int(0, lvl.tiles - 1);
+    J.Games.schedule(g, () => {
+      if (g.active) pickFloor(g, g.floor, pick);
+    }, Math.max(70, (g.auto.speed || 400) * 0.5));
+  }
+
+  /** Révèle tous les pièges d'un étage (transparence après la fin). */
+  function revealFloor(g, f, markClicked) {
+    const lvl = levelById(g.level);
+    g.traps[f].forEach((t) => {
+      const el = g.floorsEl.querySelector('[data-floor="' + f + '"][data-tile="' + t + '"]');
+      if (el && !el.textContent) { el.textContent = '💀'; el.classList.add('trap'); }
+    });
+    for (let t = 0; t < lvl.tiles; t++) {
+      if (g.traps[f].indexOf(t) === -1) {
+        const el = g.floorsEl.querySelector('[data-floor="' + f + '"][data-tile="' + t + '"]');
+        if (el && !el.textContent) el.textContent = '✅';
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------- ENCAISSEMENT */
+  function cashout(g) {
+    if (!g || !g.ticket || g.floor <= 0) return;
+    const mult = multFor(g.floor, levelById(g.level));
+    const payout = Math.round(g.ticket.bet * mult);
+    g.active = false;
+    revealTail(g);
+    J.Sfx.cashout(); J.haptic.win(mult);
+    J.floatText('+' + U.fmt(payout), { el: g.multLbl, color: 'var(--green)', size: 22 });
+    if (mult >= 4) J.FX.confetti({ count: mult >= 20 ? 110 : 50, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 70 });
+    if (mult >= 8) J.Live.playerWin('tower', mult, payout);
+    g.msgEl.innerHTML = '💰 <b class="up">Encaissé</b> à l\'étage ' + g.floor + ' · ' + U.fmtMult(mult);
+    J.Games.finish(g, mult, { detail: g.floor + ' étage(s) franchi(s)' });
+  }
+
+  /** Après encaissement : on montre les pièges des étages non joués. */
+  function revealTail(g) {
+    for (let f = g.floor; f < FLOORS; f++) {
+      const el = g.floorsEl.querySelector('[data-floor="' + f + '"]');
+      if (el) el.classList.add('done');
+    }
+  }
+
+  function updateStats(g) {
+    if (!g.floorLbl) return;
+    const lvl = levelById(g.level);
+    g.floorLbl.textContent = g.floor;
+    g.multLbl.textContent = U.fmtMult(multFor(g.floor, lvl));
+  }
+})();
+
+/* ===== 41-game-wheel.js ================================================ */
+/* =========================================================================
+   JEU 10 — WHEEL
+   Roue colorée à segments. Tu choisis un <b>multiplicateur cible</b> ; le jeu
+   tire un segment. Si son multiplicateur atteint la cible, tu es payé à
+   hauteur de la cible, sinon tu perds.
+
+   Construction mathématique (RTP 97 %, méthode des multiplicateurs de
+   segments) : pour une cible T et un nombre de segments S,
+     P(gagner) = 0,97 / T
+     segments gagnants  = round(P(gagner) × S)
+     multiplicateurs triés : bas → bas … puis deux grands paliers
+     (T et T × 12), ajustés pour que la somme des probabilités soit exacte.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+
+  const SEGMENTS = 60;                          // segments de la roue (dans la fourchette 10-60 annoncée)
+  const HOUSE = 0.97;                           // RTP 97 %
+  const TARGETS = [1.2, 1.5, 2, 3, 5, 10, 25, 50];
+
+  /**
+   * Construit la table de la roue pour une cible T.
+   *
+   * Principe : la roue paie la <b>valeur du segment</b> touché. Le RTP est donc
+   * la moyenne des valeurs des segments, et il doit valoir 0,97 pour toutes
+   * les cibles. On choisit :
+   *   · W segments « gagnants » (W = ⌊0,97 × S / T⌋) qui paient T ;
+   *   · les S − W autres segments paient une petite consolation L, calculée
+   *     pour que la moyenne vaille exactement 0,97 :
+   *         L = (0,97 × S − W × T) / (S − W)
+   * Vérification : [W×T + (S−W)×L] / S = 0,97 ✓
+   * On a toujours 0 ≤ L < 1 (donc un segment non gagnant reste une perte).
+   */
+  function buildTable(target) {
+    const S = SEGMENTS;
+    let W = Math.floor((HOUSE * S) / target);
+    W = U.clamp(W, 1, S - 1);
+    let L = (HOUSE * S - W * target) / (S - W);
+    if (L >= 1) {                                  // sécurité (cibles très basses)
+      while (L >= 1 && W > 1) { W--; L = (HOUSE * S - W * target) / (S - W); }
+    }
+    L = U.clamp(L, 0, 0.99);
+
+    // Répartition : les segments gagnants sont répartis uniformément autour de la roue
+    const gap = S / W;
+    const table = [];
+    let next = 0;
+    for (let i = 0; i < S; i++) {
+      const isWin = i >= next - 1e-9;
+      if (isWin) next += gap;
+      table.push(isWin ? { m: target, win: true } : { m: Math.round(L * 1000) / 1000, win: false });
+    }
+    // Moyenne réelle (après arrondi de L) et RTP correspondant
+    const mean = table.reduce((a, x) => a + x.m, 0) / S;
+    return {
+      table, wins: W, prob: W / S, rtp: mean * 100, mean,
+      lossMult: Math.round(L * 1000) / 1000, top: target
+    };
+  }
+
+  /** Couleur d'un segment : gagnant selon la cible, sinon bleu nuit. */
+  function segColor(seg, target, index) {
+    if (!seg.win) return '#1a253d';
+    // Variation de teinte entre or et vert pour rythmer la roue
+    return index % 3 === 0 ? '#00b862' : index % 3 === 1 ? '#ffc531' : '#00e37a';
+  }
+
+  J.Games.register({
+    id: 'wheel',
+    name: 'Wheel',
+    icon: 'wheel',
+    color: '#ffc531',
+    rtp: 97,
+    category: 'originals',
+    tagline: 'La roue des multiplicateurs',
+    volatility: 'Volatilité au choix',
+    rules:
+      'La roue compte <b>60 segments</b>. Tu choisis un <b>multiplicateur cible</b> : la roue paie la valeur du ' +
+      'segment touché. Les segments gagnants paient ta cible, les autres paient une petite consolation.<br><br>' +
+      'La répartition est calculée pour que la moyenne des valeurs vaille <b>0,97</b>, donc le <b>RTP est de 97 %</b> ' +
+      'quelle que soit la cible — seuls la fréquence et le montant des gains changent. Viser 1,2x gagne sur ~48 des ' +
+      '60 segments ; viser 50x n\'a qu\'un segment gagnant sur 60 (1,67 % de chances).',
+    playLabel: 'Lancer la roue 🎡',
+
+    /* ---------------------------------------------------------------- ÉTAT */
+    state(g) {
+      g.target = g.target || 2;
+      g.table = buildTable(g.target);
+      g.angle = -Math.PI / 2;
+      g.spinning = false;
+    },
+
+    /* ------------------------------------------------------------- OPTIONS */
+    controls(g) {
+      const t = g.table;
+      const gain = Math.round(g.bet * t.top) - g.bet;
+      const consol = Math.round(g.bet * t.lossMult);
+      return '<div class="row between"><span class="bet-label">Multiplicateur cible</span>' +
+          '<span class="mono up" id="wgProbLbl">' + U.fmtPct(t.prob * 100, 1) + ' · ' + t.wins + ' / ' + SEGMENTS + ' segments</span></div>' +
+        '<div class="chips mt-s" id="wgTargets">' +
+          TARGETS.map((x) => '<button class="chip' + (x === g.target ? ' is-on' : '') + '" data-t="' + x + '">' + U.fmtMult(x) + '</button>').join('') +
+        '</div>' +
+        '<div class="row between mt-s"><span class="sub">Gain si un segment gagnant est touché</span>' +
+          '<span class="mono gold">+' + U.fmt(gain) + ' J (' + U.fmtMult(t.top) + ')</span></div>' +
+        '<div class="row between mt-s"><span class="sub">Sinon (segment non gagnant)</span>' +
+          '<span class="mono" style="color:var(--txt-2)">' + U.fmt(consol) + ' J (' + U.fmtMult(t.lossMult) + ')</span></div>' +
+        '<div class="sub mt-s">' + t.wins + ' segments paient <b class="gold">' + U.fmtMult(t.top) + '</b> · ' +
+          (SEGMENTS - t.wins) + ' paient <b>' + U.fmtMult(t.lossMult) + '</b> · RTP réel ' + t.rtp.toFixed(2) + ' %';
+    },
+
+    payoutHint(g) {
+      const t = g.table;
+      return 'Cible ' + U.fmtMult(g.target) + ' · <b class="up">' + U.fmtPct(t.prob * 100, 1) + '</b> de chances · ' +
+        'RTP ' + t.rtp.toFixed(1).replace('.', ',') + ' %';
+    },
+
+    /* --------------------------------------------------------------- SCÈNE */
+    stage() {
+      return '<div class="wheel-game-wrap">' +
+        '<canvas id="wgCv"></canvas>' +
+        '<div class="wheel-target" id="wgLegend"></div>' +
+        '<div class="sub center" id="wgMsg">Choisis une cible puis lance la roue</div>' +
+      '</div>';
+    },
+
+    mount(g) {
+      g.cv = document.getElementById('wgCv');
+      g.msgEl = document.getElementById('wgMsg');
+      const size = Math.min(g.stageEl.clientWidth - 24, Math.max(200, g.stageEl.clientHeight - 90), 300);
+      g.size = Math.max(180, size);
+      requestAnimationFrame(() => { draw(g, g.angle); renderLegend(g); });
+
+      g.panelEl.querySelectorAll('#wgTargets [data-t]').forEach((b) => {
+        b.onclick = () => {
+          if (g.spinning) { J.toast('La roue tourne déjà', 'ko'); return; }
+          J.Sfx.click();
+          g.target = parseFloat(b.dataset.t);
+          g.table = buildTable(g.target);
+          J.Games.renderPanel(g);
+          bindTargets(g);
+          draw(g, g.angle);
+        };
+      });
+    },
+
+    stop(g) { g.spinning = false; },
+
+    /* ---------------------------------------------------------- BOUTONS */
+    actions(g) {
+      return [{ label: g.spinning ? 'La roue tourne…' : (g.auto.on ? 'Série en cours…' : 'Lancer la roue 🎡'),
+        cls: 'primary wide-lg grow', act: 'play', disabled: g.spinning || g.auto.on }];
+    },
+
+    /* -------------------------------------------------------- TOUR DE JEU */
+    start(g) {
+      const seg = J.Fair.int(0, SEGMENTS - 1);                  // segment tiré (fair)
+      const won = g.table.table[seg].win;
+      g.spinning = true;
+      J.Games.renderActions(g);
+      J.Sfx.bet();
+      g.msgEl.textContent = 'La roue tourne…';
+
+      // Animation : la roue tourne puis s'arrête sur le segment tiré
+      const step = (Math.PI * 2) / SEGMENTS;
+      const from = g.angle;
+      const norm = (a) => ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      const targetAngle = norm(-Math.PI / 2 - (seg * step + step / 2));
+      const delta = norm(targetAngle - from) + Math.PI * 2 * (g.auto.on ? 3 : 5);
+      const dur = g.auto.on ? Math.max(220, g.auto.speed * 0.9) : 3600;
+      const t0 = performance.now();
+      let lastTick = 0;
+
+      const frame = (t) => {
+        if (!g.ticket) { g.spinning = false; return; }
+        const p = Math.min(1, (t - t0) / dur);
+        const e = 1 - Math.pow(1 - p, 3.2);
+        g.angle = from + delta * e;
+        draw(g, g.angle);
+        const speed = delta * 3.2 * Math.pow(Math.max(0.001, 1 - p), 2.2) / (dur / 1000);
+        if (t - lastTick > 55 && speed > 1.5) { lastTick = t; J.Sfx.wheelTick(U.clamp(speed / 40, 0, 1)); }
+        if (p < 1) requestAnimationFrame(frame);
+        else finish(g, seg, won);
+      };
+      requestAnimationFrame(frame);
+    }
+  });
+
+  /** Légende : ce que paient les segments de la roue pour la cible courante. */
+  function renderLegend(g) {
+    const el = document.getElementById('wgLegend');
+    if (!el) return;
+    const t = g.table;
+    el.innerHTML =
+      '<button class="is-on" style="border-color:rgba(0,227,122,.5);color:var(--green)">' +
+        '<span style="font-size:13px;font-weight:800">' + t.wins + ' segments</span><small>paient ' + U.fmtMult(t.top) + '</small></button>' +
+      '<button disabled><span style="font-size:13px;font-weight:800">' + (SEGMENTS - t.wins) + ' segments</span>' +
+        '<small>paient ' + U.fmtMult(t.lossMult) + '</small></button>' +
+      '<button disabled><span style="font-size:13px;font-weight:800">RTP ' + t.rtp.toFixed(1).replace('.', ',') + ' %</span>' +
+        '<small>moyenne des 60 segments</small></button>';
+  }
+
+  /* ---------------------------------------------------------------- RENDU */
+  function draw(g, angle) {
+    const cv = g.cv;
+    if (!cv) return;
+    const S = g.size;
+    const ctx = J.util.fitCanvas(cv, S, S);
+    const cx = S / 2, cy = S / 2, R = S / 2 - 4;
+    const table = g.table.table;
+    ctx.clearRect(0, 0, S, S);
+    const step = (Math.PI * 2) / SEGMENTS;
+
+    for (let i = 0; i < SEGMENTS; i++) {
+      const a0 = angle + i * step, a1 = a0 + step;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = segColor(table[i], g.target, i);
+      ctx.fill();
+      if (table[i].win) {                        // séparateur net sur les segments gagnants
+        ctx.strokeStyle = 'rgba(0,0,0,.35)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+    // Jante + moyeu
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,197,49,.7)'; ctx.lineWidth = 4; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, S * 0.16, 0, Math.PI * 2);
+    ctx.fillStyle = '#0b1220'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#e9eefb';
+    ctx.font = '800 ' + Math.round(S * 0.062) + 'px ' + '-apple-system, system-ui, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(U.fmtMult(g.target), cx, cy - S * 0.02);
+    ctx.font = '700 ' + Math.round(S * 0.042) + 'px ' + '-apple-system, system-ui, sans-serif';
+    ctx.fillStyle = '#8fa2bd';
+    ctx.fillText(g.table.wins + '/' + SEGMENTS, cx, cy + S * 0.05);
+    // Aiguille fixe en haut
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - R + 2);
+    ctx.lineTo(cx - S * 0.035, cy - R - S * 0.055);
+    ctx.lineTo(cx + S * 0.035, cy - R - S * 0.055);
+    ctx.closePath();
+    ctx.fillStyle = '#ffc531';
+    ctx.fill();
+    // Repère de la dernière position
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.beginPath(); ctx.arc(0, -R + 8, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fill();
+    ctx.restore();
+  }
+
+  function bindTargets(g) {
+    g.panelEl.querySelectorAll('#wgTargets [data-t]').forEach((b) => {
+      b.onclick = () => {
+        if (g.spinning) { J.toast('La roue tourne déjà', 'ko'); return; }
+        J.Sfx.click();
+        g.target = parseFloat(b.dataset.t);
+        g.table = buildTable(g.target);
+        J.Games.renderPanel(g);
+        bindTargets(g);
+        draw(g, g.angle);
+        renderLegend(g);
+      };
+    });
+  }
+
+  /* ------------------------------------------------------------ RÉSOLUTION */
+  function finish(g, seg, won) {
+    g.spinning = false;
+    const segMult = g.table.table[seg].m;
+    const bet = g.ticket.bet;
+    const payout = Math.round(bet * segMult);
+    if (won) {
+      J.Sfx.win(g.target); J.haptic.win(g.target);
+      g.msgEl.innerHTML = '🎉 Segment gagnant <b class="gold">' + U.fmtMult(segMult) + '</b> — +' + U.fmt(payout) + ' jetons';
+      J.floatText('+' + U.fmt(payout), { el: g.cv, color: 'var(--green)', size: 22 });
+      J.FX.confetti({ count: g.target >= 10 ? 120 : 40, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 90 });
+      if (g.target >= 10) J.Live.playerWin('wheel', g.target, payout);
+    } else {
+      g.msgEl.innerHTML = 'Segment à <b>' + U.fmtMult(segMult) + '</b> — cible ' + U.fmtMult(g.target) +
+        (payout > 0 ? ' · consolation +' + U.fmt(payout) : '');
+      J.Sfx.lose(); J.haptic.lose();
+    }
+    J.Games.finish(g, segMult, { detail: 'segment ' + U.fmtMult(segMult) + ' · cible ' + U.fmtMult(g.target) });
+  }
+
+  /* Exposé pour les tests (vérification du RTP par cible) */
+  J.__wheelTable = buildTable;
+})();
+
+/* ===== 50-boot.js ====================================================== */
 /* =========================================================================
    JACKPOTLY — DÉMARRAGE
    Ordre d'initialisation, écran d'accueil animé, verrouillage audio au
@@ -5233,12 +6973,17 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     const unlock = () => { J.Sfx.unlock(); window.removeEventListener('pointerdown', unlock); };
     window.addEventListener('pointerdown', unlock, { once: true });
 
-    // 10) Réactions globales au solde épuisé
+    // 10) Solde épuisé : message + offre de recharge (une fois par épuisement)
+    let warnedEmpty = false;
     J.Bus.on('wallet:settled', () => {
-      if (J.Wallet.balance < J.CONST.MIN_BET) {
-        J.toast('💸 Solde épuisé — <b>Recharge gratuite</b> disponible', 'ko');
-        J.Screen.renderHome();
-      }
+      if (J.Wallet.balance >= J.CONST.MIN_BET) { warnedEmpty = false; return; }
+      if (warnedEmpty) return;
+      warnedEmpty = true;
+      J.toast('💸 Solde épuisé — <b>Recharge gratuite</b> disponible', 'ko');
+      J.Screen.renderHome();
+      setTimeout(() => {
+        if (J.Wallet.balance < J.CONST.MIN_BET && !J.UI.isModalOpen() && !J.UI.isSheetOpen()) J.Rewards.openRecharge();
+      }, 1100);
     });
     J.Bus.on('wallet:credit', () => { J.Screen.renderShop(); });
 

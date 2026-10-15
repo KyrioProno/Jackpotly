@@ -168,8 +168,8 @@ step('Fair Play : rotation de graine et vérificateur', async () => {
   J.UI.closeSheet();
 });
 
-step('les 4 jeux : ouverture, commandes, une partie', async () => {
-  for (const id of ['crash', 'dice', 'mines', 'plinko']) {
+step('les 10 jeux : ouverture, commandes, une partie', async () => {
+  for (const id of ['crash', 'dice', 'mines', 'plinko', 'limbo', 'coinflip', 'hilo', 'keno', 'tower', 'wheel']) {
     J.Store.patch({ balance: 50000 });
     J.Games.open(id);
     await wait(150);
@@ -191,9 +191,22 @@ step('les 4 jeux : ouverture, commandes, une partie', async () => {
 
     // Commandes propres au jeu
     if (id === 'dice') { click('[data-mode="over"]'); click('[data-mode="under"]'); }
-    if (id === 'mines') { click('[data-mines="5"]'); click('[data-mines="3"]'); }
+    if (id === 'mines') { click('[data-mines="5"]'); click('[data-mines="3"]'); click('[data-mines="1"]'); }
     if (id === 'plinko') { click('[data-risk="high"]'); click('[data-risk="low"]'); }
-    click('.seg button', true);
+    if (id === 'limbo') { click('#lbChips .chip', true); }                      // toutes les cibles prédéfinies
+    if (id === 'coinflip') { click('#cfSide [data-side="head"]'); click('#cfSide [data-side="tail"]'); }
+    if (id === 'keno') {
+      click('#knRisk [data-risk="high"]'); click('#knRisk [data-risk="classic"]');
+      click('#knRandom'); click('#knClear');
+      // Sélection manuelle de 3 numéros puis vérification de la grille
+      ['3', '17', '40'].forEach((n) => click('#knGrid [data-num="' + n + '"]'));
+      if (doc.querySelectorAll('#knGrid .keno-cell.sel').length !== 3) throw new Error('keno : sélection manuelle KO');
+      if (!doc.querySelectorAll('#knPay div').length) throw new Error('keno : table de gains absente');
+    }
+    if (id === 'tower') { click('#twLevels .chip', true); }                    // les 5 difficultés
+    if (id === 'wheel') { click('#wgTargets .chip', true); }                   // les 8 cibles
+    click('.seg button', true);                                                // tous les segments restants
+    await wait(40);
 
     // Auto-bet : panneau, démarrage, arrêt manuel
     click('#gAdvanced'); await wait(80);
@@ -228,6 +241,30 @@ step('les 4 jeux : ouverture, commandes, une partie', async () => {
       const cash = $('[data-act="cashout"]');
       if (cash && !cash.disabled) cash.click();
       await wait(300);
+    } else if (id === 'tower') {
+      // Franchit jusqu'à 3 étages puis encaisse (ou tombe sur un piège)
+      for (let f = 0; f < 3 && g.active; f++) {
+        const t = doc.querySelector('#twFloors .tower-floor.current [data-tile]');
+        if (!t) break;
+        t.click();
+        await wait(160);
+      }
+      const cash = $('[data-act="cashout"]');
+      if (cash && !cash.disabled) cash.click();
+      await wait(250);
+    } else if (id === 'wheel') {
+      for (let i = 0; i < 70 && J.Store.state.stats.bets <= before; i++) await wait(140);
+      if (J.Store.state.stats.bets <= before) throw new Error('wheel : le lancer ne se termine pas');
+    } else if (id === 'keno') {
+      for (let i = 0; i < 40 && g.busy; i++) await wait(140);
+    } else if (id === 'hilo') {
+      const hi = doc.getElementById('hlHigh'), lo = doc.getElementById('hlLow');
+      const btn = hi.disabled ? lo : hi;
+      if (btn) btn.click();
+      await wait(220);
+      const cash = $('[data-act="cashout"]');
+      if (cash && !cash.disabled) cash.click();
+      await wait(250);
     } else {
       await wait(id === 'plinko' ? 2600 : 900);
     }
@@ -240,10 +277,13 @@ step('les 4 jeux : ouverture, commandes, une partie', async () => {
   }
 });
 
-step('les 12 jeux de la feuille de route s\'annoncent sans se lancer', async () => {
-  for (const id of ['limbo', 'coinflip', 'hilo', 'keno', 'tower', 'wheel', 'roulette', 'blackjack', 'baccarat', 'slots', 'videopoker', 'poker']) {
+step('les 6 classiques restants s\'annoncent sans se lancer', async () => {
+  const mounted = J.Games.instance();
+  if (mounted) J.Games.close(true);                  // aucun jeu ne doit rester monté
+  for (const id of ['roulette', 'blackjack', 'baccarat', 'slots', 'videopoker', 'poker']) {
     J.Games.open(id);
-    if (J.Games.instance()) throw new Error(id + ' ne devrait pas être jouable en vague 1');
+    const cur = J.Games.instance();
+    if (cur && cur.def.id === id) throw new Error(id + ' ne devrait pas être jouable (vague 3)');
     if (!$('#modalRoot.is-on')) throw new Error(id + ' : aucune modale d\'information');
     J.UI.closeModal();
   }
@@ -284,12 +324,22 @@ step('modales de sécurité : pause, jeu responsable, mentions', async () => {
   J.UI.closeSheet();
 });
 
+step('catalogue : 10 jeux jouables, 6 en feuille de route', async () => {
+  const live = J.GAMES.filter((g) => g.status === 'live').map((g) => g.id);
+  const soon = J.GAMES.filter((g) => g.status !== 'live').map((g) => g.id);
+  if (live.length !== 10) throw new Error('jeux jouables : ' + live.join(', '));
+  if (soon.length !== 6) throw new Error('feuille de route : ' + soon.join(', '));
+  const expectLive = ['crash', 'dice', 'mines', 'plinko', 'limbo', 'coinflip', 'hilo', 'keno', 'tower', 'wheel'];
+  if (!expectLive.every((id) => live.includes(id))) throw new Error('jeu manquant : ' + expectLive.filter((i) => !live.includes(i)));
+});
+
 step('état final cohérent et persisté', async () => {
   J.Store.flush();
   const st = J.Store.state;
   if (st.balance < 0 || !isFinite(st.balance)) throw new Error('solde invalide');
   if (!win.localStorage.getItem(J.SAVE_KEY)) throw new Error('rien dans le stockage local');
-  if (st.stats.bets < 6) throw new Error('parties trop peu nombreuses : ' + st.stats.bets);
+  if (st.stats.bets < 8) throw new Error('parties trop peu nombreuses : ' + st.stats.bets);
+  if (Object.keys(st.stats.perGame).length < 8) throw new Error('jeux couverts : ' + Object.keys(st.stats.perGame).join(', '));
   if (!Object.keys(st.stats.perGame).every((id) => st.stats.perGame[id].bets > 0)) throw new Error('stats par jeu incohérentes');
   const parsed = JSON.parse(win.localStorage.getItem(J.SAVE_KEY));
   if (parsed.history.length > 250) throw new Error('historique non borné');

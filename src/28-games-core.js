@@ -38,16 +38,15 @@
       J.Sfx.error();
       J.UI.modal({
         title: def.name + ' — bientôt',
-        sub: 'Prévu dans la ' + (def.wave === 2 ? 'vague 2' : 'vague 3') + ' du développement',
-        body: '<div class="note">Ce jeu fait partie de la feuille de route : ' +
-          (def.wave === 2 ? 'les autres Originals (Limbo, Coin Flip, Hi-Lo, Keno, Tower, Wheel).' :
-            'les classiques (Roulette, Blackjack, Baccarat, Machines à sous, Video Poker, Poker).') +
-          '</div>' +
+        sub: 'Prévu dans la vague 3 du développement (jeux classiques)',
+        body: '<div class="note">Ce jeu fait partie de la feuille de route : les classiques ' +
+          '(Roulette européenne, Blackjack, Baccarat, Machines à sous, Video Poker, Texas Hold\'em). ' +
+          'Les 10 Originals sont déjà jouables dès maintenant.</div>' +
           '<div class="kv mt"><span class="k">RTP prévu</span><span class="v up">' + def.rtp + ' %</span></div>' +
           '<div class="kv"><span class="k">Catégorie</span><span class="v">' + (def.category === 'classics' ? 'Classique' : 'Original') + '</span></div>' +
           (def.hint ? '<div class="note mt-l">' + def.hint + '</div>' : ''),
         actions: [
-          { label: 'Jouer à un jeu dispo', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
+          { label: 'Voir les 10 jeux jouables', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
           { label: 'Fermer', cls: 'ghost' }
         ]
       });

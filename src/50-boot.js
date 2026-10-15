@@ -51,12 +51,17 @@
     const unlock = () => { J.Sfx.unlock(); window.removeEventListener('pointerdown', unlock); };
     window.addEventListener('pointerdown', unlock, { once: true });
 
-    // 10) Réactions globales au solde épuisé
+    // 10) Solde épuisé : message + offre de recharge (une fois par épuisement)
+    let warnedEmpty = false;
     J.Bus.on('wallet:settled', () => {
-      if (J.Wallet.balance < J.CONST.MIN_BET) {
-        J.toast('💸 Solde épuisé — <b>Recharge gratuite</b> disponible', 'ko');
-        J.Screen.renderHome();
-      }
+      if (J.Wallet.balance >= J.CONST.MIN_BET) { warnedEmpty = false; return; }
+      if (warnedEmpty) return;
+      warnedEmpty = true;
+      J.toast('💸 Solde épuisé — <b>Recharge gratuite</b> disponible', 'ko');
+      J.Screen.renderHome();
+      setTimeout(() => {
+        if (J.Wallet.balance < J.CONST.MIN_BET && !J.UI.isModalOpen() && !J.UI.isSheetOpen()) J.Rewards.openRecharge();
+      }, 1100);
     });
     J.Bus.on('wallet:credit', () => { J.Screen.renderShop(); });
 

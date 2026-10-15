@@ -1,6 +1,6 @@
 {
   "name": "jackpotly",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "JACKPOTLY — casino social de divertissement (jetons virtuels sans valeur monétaire, 18+) livré en un seul fichier HTML autonome.",
   "scripts": {
@@ -10,6 +10,13 @@
     "test": "node tools/build.mjs && node tests/verify.mjs && node tests/smoke.mjs",
     "serve": "node tools/serve.mjs"
   },
-  "keywords": ["casino", "social", "jeu", "html", "mobile", "provably-fair"],
+  "keywords": [
+    "casino",
+    "social",
+    "jeu",
+    "html",
+    "mobile",
+    "provably-fair"
+  ],
   "license": "UNLICENSED"
 }

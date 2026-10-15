@@ -119,7 +119,10 @@
         }
         st.serverSeedHash = J.crypto.sha256Hex(st.serverSeed);       // resynchronise
         if (!st.clientSeed) st.clientSeed = hexId(8);
-        if (typeof st.cursor !== 'number') st.cursor = 0;
+        // Attention : `typeof NaN === 'number'`. On teste donc la finitude réelle,
+        // sinon un curseur corrompu figerait tous les tirages sur la même valeur.
+        if (!Number.isFinite(st.nonce)) st.nonce = 0;
+        if (!Number.isFinite(st.cursor)) st.cursor = 0;
         J.Store.save();
         return st;
       },
@@ -143,19 +146,26 @@
       /** Ouvre un nouveau pari : nouveau nonce, curseur remis à zéro. */
       beginBet() {
         const st = J.Store.state.fair;
-        st.nonce = (st.nonce || 0) + 1;
+        st.nonce = (Number.isFinite(st.nonce) ? st.nonce : 0) + 1;
         st.cursor = 0;
         J.Store.save();
         return st.nonce;
       },
 
+      /** Curseur courant, toujours un entier fini (protection contre NaN). */
+      _cursor() {
+        const st = J.Store.state.fair;
+        const c = Number.isFinite(st.cursor) ? st.cursor : 0;
+        return c < 0 ? 0 : Math.floor(c);
+      },
+
       /** Float suivant du flux (avance le curseur). */
       float() {
         const st = J.Store.state.fair;
-        const f = floatsFrom(st.serverSeed, `${st.clientSeed}:${st.nonce}:${st.cursor}`)[0];
-        st.cursor++;
+        const cursor = api._cursor();
+        st.cursor = cursor + 1;
         J.Store.save();
-        return f;
+        return floatsFrom(st.serverSeed, `${st.clientSeed}:${st.nonce || 0}:${cursor}`)[0];
       },
 
       /** n floats consécutifs */
@@ -164,9 +174,10 @@
       /** Entier uniforme dans [min,max] inclus, via 4 octets (biais négligeable) */
       int(min, max) {
         const st = J.Store.state.fair;
-        const bytes = hmac(enc.encode(st.serverSeed), enc.encode(`${st.clientSeed}:${st.nonce}:${st.cursor}`));
-        st.cursor++;
+        const cursor = api._cursor();
+        st.cursor = cursor + 1;
         J.Store.save();
+        const bytes = hmac(enc.encode(st.serverSeed), enc.encode(`${st.clientSeed}:${st.nonce || 0}:${cursor}`));
         const v = ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]) >>> 0;
         return min + (v % (max - min + 1));
       },

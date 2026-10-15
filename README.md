@@ -75,10 +75,12 @@ src/25-social.js        Quêtes du jour, classement de bots, faux flux de gros g
 src/26-rewards.js       Bonus quotidien, roue de la chance, recharge gratuite
 src/27-screens.js       Rendu des écrans (lobby, catalogue, classement, boutique, profil)
 src/28-games-core.js    Moteur de jeux : coque, panneau de mise, auto-bet, registre
-src/29-catalogue-soon.js Feuille de route (12 jeux déclarés avec RTP prévu)
-src/30..33-game-*.js    Crash · Dice · Mines · Plinko
+src/29-catalogue-soon.js Feuille de route (6 classiques déclarés avec RTP prévu)
+src/30..33-game-*.js    Crash · Dice · Mines · Plinko            (vague 1)
 src/34-shop.js          Packs, limite de dépenses, adaptateur de paiement (IAP-ready)
-src/40-boot.js          Démarrage, écran de bienvenue, sauvegarde périodique
+src/35..41-game-*.js    Limbo · Coin Flip · Hi-Lo · Keno · Tower · Wheel  (vague 2)
+src/50-boot.js          Démarrage, écran de bienvenue, sauvegarde périodique
+tools/design-tables.mjs Générateur/vérificateur des tables de gains du Keno
 ```
 
 ### Règles d'architecture
@@ -122,7 +124,7 @@ float = (octet0/256) + (octet1/65536) + (octet2/16777216) + (octet3/4294967296)
 
 ---
 
-## 4. Jeux — vague 1 (jouables)
+## 4. Jeux jouables (10)
 
 | Jeu | Principe | RTP | Volatilité |
 |---|---|---|---|
@@ -130,36 +132,54 @@ float = (octet0/256) + (octet1/65536) + (octet2/16777216) + (octet3/4294967296)
 | **Dice** | Over/Under, seuil réglable de 0,01 % à 98 % de chances | 99 % | au choix |
 | **Mines** | Grille 5×5, 1 à 24 mines, gain progressif | 99 % | progressive |
 | **Plinko** | 3 risques × 8 à 16 lignes, tables de gains standard | 99 % | au choix |
+| **Limbo** | Multiplicateur cible, tirage `0,99/(1−u)` | 99 % | au choix |
+| **Coin Flip** | Pile ou face en série, `0,99 × 2ⁿ`, encaissement à chaque lancer | 99 % | progressive |
+| **Hi-Lo** | Plus haut / plus bas sur 52 cartes sans remise | 99 % | progressive |
+| **Keno** | 1 à 10 numéros sur 40, 3 risques, tirage de 10 boules | 97,5 % | au choix |
+| **Tower** | 8 étages, 5 difficultés, encaissement à chaque étage | 99 % | progressive |
+| **Wheel** | 60 segments, 8 cibles, gains jusqu'à 50x | 97 % | au choix |
 
 Mathématiques (vérifiées automatiquement) :
 
 ```
-Dice    : mult = 99 / chance(%)                     → chance × mult = 99 %
-Mines   : mult(k) = 0,99 × Π (25−i)/(25−mines−i)     → P(k cases sûres) × mult(k) = 99 %
-Plinko  : Σ C(n,k)/2ⁿ × caisse(k) = 0,99             → 27 combinaisons (9 lignes × 3 risques)
-Crash   : crash = 0,99/(1−u) ⇒ P(crash ≥ m) = 0,99/m → cash out fixe à m x : RTP = 99 %
+Dice      : mult = 99 / chance(%)                   → chance × mult = 99 %
+Mines     : mult(k) = 0,99 × Π (25−i)/(25−mines−i)   → P(k cases sûres) × mult(k) = 99 %
+Plinko    : Σ C(n,k)/2ⁿ × caisse(k) = 0,99           → 27 combinaisons (9 lignes × 3 risques)
+Crash     : crash = 0,99/(1−u) ⇒ P(crash ≥ m) = 0,99/m → cash out fixe à m x : RTP = 99 %
+Limbo     : résultat = 0,99/(1−u)                     → P(résultat ≥ T) × T = 99 %
+Coin Flip : mult(n) = 0,99 × 2ⁿ                       → (1/2)ⁿ × mult(n) = 99 % pour n = 1…12
+Hi-Lo     : mult = 0,99 / P(prédiction), P exacte par comptage des 52 cartes (sans remise)
+Keno      : tables générées pour 97,5 % (30 configurations vérifiées, 68 660x max)
+Tower     : mult(f) = 0,99 / pᶠ avec p = (ouvertures − pièges)/ouvertures → RTP 99 %
+Wheel     : moyenne des 60 segments = 0,97 pour chacune des 8 cibles → RTP 97 %
 ```
 
 Vitesse de montée de Crash calibrée : 2x ≈ 4 s · 5x ≈ 9 s · 10x ≈ 13 s · 100x ≈ 25 s.
 
-## 5. Feuille de route
+## 5. Boutique et achats intégrés
 
-**Vague 2 — autres Originals + boutique complète**
-Limbo · Coin Flip · Hi-Lo · Keno · Tower · Wheel
-+ branchement du paiement réel via l'adaptateur `J.Shop.registerProvider()` (StoreKit / Play Billing),
-interface de packs finale, reçus et restauration d'achats.
+- **5 packs** : 5 000 / 25 000 / 100 000 / 500 000 jetons + offre « premier achat » à prix réduit.
+- **Tunnel d'achat complet** : confirmation, exécution du paiement, reçu (`transactionId`), crédit des
+  jetons, journal des achats.
+- **Adaptateur interchangeable** : `J.Shop.registerProvider(provider)` prend un objet
+  `{ id, label, available(), buy(pack) → Promise<{ok, transactionId, receipt}> }`.
+  Brancher l'App Store ou le Play Store = implémenter ces 3 méthodes, **sans toucher au reste**.
+- **Limite de dépenses mensuelle** : baisse immédiate, hausse différée au mois suivant, option « Bloqué ».
+- Paiement **simulé** dans cette version : aucun débit réel.
 
-**Vague 3 — classiques**
+## 6. Feuille de route
+
+**Vague 3 — les classiques**
 Roulette européenne (toutes les mises) · Blackjack (hit/stand/double/split/assurance) · Baccarat ·
 3 machines à sous (5 rouleaux, lignes, tours gratuits, multiplicateurs) · Video Poker Jacks or Better ·
 Texas Hold'em contre bots.
 
-Les 12 jeux sont déjà déclarés dans le catalogue (`src/29-catalogue-soon.js`) avec leur RTP prévu,
-leur règle et leur vague : il ne reste qu'à remplacer `status: 'soon'` par une implémentation.
+Les 6 jeux sont déjà déclarés dans le catalogue (`src/29-catalogue-soon.js`) avec leur RTP prévu,
+leur règle et leur volatilité : il ne reste qu'à remplacer `status: 'soon'` par une implémentation.
 
 ---
 
-## 6. Conformité et jeu responsable
+## 7. Conformité et jeu responsable
 
 - Mention « jetons virtuels sans valeur monétaire, divertissement uniquement, 18+ » présente dans la
   boutique, les mentions légales, l'écran d'accueil et après chaque achat.
@@ -173,15 +193,17 @@ leur règle et leur vague : il ne reste qu'à remplacer `status: 'soon'` par une
 
 ---
 
-## 7. Tests
+## 8. Tests
 
 ```bash
 npm test
 ```
 
-- `tests/verify.mjs` — 113 contrôles : démarrage, vecteurs cryptographiques, uniformité des tirages,
+- `tests/verify.mjs` — 163 contrôles : démarrage, vecteurs cryptographiques, uniformité des tirages,
   RTP **simulés sur 100 000+ parties**, portefeuille, VIP, quêtes, récompenses, persistance,
   limite de dépenses, parcours d'interface complets.
-- `tests/smoke.mjs` — 13 étapes qui parcourent toute l'application (chaque écran, chaque modale,
-  chaque réglage, les 4 jeux, l'auto-bet, la boutique, la roue, la recharge) en vérifiant
-  qu'aucune exception ni message d'erreur n'apparaît et que l'état reste cohérent.
+- `tests/smoke.mjs` — 14 étapes qui parcourent toute l'application (chaque écran, chaque modale,
+  chaque réglage, les **10 jeux** avec toutes leurs commandes, l'auto-bet, la boutique, la roue,
+  la recharge) en vérifiant qu'aucune exception ni message d'erreur n'apparaît et que l'état
+  reste cohérent.
+- `node tools/design-tables.mjs` — régénère les tables de gains du Keno avec un RTP cible donné.

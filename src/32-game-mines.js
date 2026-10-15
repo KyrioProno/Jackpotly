@@ -105,7 +105,7 @@
         const cur = multFor(g.picked.length, g.mineCount);
         const gain = Math.round(g.bet * cur);
         return [
-          { label: g.picked.length === 0 ? 'Révèle une case…' : '💰 Encaisser ' + U.fmtMult(cur) + ' · +' + U.fmt(gain - g.bet),
+          { label: g.picked.length === 0 ? 'Révèle une case…' : '💰 Encaisser · +' + U.fmt(gain),
             cls: 'primary wide-lg grow', act: 'cashout', alsoWhenBusy: true, disabled: g.picked.length === 0 },
           { label: '⏹', cls: 'ghost', onClick: (gg) => J.Games.stopAuto(gg, 'Arrêt demandé'), alsoWhenBusy: true }
         ];
@@ -131,18 +131,24 @@
       J.Games.updateHints(g);
       J.Sfx.bet();
 
-      // Mode auto : révéler automatiquement N cases puis encaisser
+      // Mode auto : révéler automatiquement N cases, PUIS encaisser
       if (g.auto.on) {
         const speed = Math.max(60, g.auto.speed * 0.6);
-        for (let i = 0; i < g.autoPicks; i++) {
+        const picks = Math.min(g.autoPicks, TILES - g.mineCount);   // jamais plus que de cases sûres
+        for (let i = 0; i < picks; i++) {
           J.Games.schedule(g, () => {
             if (!g.active) return;
             const hidden = [];
-            g.gridEl.querySelectorAll('[data-tile]').forEach((t) => { if (!t.classList.contains('picked') && !t.classList.contains('bomb')) hidden.push(parseInt(t.dataset.tile, 10)); });
+            g.gridEl.querySelectorAll('[data-tile]').forEach((t) => {
+              if (!t.classList.contains('picked') && !t.classList.contains('bomb')) hidden.push(parseInt(t.dataset.tile, 10));
+            });
             if (!hidden.length) return;
             pick(g, hidden[J.Fair.int(0, hidden.length - 1)], true);
           }, i * speed);
         }
+        // Encaissement automatique une fois les cases révélées (sinon la série resterait bloquée).
+        // Note : `cashout` est une méthode de la définition du jeu, pas une fonction du module.
+        J.Games.schedule(g, () => { if (g.active) g.def.cashout(g); }, picks * speed + 90);
       }
     },
 
@@ -197,7 +203,12 @@
     else J.Sfx.coin();
     updateStats(g);
     J.Games.updateHints(g);
-    J.Games.renderActions(g);
+    // Mise à jour du montant encaissable sans reconstruire le bouton
+    const cash = g.panelEl.querySelector('[data-act="cashout"]');
+    if (cash) {
+      const cur2 = multFor(g.picked.length, g.mineCount);
+      cash.innerHTML = '💰 Encaisser · +' + U.fmt(Math.round(g.ticket.bet * cur2));
+    }
   }
 
   /** À la fin de la partie, on montre toutes les mines (transparence). */

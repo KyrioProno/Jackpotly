@@ -173,64 +173,101 @@
     const st = J.Store.state;
     const packs = J.Shop.PACKS;
     const money = (v) => v.toFixed(2).replace('.', ',') + ' €';
+    const firstUsed = st.shop.firstPurchaseUsed;
+
+    /** Une carte de pack : prix, contenu, économie affichée. */
+    function packCard(p) {
+      const total = p.tokens + (p.bonus || 0);
+      const rate = Math.round(total / p.price);
+      const available = J.Shop.canBuy(p);
+      const bestValue = rate >= 9000;
+      return '<div class="card pad" style="margin-bottom:8px;' +
+          (p.firstOnly ? 'border-color:rgba(255,197,49,.45)' : bestValue ? 'border-color:rgba(0,227,122,.35)' : '') + '">' +
+        '<div class="row between">' +
+          '<div class="row grow">' +
+            '<div style="width:40px;height:40px;border-radius:12px;display:grid;place-items:center;' +
+              'background:rgba(255,197,49,.12);color:var(--gold);font-weight:900;font-size:17px">J</div>' +
+            '<div><div style="font-weight:800">' + U.fmt(total) + ' jetons</div>' +
+              '<div class="sub">' + (p.bonus ? '+' + U.fmt(p.bonus) + ' bonus · ' : '') + p.label + '</div>' +
+              '<div class="sub" style="font-size:9.5px">' + U.fmt(rate) + ' jetons par euro</div></div>' +
+          '</div>' +
+          '<div class="center"><div class="mono" style="font-weight:800;font-size:15px">' + money(p.price) + '</div>' +
+            (p.tag ? '<span class="badge ' + (p.firstOnly ? 'gold' : '') + '" style="font-size:8.5px">' +
+              (p.firstOnly && firstUsed ? 'déjà utilisé' : p.tag) + '</span>' : '') + '</div>' +
+        '</div>' +
+        '<button class="btn ' + (p.firstOnly ? 'gold' : available ? 'ghost' : 'ghost') + ' block mt" data-buy="' + p.id + '"' +
+          (available ? '' : ' disabled') + '>' +
+          (available ? (p.firstOnly ? '🎁 Acheter à prix réduit' : 'Acheter (simulé)') : '🔒 Indisponible (limite atteinte)') + '</button>' +
+      '</div>';
+    }
 
     $('shopBody').innerHTML =
-      '<div class="note warn mt">Paiement <b>simulé</b> dans cette version de démonstration : aucun débit réel ' +
-      'n\'est effectué. L\'architecture (catalogue, limite de dépenses, adaptateur de paiement) est prête pour ' +
-      'brancher Apple / Google In-App Purchase en vague 2.</div>' +
-
+      // Packs
       '<div class="section"><div class="section-head"><div class="h2">🛒 Packs de jetons</div>' +
         '<span class="sub">' + (spend.limit == null ? 'aucune limite' : 'limite ' + money(spend.limit) + '/mois') + '</span></div>' +
-        packs.map((p) => {
-          const total = p.tokens + (p.bonus || 0);
-          const locked = !J.Shop.canBuy(p);
-          return '<div class="card pad" style="margin-bottom:8px;' + (p.firstOnly ? 'border-color:rgba(255,197,49,.4)' : '') + '">' +
-            '<div class="row between">' +
-              '<div class="row grow">' +
-                '<div style="width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,197,49,.12);color:var(--gold);font-weight:900">J</div>' +
-                '<div><div style="font-weight:800">' + U.fmt(total) + ' jetons</div>' +
-                '<div class="sub">' + (p.bonus ? '+' + U.fmt(p.bonus) + ' bonus · ' : '') + p.label + '</div></div>' +
-              '</div>' +
-              '<div class="center"><div class="mono" style="font-weight:800">' + money(p.price) + '</div>' +
-              (p.tag ? '<span class="badge ' + (p.firstOnly ? 'gold' : '') + '" style="font-size:8.5px">' + p.tag + '</span>' : '') + '</div>' +
-            '</div>' +
-            '<button class="btn ' + (p.firstOnly ? 'gold' : 'ghost') + ' block mt" data-buy="' + p.id + '"' + (locked ? ' disabled' : '') + '>' +
-              (locked ? 'Indisponible' : 'Acheter (simulé)') + '</button>' +
-          '</div>';
-        }).join('') +
-        '<div class="sub">Vague 2 : branchement du paiement réel via les adaptateurs App Store / Play Store. ' +
-        'Les jetons achetés restent virtuels et non remboursables.</div>' +
+        packs.map(packCard).join('') +
+        '<div class="note"><b>Paiement simulé.</b> Aucun débit réel dans cette version : le tunnel d\'achat, les reçus ' +
+        'et la limite de dépenses sont déjà en place, il ne reste qu\'à enregistrer l\'adaptateur Apple / Google ' +
+        'In-App Purchase via <span class="mono">J.Shop.registerProvider()</span>.</div>' +
       '</div>' +
 
-      '<div class="section"><div class="section-head"><div class="h2">🎁 Jetons gratuits</div></div>' +
+      // Jetons gratuits
+      '<div class="section"><div class="section-head"><div class="h2">🎁 Jetons gratuits</div>' +
+        '<span class="sub">aucune dépense requise</span></div>' +
         '<div class="card pad">' +
           '<div class="kv"><span class="k">Bonus quotidien</span><span class="v ' + (J.Rewards.canClaimDaily() ? 'up' : '') + '">' +
             (J.Rewards.canClaimDaily() ? 'disponible' : 'demain') + '</span></div>' +
           '<div class="kv"><span class="k">Roue de la chance</span><span class="v ' + (J.Rewards.canSpinWheel() ? 'up' : '') + '">' +
             (J.Rewards.canSpinWheel() ? '1 tour gratuit' : 'demain') + '</span></div>' +
-          '<div class="kv"><span class="k">Recharges gratuites restantes</span><span class="v">' + J.Rewards.rechargeState().left + ' / ' + J.CONST.FREE_CHIPS_PER_DAY + '</span></div>' +
+          '<div class="kv"><span class="k">Recharges gratuites restantes</span><span class="v">' + J.Rewards.rechargeState().left +
+            ' / ' + J.CONST.FREE_CHIPS_PER_DAY + '</span></div>' +
+          '<div class="kv"><span class="k">Missions du jour</span><span class="v up">' +
+            U.fmt(J.Quests.items().reduce((a, x) => a + (x.claimed ? 0 : x.reward), 0)) + ' J à gagner</span></div>' +
           '<button class="btn ghost block mt" data-shop="free">Recharger gratuitement ' + U.fmt(J.CONST.FREE_CHIPS) + ' jetons</button>' +
+          '<div class="sub center mt-s">Tous les jeux restent accessibles sans jamais dépenser d\'argent réel.</div>' +
         '</div>' +
       '</div>' +
 
+      // Contrôle des dépenses
       '<div class="section"><div class="section-head"><div class="h2">🛡️ Contrôle des dépenses</div></div>' +
         '<div class="card pad">' +
-          '<div class="note">Tu choisis toi-même ta limite mensuelle de dépenses réelles. Une fois atteinte, ' +
-          'les achats sont bloqués jusqu\'au mois suivant (elle peut toujours être baissée, jamais relevée dans le même mois).</div>' +
+          '<div class="note">Tu choisis ta limite mensuelle de dépenses. Une fois atteinte, les achats sont bloqués ' +
+          'jusqu\'au mois suivant. Elle peut toujours être <b>baissée immédiatement</b> ; toute hausse est différée ' +
+          'au mois suivant (garde-fou anti-impulsion).</div>' +
           '<div class="kv mt"><span class="k">Dépensé ce mois-ci (simulé)</span><span class="v">' + money(spend.total) + '</span></div>' +
-          '<div class="kv"><span class="k">Limite mensuelle</span><span class="v">' + (spend.limit == null ? 'non définie' : money(spend.limit)) + '</span></div>' +
-          (st.spend.pendingLimit ? '<div class="kv"><span class="k">Hausse programmée (' + U.esc(st.spend.pendingMonth) + ')</span><span class="v gold">' + money(st.spend.pendingLimit) + '</span></div>' : '') +
+          '<div class="kv"><span class="k">Limite mensuelle</span><span class="v">' +
+            (spend.limit == null ? 'non définie' : money(spend.limit)) + '</span></div>' +
+          '<div class="progress thin mt-s"><i style="width:' +
+            (spend.limit ? U.clamp((spend.total / spend.limit) * 100, 0, 100).toFixed(0) : 0) + '%"></i></div>' +
+          (st.spend.pendingLimit ? '<div class="kv mt"><span class="k">Hausse programmée (' + U.esc(st.spend.pendingMonth) + ')</span>' +
+            '<span class="v gold">' + money(st.spend.pendingLimit) + '</span></div>' : '') +
           '<button class="btn ghost block mt" data-shop="limit">Définir ma limite mensuelle</button>' +
         '</div>' +
       '</div>' +
+
+      // Historique des achats
+      (Object.keys(st.shop.purchased).length
+        ? '<div class="section"><div class="section-head"><div class="h2">🧾 Mes achats (simulés)</div></div>' +
+          '<div class="card pad"><table class="data"><thead><tr><th>Pack</th><th>Qté</th><th>Jetons</th></tr></thead><tbody>' +
+          Object.keys(st.shop.purchased).map((id) => {
+            const p = packs.find((x) => x.id === id);
+            if (!p) return '';
+            return '<tr><td class="name">' + U.esc(p.label) + '</td><td>' + st.shop.purchased[id] + '</td>' +
+              '<td class="gold">' + U.fmt((p.tokens + (p.bonus || 0)) * st.shop.purchased[id]) + '</td></tr>';
+          }).join('') + '</tbody></table>' +
+          (st.shop.lastTransaction ? '<div class="sub mt-s">Dernière transaction : <span class="mono">' +
+            U.esc(st.shop.lastTransaction) + '</span></div>' : '') +
+          '</div></div>'
+        : '') +
 
       '<div class="note danger mt-l">' +
         '<b>Jetons virtuels sans valeur monétaire. Divertissement uniquement. 18+.</b><br>' +
         'Aucun retrait, aucune conversion en argent ou en cadeaux, aucun échange entre joueurs. ' +
         'Les jetons ne peuvent pas être gagnés en argent réel et ne servent qu\'à jouer dans l\'application.' +
       '</div>' +
-      '<div class="sub center mt">Version ' + J.VERSION + ' · vague 1 (socle + 4 jeux)</div>';
+      '<div class="sub center mt">Version ' + J.VERSION + ' · 10 jeux jouables</div>';
 
+    /* --- Liaisons --- */
     $('shopBody').querySelectorAll('[data-shop]').forEach((b) => {
       b.onclick = () => {
         const a = b.dataset.shop;
@@ -239,39 +276,48 @@
       };
     });
 
-    // Achats : la vague 1 utilise l'adaptateur de paiement simulé
     $('shopBody').querySelectorAll('[data-buy]').forEach((b) => {
       b.onclick = () => {
         const id = b.dataset.buy;
         const pack = J.Shop.PACKS.find((p) => p.id === id);
         if (!pack) return;
         J.Sfx.click();
-        J.UI.modal({
-          title: 'Confirmer l\'achat (simulé)',
-          sub: U.fmt(pack.tokens + (pack.bonus || 0)) + ' jetons virtuels',
-          body:
-            '<div class="note warn">Aucun paiement réel n\'est effectué : cette version utilise un <b>module de paiement simulé</b>. ' +
-            'En production, cette étape passe par Apple/Google In-App Purchase.</div>' +
-            '<div class="kv mt"><span class="k">Prix affiché</span><span class="v">' + money(pack.price) + '</span></div>' +
-            '<div class="kv"><span class="k">Jetons crédités</span><span class="v gold">' + U.fmt(pack.tokens + (pack.bonus || 0)) + '</span></div>' +
-            '<div class="kv"><span class="k">Dépense du mois après achat</span><span class="v">' + money(spend.total + pack.price) + ' / ' + (spend.limit == null ? '∞' : money(spend.limit)) + '</span></div>' +
-            '<div class="note mt">Les jetons sont virtuels, sans valeur monétaire : aucun retrait, aucune conversion, aucun remboursement.</div>',
-          actions: [
-            { label: 'Annuler', cls: 'ghost' },
-            { label: 'Confirmer (simulé)', cls: 'gold', keepOpen: true, onClick: (e) => {
-              const btn = document.querySelector('#modalBox [data-actions] .btn.gold');
-              if (btn) { btn.disabled = false; btn.textContent = 'Paiement en cours…'; }
-              J.Shop.purchase(pack.id).then((res) => {
-                J.UI.closeModal();
-                if (!res.ok) { J.Sfx.error(); J.toast(res.error || 'Achat impossible', 'ko'); return; }
-                J.Screen.renderShop();
-                J.Screen.renderProfile();
-              });
-            } }
-          ]
-        });
+        openPurchase(pack);
       };
     });
+
+    /* --- Tunnel d'achat (paiement simulé, prêt pour l'IAP) --- */
+    function openPurchase(pack) {
+      const total = pack.tokens + (pack.bonus || 0);
+      const after = spend.total + pack.price;
+      J.UI.modal({
+        title: 'Confirmer l\'achat',
+        sub: U.fmt(total) + ' jetons virtuels · ' + money(pack.price),
+        body:
+          '<div class="note warn">Paiement <b>simulé</b> : aucun débit réel n\'a lieu dans cette version. ' +
+          'Le tunnel est identique à celui d\'un achat intégré (confirmation, reçu, crédit des jetons).</div>' +
+          '<div class="kv mt"><span class="k">Pack</span><span class="v">' + U.esc(pack.label) + '</span></div>' +
+          '<div class="kv"><span class="k">Jetons crédités</span><span class="v gold">' + U.fmt(total) + '</span></div>' +
+          '<div class="kv"><span class="k">Prix (simulé)</span><span class="v">' + money(pack.price) + '</span></div>' +
+          '<div class="kv"><span class="k">Dépense du mois après achat</span><span class="v">' + money(after) +
+            ' / ' + (spend.limit == null ? '∞' : money(spend.limit)) + '</span></div>' +
+          '<div class="note mt">Les jetons sont virtuels et sans valeur monétaire : aucun retrait, aucune conversion, ' +
+          'aucun remboursement. Ils servent uniquement à jouer dans l\'application.</div>',
+        actions: [
+          { label: 'Annuler', cls: 'ghost' },
+          { label: 'Confirmer ' + money(pack.price), cls: 'gold', keepOpen: true, onClick: () => {
+            const btn = document.querySelector('#modalBox [data-actions] .btn.gold');
+            if (btn) { btn.disabled = true; btn.textContent = 'Paiement en cours…'; }
+            J.Shop.purchase(pack.id).then((res) => {
+              J.UI.closeModal();
+              if (!res.ok) { J.Sfx.error(); J.toast(res.error || 'Achat impossible', 'ko'); return; }
+              J.Screen.renderShop();
+              J.Screen.renderProfile();
+            });
+          } }
+        ]
+      });
+    }
   };
 
   /* ============================================================ PROFIL */

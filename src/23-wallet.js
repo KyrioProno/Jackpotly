@@ -34,6 +34,9 @@
       if (amount <= 0) return null;
       if (amount > st.balance) return null;
 
+      // Chaque pari ouvre un nouveau nonce provably fair : le joueur peut
+      // vérifier tirage par tirage à partir des graines révélées.
+      J.Fair.beginBet();
       st.balance -= amount;
       st.stats.bets++;
       st.stats.wagered += amount;

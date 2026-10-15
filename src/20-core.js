@@ -7,7 +7,7 @@
 
   /** Espace de noms unique du jeu. Tous les modules s'y rattachent. */
   const J = (window.JACKPOTLY = window.JACKPOTLY || {});
-  J.VERSION = '0.1.0';           // vague 1 : socle + 4 jeux
+  J.VERSION = '0.2.0';           // vague 2 : 10 jeux jouables + boutique complète
   J.SAVE_KEY = 'jackpotly.state.v1';
 
   /* ------------------------------------------------------------------ UTIL */
@@ -159,7 +159,7 @@
       freeChips: { day: '', used: 0, readyAt: 0 },
       shop: { firstPurchaseUsed: false, purchased: {} },
       spend: { month: '', total: 0, limit: null },   // limite de dépenses mensuelle (achats simulés)
-      fair: { serverSeed: '', serverSeedHash: '', prevSeed: '', prevHash: '', clientSeed: '', nonce: 0, rotatedAt: 0 },
+      fair: { serverSeed: '', serverSeedHash: '', prevSeed: '', prevHash: '', clientSeed: '', nonce: 0, cursor: 0, rotatedAt: 0 },
       session: { startedAt: Date.now(), lastPauseAt: Date.now(), rounds: 0 }
     };
   }

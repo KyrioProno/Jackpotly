@@ -3,7 +3,11 @@
    Déclaration des jeux non encore développés : ils apparaissent dans le
    catalogue avec leur RTP prévu, leur règle et leur vague de livraison,
    ce qui garde une seule source de vérité pour tout le lobby.
-   Vague 2 = autres Originals · Vague 3 = jeux classiques.
+
+   Vague 1 (livrée)  : Crash, Dice, Mines, Plinko
+   Vague 2 (livrée)  : Limbo, Coin Flip, Hi-Lo, Keno, Tower, Wheel
+   Vague 3 (ici)     : Roulette, Blackjack, Baccarat, Machines à sous,
+                       Video Poker, Texas Hold'em
    ========================================================================= */
 (function () {
   'use strict';
@@ -19,40 +23,10 @@
     });
   }
 
-  /* -------------------------------------------------- VAGUE 2 : ORIGINALS */
-  soon('limbo', 'Limbo', 'limbo', '#8b5cf6', 99, 'Vise un multiplicateur',
-    'Tirage uniforme : résultat = 0,99 / (1 − u). Tu choisis un multiplicateur cible, le jeu tire et compare. ' +
-    'Simple, rapide, parfait pour l\'auto-bet.',
-    2, 'originals', 'Volatilité au choix');
-
-  soon('coinflip', 'Coin Flip', 'coin', '#22d3ee', 99, 'Pile ou face en série',
-    'Pile ou face à 50/50 (1,98x) avec compteur de série : chaque victoire consécutive augmente le gain du multiplicateur choisi.',
-    2, 'originals', 'Volatilité faible');
-
-  soon('hilo', 'Hi-Lo', 'hilo', '#00e37a', 99, 'Plus haut ou plus bas',
-    'Devine si la carte suivante est plus haute ou plus basse que la carte courante. Plus la probabilité est faible, plus le gain est élevé. ' +
-    'Tu peux enchaîner plusieurs prédictions ou encaisser à tout moment.',
-    2, 'originals', 'Volatilité progressive');
-
-  soon('keno', 'Keno', 'keno', '#f97316', 97.5, 'Tire tes numéros',
-    'Choisis 1 à 10 numéros sur 40 (ou « pick aléatoire »), le tirage révèle 10 boules. Ton gain dépend du nombre de correspondances, ' +
-    'avec un tableau de gains par taille de sélection et niveau de risque.',
-    2, 'originals', 'Volatilité au choix');
-
-  soon('tower', 'Tower', 'tower', '#ff4fa3', 98.5, 'Monte les étages',
-    'Une tour de 8 à 9 étages : à chaque étage, choisis une case parmi 3 (ou 4). Une seule est sûre. ' +
-    'Chaque étage augmente le multiplicateur, avec encaissement à tout moment.',
-    2, 'originals', 'Volatilité progressive');
-
-  soon('wheel', 'Wheel', 'wheel', '#ffc531', 97, 'La roue des multiplicateurs',
-    'Roue de 10 à 60 segments selon le risque, avec un multiplicateur cible choisi par le joueur (« target multiplier »). ' +
-    'Animation fluide, RTP constant.',
-    2, 'originals', 'Volatilité au choix');
-
   /* -------------------------------------------------- VAGUE 3 : CLASSIQUES */
   soon('roulette', 'Roulette', 'roulette', '#c9273a', 97.3, 'Européenne, un seul zéro',
     'Roulette européenne (un seul zéro) : plein, cheval, carré, ligne, colonne, douzaine, rouge/noir, pair/impair, manque/passe. ' +
-    'Voisinage du cylindre et mises annoncées incluses.',
+    'Voisinage du cylindre et mises annoncées incluses. Historique chaud/froid et relance de la dernière mise.',
     3, 'classics', 'Volatilité moyenne');
 
   soon('blackjack', 'Blackjack', 'blackjack', '#00b862', 99.5, 'Battez le croupier',
@@ -72,7 +46,7 @@
 
   soon('videopoker', 'Video Poker', 'videopoker', '#3b82f6', 99.5, 'Jacks or Better',
     'Video Poker Jacks or Better en 9/6 : tu conserves les cartes de ton choix puis le tirage complète la main. ' +
-    'Table de gains complète (paire de valets → quinte flush royale).',
+    'Table de gains complète (paire de valets → quinte flush royale), avec stratégie automatique optionnelle.',
     3, 'classics', 'Volatilité moyenne');
 
   soon('poker', 'Texas Hold\'em', 'poker', '#34d399', 98, 'Contre des bots',

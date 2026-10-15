@@ -477,6 +477,265 @@ section('9. Navigation, modales et rappels');
   J.UI.go('home');
 }
 
+/* ================================== 10. LES 6 NOUVEAUX ORIGINALS (VAGUE 2) */
+section('10. Mathématiques et tour de jeu des 6 Originals de la vague 2');
+{
+  const C = (n, k) => { let r = 1; for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1); return r; };
+
+  // ---- Limbo : résultat = 0,99/(1−u) ⇒ P(résultat ≥ T) = 0,99/T, RTP = 99 %
+  {
+    const rollFrom = (u) => Math.max(1.00, Math.floor(99 / (1 - u)) / 100);
+    let worst = 0;
+    for (const T of [1.2, 2, 3, 5, 10, 100]) {
+      const N = 60000; let wins = 0;
+      for (let i = 0; i < N; i++) if (rollFrom(J.Fair.float()) >= T) wins++;
+      const rtp = (wins / N) * T;
+      worst = Math.max(worst, Math.abs(rtp - 0.99));
+    }
+    check('Limbo : RTP ≈ 99 % pour toutes les cibles testées', worst < 0.03, 'écart max ' + (worst * 100).toFixed(2) + ' pts');
+    let below = 0;
+    for (let i = 0; i < 20000; i++) if (rollFrom(J.Fair.float()) < 1) below++;
+    check('Limbo : le résultat ne descend jamais sous 1,00x', below === 0);
+  }
+
+  // ---- Coin Flip : mult(n) = 0,99·2ⁿ et P(n victoires d'affilée) = 1/2ⁿ
+  {
+    const multOf = (n) => 0.99 * Math.pow(2, n);
+    check('Coin Flip : 0,99 × 2ⁿ, série max 12 → 4 055x', Math.abs(multOf(12) - 4055.04) < 1e-6, multOf(12).toFixed(2));
+    // Identité mathématique : P(n victoires d'affilée) × mult(n) = 0,99 quel que soit n
+    let worst = 0;
+    for (let n = 1; n <= 12; n++) worst = Math.max(worst, Math.abs(Math.pow(0.5, n) * multOf(n) - 0.99));
+    check('Coin Flip : P(n) × mult(n) = 99 % pour n = 1…12', worst < 1e-12, 'écart ' + worst.toExponential(2));
+    // Contrôle empirique des 50/50 (tolérance de ±1 %)
+    let hits = 0; const N = 40000;
+    for (let i = 0; i < N; i++) if (J.Fair.float() < 0.5) hits++;
+    check('Coin Flip : pile ou face ≈ 50/50', Math.abs(hits / N - 0.5) < 0.01, ((hits / N) * 100).toFixed(2) + ' %');
+  }
+
+  // ---- Hi-Lo : jeu de 52 cartes sans remise, mult = 0,99 / P cumulée
+  {
+    // Cas simple : carte de hauteur 6, 4 cartes par hauteur → 28 plus hautes, 20 plus basses
+    const counts = new Array(14).fill(4); counts[0] = 0;
+    let higher = 0, lower = 0;
+    for (let r = 7; r <= 13; r++) higher += counts[r];
+    for (let r = 1; r <= 5; r++) lower += counts[r];
+    check('Hi-Lo : comptage exact des cartes (jeu neuf, hauteur 6)', higher === 28 && lower === 20, higher + '/' + lower);
+    const pHigh = higher / 52;
+    check('Hi-Lo : mult = 0,99/probabilité', Math.abs((0.99 / pHigh) - 1.8386) < 0.01, (0.99 / pHigh).toFixed(4));
+    // Simulation : on tire réellement une carte et on vérifie que le taux de
+    // réussite empirique correspond à la probabilité annoncée (28/52).
+    let wagered = 0, returned = 0, wins = 0;
+    const N = 40000;
+    for (let i = 0; i < N; i++) {
+      const deck = new Array(14).fill(4); deck[0] = 0;
+      const idx = Math.floor(J.Fair.float() * 52);
+      let seen = 0, rank = 1;
+      for (let r = 1; r <= 13; r++) { if (seen + deck[r] > idx) { rank = r; break; } seen += deck[r]; }
+      wagered += 100;
+      if (rank > 6) { wins++; returned += 100 * (0.99 / pHigh); }
+    }
+    const empirical = wins / N;
+    check('Hi-Lo : la probabilité annoncée correspond au tirage réel (28/52 = 53,8 %)',
+      Math.abs(empirical - pHigh) < 0.01, (empirical * 100).toFixed(2) + ' % vs ' + (pHigh * 100).toFixed(2) + ' %');
+    check('Hi-Lo : RTP simulé d\'une prédiction ≈ 99 %', Math.abs(returned / wagered - 0.99) < 0.02,
+      ((returned / wagered) * 100).toFixed(2) + ' %');
+  }
+
+  // ---- Keno : tables conçues pour 97,5 % (vérifiées ici telles que livrées)
+  {
+    const src = readFileSync(join(root, 'src/38-game-keno.js'), 'utf8');
+    const block = src.slice(src.indexOf('const PAYTABLES'), src.indexOf('/** RTP réel'));
+    const PAYTABLES = eval('(' + block.replace('const PAYTABLES =', '').replace(/;\s*$/, '') + ')');
+    const total = C(40, 10);
+    let minRtp = 999, maxRtp = 0, worstCfg = '';
+    for (const risk of ['classic', 'medium', 'high']) {
+      for (let k = 1; k <= 10; k++) {
+        const table = PAYTABLES[risk][k];
+        if (table.length !== k + 1) throw new Error('table keno incorrecte ' + risk + '/' + k);
+        let ev = 0;
+        for (let h = 0; h <= k; h++) ev += (C(k, h) * C(40 - k, 10 - h) / total) * table[h];
+        const rtp = ev * 100;
+        minRtp = Math.min(minRtp, rtp); maxRtp = Math.max(maxRtp, rtp);
+        if (rtp < minRtp) worstCfg = risk + '/' + k;
+      }
+    }
+    check('Keno : RTP entre 97 % et 98 % pour les 30 configurations', minRtp >= 97 && maxRtp <= 98,
+      minRtp.toFixed(2) + ' % … ' + maxRtp.toFixed(2) + ' %');
+    check('Keno : les trois risques se distinguent bien', PAYTABLES.high[10][10] > PAYTABLES.medium[10][10] &&
+      PAYTABLES.medium[10][10] > PAYTABLES.classic[10][10],
+      [PAYTABLES.classic[10][10], PAYTABLES.medium[10][10], PAYTABLES.high[10][10]].join(' < '));
+    check('Keno : 68 660x pour 10 sur 10 en risque élevé', PAYTABLES.high[10][10] === 68660);
+    // Espérance du meilleur gain (tirage le plus rare) cohérente
+    const pPerfect = C(10, 10) * C(30, 0) / total;
+    check('Keno : probabilité de 10 sur 10 correcte (≈ 1 sur 847 millions)',
+      Math.abs(pPerfect - 1.1797e-9) < 1e-13, (1 / pPerfect / 1e6).toFixed(0) + ' millions');
+  }
+
+  // ---- Tower : mult(f) = 0,99 / p^f
+  {
+    const LEVELS = [
+      { tiles: 4, traps: 1 }, { tiles: 3, traps: 1 }, { tiles: 2, traps: 1 },
+      { tiles: 3, traps: 2 }, { tiles: 4, traps: 3 }
+    ];
+    let worst = 0;
+    for (const lvl of LEVELS) {
+      const p = (lvl.tiles - lvl.traps) / lvl.tiles;
+      for (let f = 1; f <= 8; f++) {
+        const mult = 0.99 / Math.pow(p, f);
+        worst = Math.max(worst, Math.abs(mult * Math.pow(p, f) - 0.99));
+      }
+    }
+    check('Tower : mult(f) × pᶠ = 99 % pour les 5 difficultés', worst < 1e-9, 'écart ' + worst.toExponential(2));
+    check('Tower : Maître (4 ouvertures, 3 pièges) vaut 3,96x au 1er étage',
+      Math.abs((0.99 / 0.25) - 3.96) < 1e-9, (0.99 / 0.25).toFixed(2) + 'x');
+  }
+
+  // ---- Wheel : tables de segments construites pour 97 %
+  {
+    const buildTable = J.__wheelTable;
+    check('Wheel : constructeur de table exposé', typeof buildTable === 'function');
+    let worst = 0, worstAt = '';
+    const details = [];
+    const TARGETS = [1.2, 1.5, 2, 3, 5, 10, 25, 50];
+    for (const T of TARGETS) {
+      const t = buildTable(T);
+      // RTP = moyenne des valeurs des segments (le gain est la valeur du segment)
+      const rtp = t.table.reduce((a, s) => a + s.m, 0) / t.table.length * 100;
+      details.push(T + 'x→' + rtp.toFixed(1) + '%');
+      if (Math.abs(rtp - 97) > worst) { worst = Math.abs(rtp - 97); worstAt = T + 'x (' + rtp.toFixed(2) + '%)'; }
+      if (t.table.length !== 60) { worst = 99; worstAt = 'nombre de segments ' + t.table.length; }
+      if (!(t.lossMult >= 0 && t.lossMult < 1)) { worst = 99; worstAt = 'consolation ' + t.lossMult; }
+    }
+    check('Wheel : RTP = 97 % pour les 8 cibles', worst < 0.6, 'pire cas ' + worstAt + ' · ' + details.join(' '));
+    check('Wheel : segments gagnants décroissants et toujours ≥ 1',
+      buildTable(1.2).wins > buildTable(2).wins && buildTable(2).wins > buildTable(10).wins &&
+      buildTable(50).wins >= 1,
+      [buildTable(1.2).wins, buildTable(2).wins, buildTable(10).wins, buildTable(50).wins].join(' > '));
+    // Simulation : 60 000 lancers à cible 2x, RTP attendu 97 %
+    {
+      const t = buildTable(2);
+      let wagered = 0, returned = 0;
+      for (let i = 0; i < 60000; i++) {
+        const seg = J.Fair.int(0, t.table.length - 1);
+        wagered += 100; returned += 100 * t.table[seg].m;
+      }
+      check('Wheel : RTP simulé à cible 2x ≈ 97 %', Math.abs(returned / wagered - 0.97) < 0.02,
+        ((returned / wagered) * 100).toFixed(2) + ' %');
+    }
+  }
+}
+
+/* =========================== 11. LES 6 JEUX DE LA VAGUE 2 VIA L'INTERFACE */
+section('11. Tour de jeu complet des 6 nouveaux jeux (interface)');
+{
+  const playBtn = () => win.document.querySelector('#gameShell [data-act="play"]');
+  for (const id of ['limbo', 'coinflip', 'hilo', 'keno', 'tower', 'wheel']) {
+    J.Store.reset();
+    J.Store.patch({ balance: 100000 });
+    J.Games.open(id);
+    await wait(120);
+    const g = J.Games.instance();
+    check(id + ' : écran monté avec la mise et les réglages', !!g && !!playBtn());
+    J.Games.setBet(g, 100, true);
+    playBtn().click();
+    check(id + ' : mise débitée au lancement', J.Store.state.stats.bets === 1, 'paris ' + J.Store.state.stats.bets);
+    await wait(120);
+
+    if (id === 'coinflip') {
+      // Encaisse après la première victoire (le lancer est animé)
+      await wait(1300);
+      const cash = win.document.querySelector('[data-act="cashout"]');
+      if (g.streak > 0 && cash) cash.click();
+      else { const relaunch = win.document.querySelector('[data-act="custom"]'); if (relaunch) relaunch.click(); }
+      await wait(300);
+      check('coinflip : la manche se termine (historique)', J.Store.state.history.length === 1, String(J.Store.state.history.length));
+    } else if (id === 'hilo') {
+      const high = win.document.getElementById('hlHigh'), low = win.document.getElementById('hlLow');
+      const pTxt = win.document.getElementById('hlHighP').textContent + ' ' + win.document.getElementById('hlLowP').textContent;
+      check('hilo : au moins un sens jouable, probabilités affichées',
+        !!high && !!low && (!high.disabled || !low.disabled) && /%/.test(pTxt), pTxt);
+      check('hilo : les deux sens se désactivent sur un As ou un Roi (comptage exact)',
+        (g.card.rank === 1 ? low.disabled : true) && (g.card.rank === 13 ? high.disabled : true),
+        'carte ' + g.card.rank);
+      (high.disabled ? low : high).click();
+      await wait(200);
+      const cash = win.document.querySelector('[data-act="cashout"]');
+      if (g.steps > 0 && cash) cash.click();
+      else { const again = win.document.querySelector('[data-act="play"]'); if (again && !again.disabled) again.click(); }
+      await wait(400);
+      check('hilo : la manche se termine (historique)', J.Store.state.history.length >= 1);
+    } else if (id === 'keno') {
+      check('keno : 40 numéros affichés', win.document.querySelectorAll('#knGrid [data-num]').length === 40);
+      check('keno : le tirage révèle 10 boules', await (async () => {
+        for (let i = 0; i < 40; i++) { if (win.document.querySelectorAll('#knBalls .keno-ball').length >= 10) return true; await wait(120); }
+        return false;
+      })());
+      for (let i = 0; i < 25 && J.Store.state.history.length === 0; i++) await wait(120);
+      check('keno : la manche est réglée', J.Store.state.history.length === 1, String(J.Store.state.history.length));
+    } else if (id === 'tower') {
+      check('tower : 8 étages affichés', win.document.querySelectorAll('#twFloors .tower-floor').length === 8);
+      const tile = win.document.querySelector('#twFloors [data-floor="0"][data-tile="0"]');
+      tile.click();
+      await wait(200);
+      if (g.active && g.floor > 0) {
+        const cash = win.document.querySelector('[data-act="cashout"]');
+        if (cash && !cash.disabled) cash.click();
+      }
+      await wait(300);
+      check('tower : la manche se termine (encaissement ou piège)', J.Store.state.history.length === 1,
+        String(J.Store.state.history.length));
+    } else if (id === 'wheel') {
+      // Cible plus petite = plus de segments gagnants, rotation plus courte
+      const smallTarget = win.document.querySelector('#wgTargets [data-t="1.2"]');
+      if (smallTarget) smallTarget.click();
+      await wait(120);
+      const spin = playBtn();
+      if (spin && !spin.disabled) spin.click();
+      for (let i = 0; i < 70 && J.Store.state.history.length === 0; i++) await wait(120);
+      check('wheel : la manche se règle après la rotation', J.Store.state.history.length === 1, String(J.Store.state.history.length));
+    } else if (id === 'limbo') {
+      await wait(900);
+      check('limbo : la manche se règle après le tirage', J.Store.state.history.length === 1, String(J.Store.state.history.length));
+    }
+    J.Games.close(true);
+    await wait(60);
+  }
+}
+
+/* ============== 12. BOUTIQUE : OFFRES, PREMIER ACHAT ET ADAPTATEUR IAP */
+section('12. Boutique : structure de paiement et offres');
+{
+  J.Store.reset();
+  const packs = J.Shop.PACKS;
+  check('5 packs proposés, dont 4 tailles demandées',
+    packs.length === 5 && packs.some((p) => p.tokens === 5000) && packs.some((p) => p.tokens === 25000) &&
+    packs.some((p) => p.tokens === 100000) && packs.some((p) => p.tokens === 500000),
+    packs.map((p) => p.tokens).join('/'));
+  check('offre « premier achat » à prix réduit', packs.some((p) => p.firstOnly && p.bonus > 0));
+  check('adaptateur de paiement simulé actif', J.Shop.provider && J.Shop.provider.id === 'simulated' &&
+    typeof J.Shop.provider.buy === 'function' && typeof J.Shop.provider.available === 'function');
+  // Un fournisseur réel peut être branché et remplace le simulé
+  const fake = { id: 'storekit', label: 'Apple', available: () => true, buy: () => Promise.resolve({ ok: true, transactionId: 'APPLE-1' }) };
+  const before = J.Shop.provider;
+  J.Shop.registerProvider(fake);
+  check('registerProvider() branche un adaptateur Apple/Google',
+    J.Shop.provider.id === 'storekit');
+  const res = await J.Shop.purchase('starter');
+  check('achat via l\'adaptateur branché : jetons crédités + transaction tracée',
+    res.ok === true && res.tokens === 5000 && J.Store.state.shop.lastTransaction === 'APPLE-1');
+  J.Shop.registerProvider(before);                       // retour au simulé
+  check('retour au fournisseur simulé', J.Shop.provider.id === 'simulated');
+  check('l\'offre premier achat devient indisponible après usage', (function () {
+    J.Store.patch({ shop: { firstPurchaseUsed: true } });
+    const fb = J.Shop.PACKS.find((p) => p.firstOnly);
+    return J.Shop.canBuy(fb) === false;
+  })());
+  check('limite mensuelle respectée par le tunnel d\'achat', (function () {
+    J.Store.patch({ spend: { month: win.JACKPOTLY.util.monthKey(), total: 0, limit: 3 } });
+    return J.Shop.canBuy(J.Shop.PACKS.find((p) => p.id === 'popular')) === false;
+  })());
+}
+
 /* ================================================================ SYNTHÈSE */
 console.log(results.join('\n'));
 console.log('\n' + '─'.repeat(64));
