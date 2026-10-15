@@ -13,7 +13,7 @@
 <title>JACKPOTLY — Casino Social (jetons virtuels, 18+)</title>
 <style>
 
-/* JACKPOTLY v0.1.0 — fichier unique généré le 2026-10-15 21:46 (ne pas éditer : voir src/) */
+/* JACKPOTLY v0.1.0 — fichier unique généré le 2026-10-15 21:48 (ne pas éditer : voir src/) */
 
 /* =========================================================================
    JACKPOTLY — DESIGN SYSTEM (dark premium, ambiance Stake)
@@ -4760,7 +4760,8 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   function layout(g) {
     const box = g.stageEl;
     const W = box.clientWidth;
-    const H = Math.max(240, box.clientHeight - 32);
+    // Le canvas s'adapte à la hauteur disponible (jamais de débordement clippé)
+    const H = Math.max(160, box.clientHeight - 32);
     const ctx = J.util.fitCanvas(g.cv, W, H);
     const rows = g.rows;
     const topPad = 14, bucketH = 21, botPad = 8;

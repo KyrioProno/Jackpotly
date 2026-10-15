@@ -84,7 +84,8 @@
   function layout(g) {
     const box = g.stageEl;
     const W = box.clientWidth;
-    const H = Math.max(240, box.clientHeight - 32);
+    // Le canvas s'adapte à la hauteur disponible (jamais de débordement clippé)
+    const H = Math.max(160, box.clientHeight - 32);
     const ctx = J.util.fitCanvas(g.cv, W, H);
     const rows = g.rows;
     const topPad = 14, bucketH = 21, botPad = 8;
