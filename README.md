@@ -29,6 +29,35 @@ npm run serve     # http://localhost:4173
 `node_modules/` n'est nécessaire que pour les tests (`npm install --no-save jsdom`).
 Le jeu lui-même ne dépend de **rien**.
 
+### Tester le jeu sans jeton d'accès
+
+L'aperçu live d'Arena passe par le proxy du sandbox, qui **exige un jeton** : l'URL nue
+(`https://<port>-<sandbox>.e2b.app`) affiche une demande de token si on l'ouvre directement.
+Le jeu n'ayant besoin d'aucun serveur, voici trois voies qui n'utilisent aucun jeton :
+
+**1. Rendu direct dans le navigateur (un tap, aucune installation)** — fichiers figés sur le tag `v0.1.0` :
+
+- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.1.0/jackpotly.html
+- https://cdn.statically.io/gh/KyrioProno/Jackpotly/v0.1.0/jackpotly.html
+- https://raw.githack.com/KyrioProno/Jackpotly/v0.1.0/jackpotly.html
+- https://htmlpreview.github.io/?https://github.com/KyrioProno/Jackpotly/blob/v0.1.0/jackpotly.html
+
+**2. Téléchargement puis lecture hors ligne (le plus fiable sur mobile)**
+
+- Fichier : https://github.com/KyrioProno/Jackpotly/blob/v0.1.0/jackpotly.html → « Download raw file »
+- Archive complète : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.1.0
+- Ensuite : ouvrir `jackpotly.html` dans le navigateur, ou « Ajouter à l'écran d'accueil »
+  pour l'avoir en plein écran. Aucune connexion n'est nécessaire pour jouer.
+
+**3. URL permanente (GitHub Pages)** — nécessite l'activation par le propriétaire du dépôt
+(le jeton de la session n'a pas la permission `pages:write`) :
+
+> Settings → Pages → *Source* : « Deploy from a branch » → *Branche* : `arena/5d3a1cfc-jackpotly`,
+> *Dossier* : `/ (root)` → Save
+
+L'application est alors servie sur **https://kyrioprono.github.io/Jackpotly/**
+(le fichier à la racine du dépôt est `index.html`, copie exacte de `jackpotly.html`).
+
 ---
 
 ## 2. Architecture
