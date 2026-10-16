@@ -3,6 +3,9 @@ node_modules/
 # Captures d'écran générées par `node tests/mobile.mjs --shots`
 tests/screens/
 
+# Harnais de diagnostic jetables (créés puis supprimés au fil du travail)
+*.diag.mjs
+
 # Fichiers temporaires
 *.log
 .DS_Store
