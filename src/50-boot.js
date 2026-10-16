@@ -27,6 +27,7 @@
     if (st.settings.liveFeed) J.Live.init();
 
     // 6) Interface
+    J.UI.mountIcons();          // icônes SVG déclarées par le squelette HTML
     J.Wallet.renderBalance();
     J.Screen.renderAll();
 
@@ -80,20 +81,20 @@
   function firstRunWelcome() {
     J.Store.patch({ settings: { _welcomed: true } });
     J.UI.modal({
-      title: 'Bienvenue sur JACKPOTLY 👋',
+      title: 'Bienvenue sur JACKPOTLY',
       sub: '10 000 jetons virtuels pour commencer',
       closable: false,
       body:
         '<div class="note">Tu joues avec des <b>jetons virtuels sans aucune valeur monétaire</b> : ' +
         'pas de retrait, pas de conversion en argent ou en cadeau, pas d\'échange entre joueurs. ' +
         'L\'argent réel ne sert qu\'à acheter des packs de jetons (paiement simulé dans cette version). <b>18+</b>.</div>' +
-        '<div class="kv mt"><span class="k">🎁 Bonus quotidien</span><span class="v up"> +500 à +5 000 J</span></div>' +
-        '<div class="kv"><span class="k">🎡 Roue de la chance</span><span class="v up">1 tour gratuit / jour</span></div>' +
-        '<div class="kv"><span class="k">💸 Solde à zéro</span><span class="v up">recharge gratuite</span></div>' +
+        '<div class="kv mt"><span class="k">' + J.icon.gift + ' Bonus quotidien</span><span class="v up"> +500 à +5 000 J</span></div>' +
+        '<div class="kv"><span class="k">' + J.icon.fortune + ' Roue de la chance</span><span class="v up">1 tour gratuit / jour</span></div>' +
+        '<div class="kv"><span class="k">' + J.icon.refill + ' Solde à zéro</span><span class="v up">recharge gratuite</span></div>' +
         '<div class="note mt">Chaque jeu explique ses règles en un tap (bouton <b>?</b> en haut à droite). ' +
         'Rappel de pause automatique toutes les 30 minutes.</div>',
       actions: [
-        { label: '🎁 Prendre mon bonus', cls: 'gold', onClick: () => J.Rewards.openDaily() },
+        { label: J.icon.gift + ' Prendre mon bonus', cls: 'gold', onClick: () => J.Rewards.openDaily() },
         { label: 'Explorer les jeux', cls: 'primary' }
       ]
     });

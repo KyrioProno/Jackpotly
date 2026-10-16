@@ -46,19 +46,19 @@
     // Cartes promo (bonus, roue, recharge, VIP)
     const promos = [];
     if (J.Rewards.canClaimDaily()) {
-      promos.push({ ico: '🎁', t: 'Bonus quotidien', s: 'Prêt à récupérer !', act: 'daily', cls: 'glow-green' });
+      promos.push({ ico: J.icon.gift, t: 'Bonus quotidien', s: 'Prêt à récupérer !', act: 'daily', cls: 'glow-green' });
     }
     if (J.Rewards.canSpinWheel()) {
-      promos.push({ ico: '🎡', t: 'Roue de la chance', s: '1 tour gratuit disponible', act: 'wheel', cls: 'glow-gold' });
+      promos.push({ ico: J.icon.fortune, t: 'Roue de la chance', s: '1 tour gratuit disponible', act: 'wheel', cls: 'glow-gold' });
     }
     if (J.Wallet.balance < J.CONST.MIN_BET) {
-      promos.push({ ico: '💸', t: 'Solde épuisé', s: 'Recharge gratuite disponible', act: 'recharge', cls: '' });
+      promos.push({ ico: J.icon.refill, t: 'Solde épuisé', s: 'Recharge gratuite disponible', act: 'recharge', cls: '' });
     }
     const vip = J.Wallet.vipInfo();
     promos.push({
-      ico: '🏅', t: 'Statut ' + vip.tier.name, s: vip.next ? U.fmtK(vip.remaining) + ' J avant ' + vip.next.name : 'Palier maximum', act: 'vip', cls: ''
+      ico: J.icon.medal, t: 'Statut ' + vip.tier.name, s: vip.next ? U.fmtK(vip.remaining) + ' J avant ' + vip.next.name : 'Palier maximum', act: 'vip', cls: ''
     });
-    promos.push({ ico: '🛒', t: 'Packs de jetons', s: 'Jetons virtuels · paiement simulé', act: 'shop', cls: '' });
+    promos.push({ ico: J.icon.cart, t: 'Packs de jetons', s: 'Jetons virtuels · paiement simulé', act: 'shop', cls: '' });
 
     $('homePromos').innerHTML = promos.map((p, i) =>
       '<button class="promo-card ' + p.cls + '" data-promo="' + p.act + '" data-i="' + i + '">' +
@@ -199,13 +199,13 @@
         '</div>' +
         '<button class="btn ' + (p.firstOnly ? 'gold' : available ? 'ghost' : 'ghost') + ' block mt" data-buy="' + p.id + '"' +
           (available ? '' : ' disabled') + '>' +
-          (available ? (p.firstOnly ? '🎁 Acheter à prix réduit' : 'Acheter (simulé)') : '🔒 Indisponible (limite atteinte)') + '</button>' +
+          (available ? (p.firstOnly ? J.icon.gift + ' Acheter à prix réduit' : 'Acheter (simulé)') : J.icon.lock + ' Indisponible (limite atteinte)') + '</button>' +
       '</div>';
     }
 
     $('shopBody').innerHTML =
       // Packs
-      '<div class="section"><div class="section-head"><div class="h2">🛒 Packs de jetons</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.cart + ' Packs de jetons</div>' +
         '<span class="sub">' + (spend.limit == null ? 'aucune limite' : 'limite ' + money(spend.limit) + '/mois') + '</span></div>' +
         packs.map(packCard).join('') +
         '<div class="note"><b>Paiement simulé.</b> Aucun débit réel dans cette version : le tunnel d\'achat, les reçus ' +
@@ -214,7 +214,7 @@
       '</div>' +
 
       // Jetons gratuits
-      '<div class="section"><div class="section-head"><div class="h2">🎁 Jetons gratuits</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.gift + ' Jetons gratuits</div>' +
         '<span class="sub">aucune dépense requise</span></div>' +
         '<div class="card pad">' +
           '<div class="kv"><span class="k">Bonus quotidien</span><span class="v ' + (J.Rewards.canClaimDaily() ? 'up' : '') + '">' +
@@ -231,7 +231,7 @@
       '</div>' +
 
       // Contrôle des dépenses
-      '<div class="section"><div class="section-head"><div class="h2">🛡️ Contrôle des dépenses</div></div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.shield + ' Contrôle des dépenses</div></div>' +
         '<div class="card pad">' +
           '<div class="note">Tu choisis ta limite mensuelle de dépenses. Une fois atteinte, les achats sont bloqués ' +
           'jusqu\'au mois suivant. Elle peut toujours être <b>baissée immédiatement</b> ; toute hausse est différée ' +
@@ -249,7 +249,7 @@
 
       // Historique des achats
       (Object.keys(st.shop.purchased).length
-        ? '<div class="section"><div class="section-head"><div class="h2">🧾 Mes achats (simulés)</div></div>' +
+        ? '<div class="section"><div class="section-head"><div class="h2">' + J.icon.receipt + ' Mes achats (simulés)</div></div>' +
           '<div class="card pad"><table class="data"><thead><tr><th>Pack</th><th>Qté</th><th>Jetons</th></tr></thead><tbody>' +
           Object.keys(st.shop.purchased).map((id) => {
             const p = packs.find((x) => x.id === id);
@@ -340,7 +340,7 @@
           '<span class="avatar" style="width:52px;height:52px;font-size:21px;background:linear-gradient(150deg,#00e37a,#8affc1)">' +
             U.esc(st.pseudo.charAt(0).toUpperCase()) + '</span>' +
           '<div class="grow"><div style="font-weight:800;font-size:16px">' + U.esc(st.pseudo) + '</div>' +
-          '<div class="row mt-s"><span class="badge ' + vip.tier.badge + '">🏅 ' + vip.tier.name + '</span>' +
+          '<div class="row mt-s"><span class="badge ' + vip.tier.badge + '">' + J.icon.medal + ' ' + vip.tier.name + '</span>' +
           '<span class="badge">RTP ' + U.fmtPct(s.rtp, 1) + '</span></div></div>' +
           '<button class="btn xs ghost" data-prof="editName" aria-label="Modifier le pseudo">Éditer</button>' +
         '</div>' +
@@ -352,14 +352,14 @@
 
       // Actions rapides
       '<div class="btn-row four mt">' +
-        '<button class="btn sm ghost" data-prof="daily">🎁<br>Bonus</button>' +
-        '<button class="btn sm ghost" data-prof="wheel">🎡<br>Roue</button>' +
-        '<button class="btn sm ghost" data-prof="fair">🔐<br>Fair Play</button>' +
-        '<button class="btn sm ghost" data-prof="settings">⚙️<br>Réglages</button>' +
+        '<button class="btn sm ghost" data-prof="daily">' + J.icon.gift + '<br>Bonus</button>' +
+        '<button class="btn sm ghost" data-prof="wheel">' + J.icon.fortune + '<br>Roue</button>' +
+        '<button class="btn sm ghost" data-prof="fair">' + J.icon.key + '<br>Fair Play</button>' +
+        '<button class="btn sm ghost" data-prof="settings">' + J.icon.settings + '<br>Réglages</button>' +
       '</div>' +
 
       // Stats
-      '<div class="section"><div class="section-head"><div class="h2">📊 Statistiques</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.chart + ' Statistiques</div>' +
         '<button class="link" data-prof="history">Historique</button></div>' +
         '<div class="card pad">' +
           '<div class="kv"><span class="k">Total misé</span><span class="v">' + U.fmt(s.wagered) + ' J</span></div>' +
@@ -375,14 +375,14 @@
       '</div>' +
 
       // Quêtes du jour
-      '<div class="section"><div class="section-head"><div class="h2">🎯 Missions du jour</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.target + ' Missions du jour</div>' +
         '<span class="sub">' + q.items.filter((x) => x.claimed).length + ' / ' + q.items.length + ' récupérées</span></div>' +
         '<div class="card pad">' +
           q.items.map((item) => {
             const done = item.progress >= item.target;
             const pct = U.clamp((item.progress / item.target) * 100, 0, 100);
             return '<div class="quest' + (done ? ' done' : '') + (item.claimed ? ' claimed' : '') + '">' +
-              '<span class="q-ico">' + (item.claimed ? '✅' : done ? '🎁' : '🎯') + '</span>' +
+              '<span class="q-ico">' + (item.claimed ? J.icon.check : done ? J.icon.gift : J.icon.target) + '</span>' +
               '<div class="grow"><div class="q-t">' + item.title + '</div>' +
                 '<div class="q-s">' + (item.id === 'wager' || item.id === 'profit'
                   ? U.fmt(item.progress) + ' / ' + U.fmt(item.target) + ' · récompense ' + U.fmt(item.reward) + ' J'
@@ -399,7 +399,7 @@
       '</div>' +
 
       // Détail par jeu
-      '<div class="section"><div class="section-head"><div class="h2">🎮 Détail par jeu</div></div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.gamepad + ' Détail par jeu</div></div>' +
         '<div class="card pad">' + (Object.keys(s.perGame).length
           ? '<table class="data"><thead><tr><th>Jeu</th><th>Parties</th><th>Misé</th><th>Meilleur</th></tr></thead><tbody>' +
             Object.keys(s.perGame).sort((a, b) => s.perGame[b].wagered - s.perGame[a].wagered).map((id) => {
@@ -407,12 +407,12 @@
               return '<tr><td class="name">' + U.esc(J.Wallet.gameName(id)) + '</td><td>' + g.bets + '</td>' +
                 '<td>' + U.fmtK(g.wagered) + '</td><td class="up">' + U.fmtMult(g.bestMult) + '</td></tr>';
             }).join('') + '</tbody></table>'
-          : '<div class="empty"><div class="e-ico">🎮</div>Aucune partie jouée pour l\'instant.</div>') +
+          : '<div class="empty"><div class="e-ico">' + J.icon.gamepad + '</div>Aucune partie jouée pour l\'instant.</div>') +
         '</div>' +
       '</div>' +
 
       // Liens
-      '<div class="section"><div class="section-head"><div class="h2">🛡️ Jeu responsable & réglages</div></div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.shield + ' Jeu responsable & réglages</div></div>' +
         '<button class="btn ghost block" data-prof="responsible">Jeu responsable · mes limites</button>' +
         '<button class="btn ghost block mt-s" data-prof="about">À propos / Mentions légales</button>' +
         '<button class="btn ghost block mt-s" data-prof="reset">Réinitialiser ma progression</button>' +
@@ -456,7 +456,7 @@
     const vip = J.Wallet.vipInfo();
     const tiers = J.CONST.VIP;
     J.UI.modal({
-      title: '🏅 Programme VIP',
+      title: J.icon.medal + ' Programme VIP',
       sub: 'Basé sur le total misé (jetons virtuels)',
       body:
         '<div class="note">Gagne du rakeback et des récompenses de palier en avançant. Les paliers se débloquent au total misé cumulé.</div>' +
@@ -464,7 +464,7 @@
           const reached = J.Store.state.vip.wagered >= t.need;
           const claimed = J.Store.state.vip.claimedLevels.includes(i);
           return '<div class="quest' + (reached ? ' done' : '') + (claimed ? ' claimed' : '') + '">' +
-            '<span class="q-ico">' + (claimed ? '✅' : reached ? '🎁' : '🔒') + '</span>' +
+            '<span class="q-ico">' + (claimed ? J.icon.check : reached ? J.icon.gift : J.icon.lock) + '</span>' +
             '<div class="grow"><div class="q-t">' + t.name + '</div>' +
             '<div class="q-s">' + U.fmt(t.need) + ' J misés · rakeback ' + t.rakeback.toFixed(2).replace('.', ',') + ' %' +
             (t.reward ? ' · récompense ' + U.fmt(t.reward) + ' J' : '') + '</div></div>' +

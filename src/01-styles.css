@@ -1164,3 +1164,32 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 .pk-log{ display:flex; flex-direction:column; gap:2px; min-height:46px; }
 .pk-log-line{ font-size:11px; color:var(--txt-2); }
 .pk-log-line.old{ color:var(--muted); opacity:.75; }
+
+/* =========================================================================
+   ICÔNES D'INTERFACE (v0.3.2)
+   Le SVG interne remplace les emojis dans les titres, les cartes, les menus
+   et les boutons : même dessin au trait sur tous les appareils (les emojis
+   couleur dépendent de la police système), couleur héritée du texte via
+   currentColor. Les emojis restent dans les messages, les gains et les
+   animations, où l'expressivité prime.
+   ========================================================================= */
+.ic{ display:inline-block; width:1.15em; height:1.15em; flex:0 0 auto; vertical-align:-0.18em; }
+/* Un conteneur <i class="ic" data-icon="…"> cale le SVG sur sa propre taille */
+.ic > svg{ width:100%; height:100%; }
+
+/* Titres de sections, de modales et d'onglets */
+.section-head .h2 .ic,
+.mh-t .ic,
+.badge .ic,
+.btn .ic{ width:1.16em; height:1.16em; vertical-align:0; }
+.section-head .h2 .ic{ width:17px; height:17px; }
+
+/* Pastilles d'icône : cartes de l'accueil, catalogue, missions, états vides */
+.pc-emoji .ic{ width:26px; height:26px; vertical-align:0; }
+.game-tile .gt-ico .ic{ width:26px; height:26px; }
+.quest .q-ico .ic{ width:18px; height:18px; vertical-align:0; }
+.empty .e-ico .ic{ width:28px; height:28px; vertical-align:0; opacity:.9; }
+
+/* Boutons texte + icône : espacement homogène, icône jamais comprimée */
+.btn .ic{ margin-right:2px; }
+.btn .ic:only-child{ margin-right:0; }

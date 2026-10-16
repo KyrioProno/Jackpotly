@@ -12,6 +12,18 @@
   let current = 'home';
   let modalOpen = false, sheetOpen = false;
 
+  /* --------------------------------------------------------- ICÔNES DU SHELL
+     Le squelette HTML (src/10-body.html) déclare ses icônes par
+     <i class="ic" data-icon="cadeau"></i> : le SVG correspondant est monté au
+     démarrage. Le shell reste ainsi du HTML pur, sans emoji couleur dont le
+     rendu varie d'un appareil à l'autre.                                    */
+  UI.mountIcons = function (scope) {
+    (scope || document).querySelectorAll('.ic[data-icon]').forEach((el) => {
+      const svg = J.icon[el.dataset.icon];
+      if (svg && !el.firstChild) el.innerHTML = svg;
+    });
+  };
+
   /* ---------------------------------------------------------------- ÉCRANS */
   const SCREEN_NAV = { home: 'home', originals: 'originals', rank: 'rank', shop: 'shop', profile: 'profile', game: null };
 
@@ -163,7 +175,7 @@
     const tier = info.tier;
     const claimable = !J.Store.state.vip.claimedLevels.includes(info.index) && tier.reward > 0;
     UI.modal({
-      title: '🏅 Niveau ' + tier.name + ' atteint !',
+      title: J.icon.medal + ' Niveau ' + tier.name + ' atteint !',
       sub: 'Total misé : ' + U.fmt(info.wagered) + ' jetons',
       body:
         '<div class="note">Bravo ! Tu progresses dans le programme VIP. Plus tu joues (en jetons virtuels), ' +
@@ -205,7 +217,7 @@
     const s = J.Store.state.session;
     const dur = Date.now() - s.startedAt;
     UI.modal({
-      title: '⏸️ Petite pause ?',
+      title: J.icon.hourglass + ' Petite pause ?',
       sub: 'Tu joues depuis ' + U.fmtDur(dur),
       body:
         '<div class="note warn">Les jeux de hasard doivent rester un divertissement. ' +
@@ -225,13 +237,13 @@
     UI.sheet(
       '<div class="row between"><div class="h2">Menu</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="mt"></div>' +
-      '<button class="btn ghost block" data-menu="daily">🎁 Bonus quotidien ' + (J.Rewards.canClaimDaily() ? '<span class="badge gold">disponible</span>' : '') + '</button>' +
-      '<button class="btn ghost block mt-s" data-menu="wheel">🎡 Roue de la chance ' + (J.Rewards.canSpinWheel() ? '<span class="badge gold">1 tour</span>' : '') + '</button>' +
-      '<button class="btn ghost block mt-s" data-menu="fair">🔐 Fair Play (provably fair)</button>' +
-      '<button class="btn ghost block mt-s" data-menu="history">🧾 Historique des paris</button>' +
-      '<button class="btn ghost block mt-s" data-menu="responsible">🛡️ Jeu responsable</button>' +
-      '<button class="btn ghost block mt-s" data-menu="settings">⚙️ Réglages</button>' +
-      '<button class="btn ghost block mt-s" data-menu="about">ℹ️ À propos / Mentions légales</button>' +
+      '<button class="btn ghost block" data-menu="daily">' + J.icon.gift + ' Bonus quotidien ' + (J.Rewards.canClaimDaily() ? '<span class="badge gold">disponible</span>' : '') + '</button>' +
+      '<button class="btn ghost block mt-s" data-menu="wheel">' + J.icon.fortune + ' Roue de la chance ' + (J.Rewards.canSpinWheel() ? '<span class="badge gold">1 tour</span>' : '') + '</button>' +
+      '<button class="btn ghost block mt-s" data-menu="fair">' + J.icon.key + ' Fair Play (provably fair)</button>' +
+      '<button class="btn ghost block mt-s" data-menu="history">' + J.icon.receipt + ' Historique des paris</button>' +
+      '<button class="btn ghost block mt-s" data-menu="responsible">' + J.icon.shield + ' Jeu responsable</button>' +
+      '<button class="btn ghost block mt-s" data-menu="settings">' + J.icon.settings + ' Réglages</button>' +
+      '<button class="btn ghost block mt-s" data-menu="about">' + J.icon.info + ' À propos / Mentions légales</button>' +
       '<div class="note mt-l">Jetons virtuels sans valeur monétaire — divertissement uniquement — 18+.</div>',
       {
         onMount(el) {
@@ -271,8 +283,8 @@
       '<div class="kv"><span class="k">Total misé (à vie)</span><span class="v">' + U.fmt(s.wagered) + ' J</span></div>' +
       '<div class="kv"><span class="k">Total gagné</span><span class="v up">' + U.fmt(s.returned) + ' J</span></div>' +
       '<div class="kv"><span class="k">Bénéfice net</span><span class="v ' + (s.netProfit >= 0 ? 'up' : 'down') + '">' + (s.netProfit >= 0 ? '+' : '') + U.fmt(s.netProfit) + ' J</span></div>' +
-      '<button class="btn ghost block mt" data-keep-sheet data-menu2="daily">🎁 Bonus quotidien</button>' +
-      '<button class="btn gold block mt-s" data-keep-sheet data-menu2="shop">🛒 Acheter un pack de jetons</button>' +
+      '<button class="btn ghost block mt" data-keep-sheet data-menu2="daily">' + J.icon.gift + ' Bonus quotidien</button>' +
+      '<button class="btn gold block mt-s" data-keep-sheet data-menu2="shop">' + J.icon.cart + ' Acheter un pack de jetons</button>' +
       '<div class="note mt-l">' + J.CONST.HOUSE_DISCLAIMER + ' Aucun retrait ni conversion possible.</div>',
       {
         onMount(el) {
@@ -291,7 +303,7 @@
   UI.openHistory = function () {
     const h = J.Store.state.history;
     UI.sheet(
-      '<div class="row between"><div class="h2">Historique des paris</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.receipt + ' Historique des paris</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="sub mt-s">' + h.length + ' derniers paris enregistrés</div>' +
       (h.length
         ? '<table class="data mt"><thead><tr><th>Heure</th><th>Jeu</th><th>Mise</th><th>Mult.</th><th>Gain</th></tr></thead><tbody>' +
@@ -302,7 +314,7 @@
             '<td class="' + (r.mult >= 1 ? 'up' : 'down') + '">' + U.fmtMult(r.mult) + '</td>' +
             '<td class="' + (r.payout > 0 ? 'up' : 'muted') + '">' + (r.payout ? '+' + U.fmt(r.payout) : '—') + '</td></tr>').join('') +
           '</tbody></table>'
-        : '<div class="empty"><div class="e-ico">🧾</div>Aucun pari pour le moment.</div>')
+        : '<div class="empty"><div class="e-ico">' + J.icon.receipt + '</div>Aucun pari pour le moment.</div>')
     );
   };
 
@@ -310,7 +322,7 @@
   UI.openSettings = function () {
     const s = J.Store.state.settings;
     UI.sheet(
-      '<div class="row between"><div class="h2">Réglages</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.settings + ' Réglages</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="kv"><span class="k">Sons</span><label class="switch"><input type="checkbox" data-set="sound"' + (s.sound ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
       '<div class="kv"><span class="k">Vibrations</span><label class="switch"><input type="checkbox" data-set="vibration"' + (s.vibration ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
       '<div class="kv"><span class="k">Animations & confettis</span><label class="switch"><input type="checkbox" data-set="motion"' + (s.motion ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
@@ -357,7 +369,7 @@
   /** Mentions légales et avertissements. */
   UI.openAbout = function () {
     UI.sheet(
-      '<div class="row between"><div class="h2">À propos</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.info + ' À propos</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">' +
         '<b>JACKPOTLY</b> est un <b>simulateur de casino social</b> de divertissement.<br><br>' +
         '• Les jetons sont <b>virtuels</b> et n\'ont <b>aucune valeur monétaire</b>.<br>' +
@@ -377,7 +389,7 @@
   UI.openResponsible = function () {
     const s = J.Wallet.summary();
     UI.sheet(
-      '<div class="row between"><div class="h2">🛡️ Jeu responsable</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.shield + ' Jeu responsable</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">Ce jeu est un <b>divertissement sans enjeu réel</b>. Voici tes repères de session :</div>' +
       '<div class="kv"><span class="k">Temps de jeu (session)</span><span class="v">' + U.fmtDur(Date.now() - J.Store.state.session.startedAt) + '</span></div>' +
       '<div class="kv"><span class="k">Parties jouées (session)</span><span class="v">' + J.Store.state.session.rounds + '</span></div>' +
@@ -410,7 +422,7 @@
     const st = J.Store.state.fair;
     const last = st.history && st.history.length ? st.history[st.history.length - 1] : null;
     UI.sheet(
-      '<div class="row between"><div class="h2">🔐 Fair Play</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.key + ' Fair Play</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">Chaque résultat est calculé à partir de <b>HMAC-SHA256(serverSeed, « clientSeed:nonce:curseur »)</b>. ' +
       'Le hash du serverSeed est publié à l\'avance : impossible de le modifier ensuite. En tournant la graine, elle est révélée ' +
       'et tu peux revérifier chaque tirage.</div>' +
@@ -427,7 +439,7 @@
           '<div class="mono sub" style="word-break:break-all">' + U.esc(st.prevSeed) + '</div>' +
           '<div class="kv mt"><span class="k">Hash publié avant</span></div><div class="mono sub" style="word-break:break-all">' + U.esc(st.prevHash) + '</div>'
         : '') +
-      '<button class="btn gold block mt-l" id="rotate">🔄 Tourner la graine & révéler</button>' +
+      '<button class="btn gold block mt-l" id="rotate">' + J.icon.rotate + ' Tourner la graine & révéler</button>' +
       '<div class="section-head mt-l"><div class="h2">Vérificateur</div></div>' +
       '<div class="sub">Recalculer un tirage à partir des graines révélées.</div>' +
       '<div class="field mt-s"><input id="vSeed" placeholder="serverSeed (hex)"></div>' +
@@ -474,7 +486,7 @@
     J.Sfx.click();
     if (J.Rewards.canClaimDaily()) J.Rewards.openDaily();
     else UI.sheet(
-      '<div class="row between"><div class="h2">🎁 Bonus quotidien</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.gift + ' Bonus quotidien</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">Bonus déjà récupéré aujourd\'hui. Reviens demain ! Série actuelle : <b>' + J.Store.state.daily.streak + ' jour(s)</b>.</div>' +
       '<div class="kv"><span class="k">Série maximale</span><span class="v">' + (J.Store.state.daily.best || J.Store.state.daily.streak) + ' jour(s)</span></div>' +
       '<button class="btn gold block mt" data-close-sheet>OK</button>');

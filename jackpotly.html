@@ -13,7 +13,7 @@
 <title>JACKPOTLY — Casino Social (jetons virtuels, 18+)</title>
 <style>
 
-/* JACKPOTLY v0.3.1 — build c923d9455757 — fichier généré, ne pas éditer (voir src/) */
+/* JACKPOTLY v0.3.1 — build 83a51aaa6f13 — fichier généré, ne pas éditer (voir src/) */
 
 /* =========================================================================
    JACKPOTLY — DESIGN SYSTEM (dark premium, ambiance Stake)
@@ -1181,6 +1181,35 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 .pk-log{ display:flex; flex-direction:column; gap:2px; min-height:46px; }
 .pk-log-line{ font-size:11px; color:var(--txt-2); }
 .pk-log-line.old{ color:var(--muted); opacity:.75; }
+
+/* =========================================================================
+   ICÔNES D'INTERFACE (v0.3.2)
+   Le SVG interne remplace les emojis dans les titres, les cartes, les menus
+   et les boutons : même dessin au trait sur tous les appareils (les emojis
+   couleur dépendent de la police système), couleur héritée du texte via
+   currentColor. Les emojis restent dans les messages, les gains et les
+   animations, où l'expressivité prime.
+   ========================================================================= */
+.ic{ display:inline-block; width:1.15em; height:1.15em; flex:0 0 auto; vertical-align:-0.18em; }
+/* Un conteneur <i class="ic" data-icon="…"> cale le SVG sur sa propre taille */
+.ic > svg{ width:100%; height:100%; }
+
+/* Titres de sections, de modales et d'onglets */
+.section-head .h2 .ic,
+.mh-t .ic,
+.badge .ic,
+.btn .ic{ width:1.16em; height:1.16em; vertical-align:0; }
+.section-head .h2 .ic{ width:17px; height:17px; }
+
+/* Pastilles d'icône : cartes de l'accueil, catalogue, missions, états vides */
+.pc-emoji .ic{ width:26px; height:26px; vertical-align:0; }
+.game-tile .gt-ico .ic{ width:26px; height:26px; }
+.quest .q-ico .ic{ width:18px; height:18px; vertical-align:0; }
+.empty .e-ico .ic{ width:28px; height:28px; vertical-align:0; opacity:.9; }
+
+/* Boutons texte + icône : espacement homogène, icône jamais comprimée */
+.btn .ic{ margin-right:2px; }
+.btn .ic:only-child{ margin-right:0; }
 </style>
 </head>
 <body>
@@ -1236,7 +1265,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     <section class="screen is-on" id="screen-home">
       <div class="row between" style="margin:2px 0 10px">
         <div>
-          <div class="h1">Salut, <span id="homePseudo">Joueur</span> 👋</div>
+          <div class="h1">Salut, <span id="homePseudo">Joueur</span></div>
           <div class="sub" id="homeGreeting">Bonne chance !</div>
         </div>
       </div>
@@ -1245,20 +1274,20 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
       <div class="section">
         <div class="section-head">
-          <div class="h2">🔥 Jackpotly Originals</div>
+          <div class="h2"><i class="ic" data-icon="bolt"></i> Jackpotly Originals</div>
           <button class="link" data-goto="originals">Tout voir</button>
         </div>
         <div class="game-grid" id="homeOriginals"></div>
       </div>
 
       <div class="section">
-        <div class="section-head"><div class="h2">🎰 Casino</div></div>
+        <div class="section-head"><div class="h2"><i class="ic" data-icon="slots"></i> Casino</div></div>
         <div class="game-grid" id="homeClassics"></div>
       </div>
 
       <div class="section">
         <div class="section-head">
-          <div class="h2">📈 Gros gains récents</div>
+          <div class="h2"><i class="ic" data-icon="chart"></i> Gros gains récents</div>
           <span class="sub" id="feedCount">live</span>
         </div>
         <div class="card pad" id="homeFeed"></div>
@@ -1609,7 +1638,30 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     slots: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 4v16"/><path d="M12 2v2"/></svg>',
     videopoker: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 12h10M9 9l3 3-3 3"/></svg>',
     poker: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c2.5 3 5 4.6 5 7a5 5 0 0 1-10 0c0-2.4 2.5-4 5-7z"/><path d="M12 15v6"/>',
-    gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13"/></svg>'
+    /* ------------------------------------------- ICÔNES D'INTERFACE (v0.3.2)
+       Titres, cartes d'accueil, menus et pastilles : nav, en-tête et titres
+       passent en SVG interne (rendu identique sur tous les appareils), alors
+       que les emojis restent dans les messages, gains et animations, où ils
+       apportent la touche expressive souhaitée. */
+    gift: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13"/><path d="M12 8S11 3 8 3s-3 5 4 5 4-5 4-5-1-5-4 5"/></svg>',
+    fortune: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l7.8 4.5M12 12 4.2 16.5M12 12l7.8-4.5"/></svg>',
+    cart: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 4h2l2.6 11.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/></svg>',
+    medal: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="15" r="5"/><path d="M8.5 10 6 3h5l1 4 1-4h5l-2.5 7"/><path d="m12 13 .9 1.8 2 .3-1.4 1.4.3 2-1.8-1-1.8 1 .3-2L9 15.1l2-.3z"/></svg>',
+    target: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>',
+    shield: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l7 3v6c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+    lock: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>',
+    key: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="4"/><path d="m11 11 8 8M17 17l2-2M19 19l2-2"/></svg>',
+    receipt: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 3h14v18l-2.3-1.6-2.4 1.6-2.3-1.6L9.7 19 7.3 17.4 5 19z"/><path d="M9 8h6M9 12h6"/></svg>',
+    gamepad: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.7 3.2a2.6 2.6 0 0 1-4.5 1L15 16H9l-1.7 1.2a2.6 2.6 0 0 1-4.5-1L2.1 13A5 5 0 0 1 7 7z"/><path d="M7.5 11v3M6 12.5h3M15.5 11.5h.01M17.5 13.5h.01"/></svg>',
+    money: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></svg>',
+    chart: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8 17V11M12.5 17V7M17 17v-4"/></svg>',
+    rotate: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg>',
+    check: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="m5 13 4.5 4.5L19 7"/></svg>',
+    settings: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1h.2a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+    refill: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 6.5v11M8 11l4-4.5 4 4.5"/><rect x="3" y="3" width="18" height="18" rx="4" opacity=".35"/></svg>',
+    bolt: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 5 13h5l-1 9 8-11h-5z"/></svg>',
+    hourglass: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 3h10M7 21h10M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/></svg>',
+    info: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.2"/></svg>',
   };
 
   /* --------------------------------------------------------------- CONSTANTES */
@@ -2675,6 +2727,18 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   let current = 'home';
   let modalOpen = false, sheetOpen = false;
 
+  /* --------------------------------------------------------- ICÔNES DU SHELL
+     Le squelette HTML (src/10-body.html) déclare ses icônes par
+     <i class="ic" data-icon="cadeau"></i> : le SVG correspondant est monté au
+     démarrage. Le shell reste ainsi du HTML pur, sans emoji couleur dont le
+     rendu varie d'un appareil à l'autre.                                    */
+  UI.mountIcons = function (scope) {
+    (scope || document).querySelectorAll('.ic[data-icon]').forEach((el) => {
+      const svg = J.icon[el.dataset.icon];
+      if (svg && !el.firstChild) el.innerHTML = svg;
+    });
+  };
+
   /* ---------------------------------------------------------------- ÉCRANS */
   const SCREEN_NAV = { home: 'home', originals: 'originals', rank: 'rank', shop: 'shop', profile: 'profile', game: null };
 
@@ -2826,7 +2890,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     const tier = info.tier;
     const claimable = !J.Store.state.vip.claimedLevels.includes(info.index) && tier.reward > 0;
     UI.modal({
-      title: '🏅 Niveau ' + tier.name + ' atteint !',
+      title: J.icon.medal + ' Niveau ' + tier.name + ' atteint !',
       sub: 'Total misé : ' + U.fmt(info.wagered) + ' jetons',
       body:
         '<div class="note">Bravo ! Tu progresses dans le programme VIP. Plus tu joues (en jetons virtuels), ' +
@@ -2868,7 +2932,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     const s = J.Store.state.session;
     const dur = Date.now() - s.startedAt;
     UI.modal({
-      title: '⏸️ Petite pause ?',
+      title: J.icon.hourglass + ' Petite pause ?',
       sub: 'Tu joues depuis ' + U.fmtDur(dur),
       body:
         '<div class="note warn">Les jeux de hasard doivent rester un divertissement. ' +
@@ -2888,13 +2952,13 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     UI.sheet(
       '<div class="row between"><div class="h2">Menu</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="mt"></div>' +
-      '<button class="btn ghost block" data-menu="daily">🎁 Bonus quotidien ' + (J.Rewards.canClaimDaily() ? '<span class="badge gold">disponible</span>' : '') + '</button>' +
-      '<button class="btn ghost block mt-s" data-menu="wheel">🎡 Roue de la chance ' + (J.Rewards.canSpinWheel() ? '<span class="badge gold">1 tour</span>' : '') + '</button>' +
-      '<button class="btn ghost block mt-s" data-menu="fair">🔐 Fair Play (provably fair)</button>' +
-      '<button class="btn ghost block mt-s" data-menu="history">🧾 Historique des paris</button>' +
-      '<button class="btn ghost block mt-s" data-menu="responsible">🛡️ Jeu responsable</button>' +
-      '<button class="btn ghost block mt-s" data-menu="settings">⚙️ Réglages</button>' +
-      '<button class="btn ghost block mt-s" data-menu="about">ℹ️ À propos / Mentions légales</button>' +
+      '<button class="btn ghost block" data-menu="daily">' + J.icon.gift + ' Bonus quotidien ' + (J.Rewards.canClaimDaily() ? '<span class="badge gold">disponible</span>' : '') + '</button>' +
+      '<button class="btn ghost block mt-s" data-menu="wheel">' + J.icon.fortune + ' Roue de la chance ' + (J.Rewards.canSpinWheel() ? '<span class="badge gold">1 tour</span>' : '') + '</button>' +
+      '<button class="btn ghost block mt-s" data-menu="fair">' + J.icon.key + ' Fair Play (provably fair)</button>' +
+      '<button class="btn ghost block mt-s" data-menu="history">' + J.icon.receipt + ' Historique des paris</button>' +
+      '<button class="btn ghost block mt-s" data-menu="responsible">' + J.icon.shield + ' Jeu responsable</button>' +
+      '<button class="btn ghost block mt-s" data-menu="settings">' + J.icon.settings + ' Réglages</button>' +
+      '<button class="btn ghost block mt-s" data-menu="about">' + J.icon.info + ' À propos / Mentions légales</button>' +
       '<div class="note mt-l">Jetons virtuels sans valeur monétaire — divertissement uniquement — 18+.</div>',
       {
         onMount(el) {
@@ -2934,8 +2998,8 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       '<div class="kv"><span class="k">Total misé (à vie)</span><span class="v">' + U.fmt(s.wagered) + ' J</span></div>' +
       '<div class="kv"><span class="k">Total gagné</span><span class="v up">' + U.fmt(s.returned) + ' J</span></div>' +
       '<div class="kv"><span class="k">Bénéfice net</span><span class="v ' + (s.netProfit >= 0 ? 'up' : 'down') + '">' + (s.netProfit >= 0 ? '+' : '') + U.fmt(s.netProfit) + ' J</span></div>' +
-      '<button class="btn ghost block mt" data-keep-sheet data-menu2="daily">🎁 Bonus quotidien</button>' +
-      '<button class="btn gold block mt-s" data-keep-sheet data-menu2="shop">🛒 Acheter un pack de jetons</button>' +
+      '<button class="btn ghost block mt" data-keep-sheet data-menu2="daily">' + J.icon.gift + ' Bonus quotidien</button>' +
+      '<button class="btn gold block mt-s" data-keep-sheet data-menu2="shop">' + J.icon.cart + ' Acheter un pack de jetons</button>' +
       '<div class="note mt-l">' + J.CONST.HOUSE_DISCLAIMER + ' Aucun retrait ni conversion possible.</div>',
       {
         onMount(el) {
@@ -2954,7 +3018,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   UI.openHistory = function () {
     const h = J.Store.state.history;
     UI.sheet(
-      '<div class="row between"><div class="h2">Historique des paris</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.receipt + ' Historique des paris</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="sub mt-s">' + h.length + ' derniers paris enregistrés</div>' +
       (h.length
         ? '<table class="data mt"><thead><tr><th>Heure</th><th>Jeu</th><th>Mise</th><th>Mult.</th><th>Gain</th></tr></thead><tbody>' +
@@ -2965,7 +3029,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
             '<td class="' + (r.mult >= 1 ? 'up' : 'down') + '">' + U.fmtMult(r.mult) + '</td>' +
             '<td class="' + (r.payout > 0 ? 'up' : 'muted') + '">' + (r.payout ? '+' + U.fmt(r.payout) : '—') + '</td></tr>').join('') +
           '</tbody></table>'
-        : '<div class="empty"><div class="e-ico">🧾</div>Aucun pari pour le moment.</div>')
+        : '<div class="empty"><div class="e-ico">' + J.icon.receipt + '</div>Aucun pari pour le moment.</div>')
     );
   };
 
@@ -2973,7 +3037,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   UI.openSettings = function () {
     const s = J.Store.state.settings;
     UI.sheet(
-      '<div class="row between"><div class="h2">Réglages</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.settings + ' Réglages</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="kv"><span class="k">Sons</span><label class="switch"><input type="checkbox" data-set="sound"' + (s.sound ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
       '<div class="kv"><span class="k">Vibrations</span><label class="switch"><input type="checkbox" data-set="vibration"' + (s.vibration ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
       '<div class="kv"><span class="k">Animations & confettis</span><label class="switch"><input type="checkbox" data-set="motion"' + (s.motion ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
@@ -3020,7 +3084,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   /** Mentions légales et avertissements. */
   UI.openAbout = function () {
     UI.sheet(
-      '<div class="row between"><div class="h2">À propos</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.info + ' À propos</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">' +
         '<b>JACKPOTLY</b> est un <b>simulateur de casino social</b> de divertissement.<br><br>' +
         '• Les jetons sont <b>virtuels</b> et n\'ont <b>aucune valeur monétaire</b>.<br>' +
@@ -3040,7 +3104,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   UI.openResponsible = function () {
     const s = J.Wallet.summary();
     UI.sheet(
-      '<div class="row between"><div class="h2">🛡️ Jeu responsable</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.shield + ' Jeu responsable</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">Ce jeu est un <b>divertissement sans enjeu réel</b>. Voici tes repères de session :</div>' +
       '<div class="kv"><span class="k">Temps de jeu (session)</span><span class="v">' + U.fmtDur(Date.now() - J.Store.state.session.startedAt) + '</span></div>' +
       '<div class="kv"><span class="k">Parties jouées (session)</span><span class="v">' + J.Store.state.session.rounds + '</span></div>' +
@@ -3073,7 +3137,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     const st = J.Store.state.fair;
     const last = st.history && st.history.length ? st.history[st.history.length - 1] : null;
     UI.sheet(
-      '<div class="row between"><div class="h2">🔐 Fair Play</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.key + ' Fair Play</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">Chaque résultat est calculé à partir de <b>HMAC-SHA256(serverSeed, « clientSeed:nonce:curseur »)</b>. ' +
       'Le hash du serverSeed est publié à l\'avance : impossible de le modifier ensuite. En tournant la graine, elle est révélée ' +
       'et tu peux revérifier chaque tirage.</div>' +
@@ -3090,7 +3154,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
           '<div class="mono sub" style="word-break:break-all">' + U.esc(st.prevSeed) + '</div>' +
           '<div class="kv mt"><span class="k">Hash publié avant</span></div><div class="mono sub" style="word-break:break-all">' + U.esc(st.prevHash) + '</div>'
         : '') +
-      '<button class="btn gold block mt-l" id="rotate">🔄 Tourner la graine & révéler</button>' +
+      '<button class="btn gold block mt-l" id="rotate">' + J.icon.rotate + ' Tourner la graine & révéler</button>' +
       '<div class="section-head mt-l"><div class="h2">Vérificateur</div></div>' +
       '<div class="sub">Recalculer un tirage à partir des graines révélées.</div>' +
       '<div class="field mt-s"><input id="vSeed" placeholder="serverSeed (hex)"></div>' +
@@ -3137,7 +3201,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     J.Sfx.click();
     if (J.Rewards.canClaimDaily()) J.Rewards.openDaily();
     else UI.sheet(
-      '<div class="row between"><div class="h2">🎁 Bonus quotidien</div><button class="modal-x" data-close-sheet>✕</button></div>' +
+      '<div class="row between"><div class="h2">' + J.icon.gift + ' Bonus quotidien</div><button class="modal-x" data-close-sheet>✕</button></div>' +
       '<div class="note mt">Bonus déjà récupéré aujourd\'hui. Reviens demain ! Série actuelle : <b>' + J.Store.state.daily.streak + ' jour(s)</b>.</div>' +
       '<div class="kv"><span class="k">Série maximale</span><span class="v">' + (J.Store.state.daily.best || J.Store.state.daily.streak) + ' jour(s)</span></div>' +
       '<button class="btn gold block mt" data-close-sheet>OK</button>');
@@ -3668,7 +3732,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
         '</div>').join('');
 
       J.UI.modal({
-        title: '🎁 Bonus quotidien',
+        title: J.icon.gift + ' Bonus quotidien',
         sub: 'Jour ' + (idx + 1) + ' du cycle · ' + (d.claims || 0) + ' bonus déjà reçus',
         body:
           '<div class="note">Connecte-toi chaque jour : la récompense grimpe jusqu\'au 7ᵉ jour, puis le cycle recommence. ' +
@@ -3726,7 +3790,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     openWheel() {
       const canSpin = Rewards.canSpinWheel();
       J.UI.modal({
-        title: '🎡 Roue de la chance',
+        title: J.icon.fortune + ' Roue de la chance',
         sub: canSpin ? 'Un tour gratuit par jour' : 'Prochain tour gratuit demain',
         body:
           '<div class="wheel-wrap"><canvas id="wheelCv"></canvas>' +
@@ -3736,7 +3800,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
             : 'Tu as déjà utilisé ton tour gratuit aujourd\'hui. Reviens demain !') + '</div>' +
           '<div class="sub center mt-s" style="font-size:10px">Tour gratuit · gain moyen ' + U.fmt(Rewards.expectedPrize()) + ' jetons (calculé sur les probabilités des segments)</div>',
         actions: [
-          { label: canSpin ? '🎡 Tourner' : 'Revenir demain', cls: canSpin ? 'gold' : 'ghost', keepOpen: true,
+          { label: canSpin ? J.icon.rotate + ' Tourner' : 'Revenir demain', cls: canSpin ? 'gold' : 'ghost', keepOpen: true,
             onClick: () => { if (canSpin) Rewards.spin(); } },
           { label: 'Fermer', cls: 'ghost' }
         ]
@@ -3899,7 +3963,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
         const a = [];
         if (s.left > 0) {
           a.push({
-            label: s.ready ? '🎁 Recharger ' + U.fmt(s.amount) + ' jetons'
+            label: s.ready ? J.icon.refill + ' Recharger ' + U.fmt(s.amount) + ' jetons'
                            : (s.readyIn > 0 ? '⏳ Patienter ' + Math.ceil(s.readyIn / 1000) + ' s'
                                             : '⏳ Lancer le délai (' + Math.round(J.CONST.FREE_CHIPS_DELAY / 1000) + ' s)'),
             cls: s.ready ? 'primary' : 'ghost', keepOpen: true,
@@ -3914,13 +3978,13 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
             }
           });
         }
-        a.push({ label: '🛒 Boutique', cls: 'gold', onClick: () => { J.UI.closeSheet(); J.UI.go('shop'); } });
+        a.push({ label: J.icon.cart + ' Boutique', cls: 'gold', onClick: () => { J.UI.closeSheet(); J.UI.go('shop'); } });
         a.push({ label: 'Fermer', cls: 'ghost' });
         return a;
       }
 
       J.UI.modal({
-        title: '💸 Solde épuisé',
+        title: J.icon.refill + ' Solde épuisé',
         sub: 'Jetons virtuels — aucune valeur monétaire',
         body: bodyHtml(st), actions: actionsFor(st)
       });
@@ -3994,19 +4058,19 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     // Cartes promo (bonus, roue, recharge, VIP)
     const promos = [];
     if (J.Rewards.canClaimDaily()) {
-      promos.push({ ico: '🎁', t: 'Bonus quotidien', s: 'Prêt à récupérer !', act: 'daily', cls: 'glow-green' });
+      promos.push({ ico: J.icon.gift, t: 'Bonus quotidien', s: 'Prêt à récupérer !', act: 'daily', cls: 'glow-green' });
     }
     if (J.Rewards.canSpinWheel()) {
-      promos.push({ ico: '🎡', t: 'Roue de la chance', s: '1 tour gratuit disponible', act: 'wheel', cls: 'glow-gold' });
+      promos.push({ ico: J.icon.fortune, t: 'Roue de la chance', s: '1 tour gratuit disponible', act: 'wheel', cls: 'glow-gold' });
     }
     if (J.Wallet.balance < J.CONST.MIN_BET) {
-      promos.push({ ico: '💸', t: 'Solde épuisé', s: 'Recharge gratuite disponible', act: 'recharge', cls: '' });
+      promos.push({ ico: J.icon.refill, t: 'Solde épuisé', s: 'Recharge gratuite disponible', act: 'recharge', cls: '' });
     }
     const vip = J.Wallet.vipInfo();
     promos.push({
-      ico: '🏅', t: 'Statut ' + vip.tier.name, s: vip.next ? U.fmtK(vip.remaining) + ' J avant ' + vip.next.name : 'Palier maximum', act: 'vip', cls: ''
+      ico: J.icon.medal, t: 'Statut ' + vip.tier.name, s: vip.next ? U.fmtK(vip.remaining) + ' J avant ' + vip.next.name : 'Palier maximum', act: 'vip', cls: ''
     });
-    promos.push({ ico: '🛒', t: 'Packs de jetons', s: 'Jetons virtuels · paiement simulé', act: 'shop', cls: '' });
+    promos.push({ ico: J.icon.cart, t: 'Packs de jetons', s: 'Jetons virtuels · paiement simulé', act: 'shop', cls: '' });
 
     $('homePromos').innerHTML = promos.map((p, i) =>
       '<button class="promo-card ' + p.cls + '" data-promo="' + p.act + '" data-i="' + i + '">' +
@@ -4147,13 +4211,13 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
         '</div>' +
         '<button class="btn ' + (p.firstOnly ? 'gold' : available ? 'ghost' : 'ghost') + ' block mt" data-buy="' + p.id + '"' +
           (available ? '' : ' disabled') + '>' +
-          (available ? (p.firstOnly ? '🎁 Acheter à prix réduit' : 'Acheter (simulé)') : '🔒 Indisponible (limite atteinte)') + '</button>' +
+          (available ? (p.firstOnly ? J.icon.gift + ' Acheter à prix réduit' : 'Acheter (simulé)') : J.icon.lock + ' Indisponible (limite atteinte)') + '</button>' +
       '</div>';
     }
 
     $('shopBody').innerHTML =
       // Packs
-      '<div class="section"><div class="section-head"><div class="h2">🛒 Packs de jetons</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.cart + ' Packs de jetons</div>' +
         '<span class="sub">' + (spend.limit == null ? 'aucune limite' : 'limite ' + money(spend.limit) + '/mois') + '</span></div>' +
         packs.map(packCard).join('') +
         '<div class="note"><b>Paiement simulé.</b> Aucun débit réel dans cette version : le tunnel d\'achat, les reçus ' +
@@ -4162,7 +4226,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       '</div>' +
 
       // Jetons gratuits
-      '<div class="section"><div class="section-head"><div class="h2">🎁 Jetons gratuits</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.gift + ' Jetons gratuits</div>' +
         '<span class="sub">aucune dépense requise</span></div>' +
         '<div class="card pad">' +
           '<div class="kv"><span class="k">Bonus quotidien</span><span class="v ' + (J.Rewards.canClaimDaily() ? 'up' : '') + '">' +
@@ -4179,7 +4243,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       '</div>' +
 
       // Contrôle des dépenses
-      '<div class="section"><div class="section-head"><div class="h2">🛡️ Contrôle des dépenses</div></div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.shield + ' Contrôle des dépenses</div></div>' +
         '<div class="card pad">' +
           '<div class="note">Tu choisis ta limite mensuelle de dépenses. Une fois atteinte, les achats sont bloqués ' +
           'jusqu\'au mois suivant. Elle peut toujours être <b>baissée immédiatement</b> ; toute hausse est différée ' +
@@ -4197,7 +4261,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
       // Historique des achats
       (Object.keys(st.shop.purchased).length
-        ? '<div class="section"><div class="section-head"><div class="h2">🧾 Mes achats (simulés)</div></div>' +
+        ? '<div class="section"><div class="section-head"><div class="h2">' + J.icon.receipt + ' Mes achats (simulés)</div></div>' +
           '<div class="card pad"><table class="data"><thead><tr><th>Pack</th><th>Qté</th><th>Jetons</th></tr></thead><tbody>' +
           Object.keys(st.shop.purchased).map((id) => {
             const p = packs.find((x) => x.id === id);
@@ -4288,7 +4352,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
           '<span class="avatar" style="width:52px;height:52px;font-size:21px;background:linear-gradient(150deg,#00e37a,#8affc1)">' +
             U.esc(st.pseudo.charAt(0).toUpperCase()) + '</span>' +
           '<div class="grow"><div style="font-weight:800;font-size:16px">' + U.esc(st.pseudo) + '</div>' +
-          '<div class="row mt-s"><span class="badge ' + vip.tier.badge + '">🏅 ' + vip.tier.name + '</span>' +
+          '<div class="row mt-s"><span class="badge ' + vip.tier.badge + '">' + J.icon.medal + ' ' + vip.tier.name + '</span>' +
           '<span class="badge">RTP ' + U.fmtPct(s.rtp, 1) + '</span></div></div>' +
           '<button class="btn xs ghost" data-prof="editName" aria-label="Modifier le pseudo">Éditer</button>' +
         '</div>' +
@@ -4300,14 +4364,14 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
       // Actions rapides
       '<div class="btn-row four mt">' +
-        '<button class="btn sm ghost" data-prof="daily">🎁<br>Bonus</button>' +
-        '<button class="btn sm ghost" data-prof="wheel">🎡<br>Roue</button>' +
-        '<button class="btn sm ghost" data-prof="fair">🔐<br>Fair Play</button>' +
-        '<button class="btn sm ghost" data-prof="settings">⚙️<br>Réglages</button>' +
+        '<button class="btn sm ghost" data-prof="daily">' + J.icon.gift + '<br>Bonus</button>' +
+        '<button class="btn sm ghost" data-prof="wheel">' + J.icon.fortune + '<br>Roue</button>' +
+        '<button class="btn sm ghost" data-prof="fair">' + J.icon.key + '<br>Fair Play</button>' +
+        '<button class="btn sm ghost" data-prof="settings">' + J.icon.settings + '<br>Réglages</button>' +
       '</div>' +
 
       // Stats
-      '<div class="section"><div class="section-head"><div class="h2">📊 Statistiques</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.chart + ' Statistiques</div>' +
         '<button class="link" data-prof="history">Historique</button></div>' +
         '<div class="card pad">' +
           '<div class="kv"><span class="k">Total misé</span><span class="v">' + U.fmt(s.wagered) + ' J</span></div>' +
@@ -4323,14 +4387,14 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       '</div>' +
 
       // Quêtes du jour
-      '<div class="section"><div class="section-head"><div class="h2">🎯 Missions du jour</div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.target + ' Missions du jour</div>' +
         '<span class="sub">' + q.items.filter((x) => x.claimed).length + ' / ' + q.items.length + ' récupérées</span></div>' +
         '<div class="card pad">' +
           q.items.map((item) => {
             const done = item.progress >= item.target;
             const pct = U.clamp((item.progress / item.target) * 100, 0, 100);
             return '<div class="quest' + (done ? ' done' : '') + (item.claimed ? ' claimed' : '') + '">' +
-              '<span class="q-ico">' + (item.claimed ? '✅' : done ? '🎁' : '🎯') + '</span>' +
+              '<span class="q-ico">' + (item.claimed ? J.icon.check : done ? J.icon.gift : J.icon.target) + '</span>' +
               '<div class="grow"><div class="q-t">' + item.title + '</div>' +
                 '<div class="q-s">' + (item.id === 'wager' || item.id === 'profit'
                   ? U.fmt(item.progress) + ' / ' + U.fmt(item.target) + ' · récompense ' + U.fmt(item.reward) + ' J'
@@ -4347,7 +4411,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       '</div>' +
 
       // Détail par jeu
-      '<div class="section"><div class="section-head"><div class="h2">🎮 Détail par jeu</div></div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.gamepad + ' Détail par jeu</div></div>' +
         '<div class="card pad">' + (Object.keys(s.perGame).length
           ? '<table class="data"><thead><tr><th>Jeu</th><th>Parties</th><th>Misé</th><th>Meilleur</th></tr></thead><tbody>' +
             Object.keys(s.perGame).sort((a, b) => s.perGame[b].wagered - s.perGame[a].wagered).map((id) => {
@@ -4355,12 +4419,12 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
               return '<tr><td class="name">' + U.esc(J.Wallet.gameName(id)) + '</td><td>' + g.bets + '</td>' +
                 '<td>' + U.fmtK(g.wagered) + '</td><td class="up">' + U.fmtMult(g.bestMult) + '</td></tr>';
             }).join('') + '</tbody></table>'
-          : '<div class="empty"><div class="e-ico">🎮</div>Aucune partie jouée pour l\'instant.</div>') +
+          : '<div class="empty"><div class="e-ico">' + J.icon.gamepad + '</div>Aucune partie jouée pour l\'instant.</div>') +
         '</div>' +
       '</div>' +
 
       // Liens
-      '<div class="section"><div class="section-head"><div class="h2">🛡️ Jeu responsable & réglages</div></div>' +
+      '<div class="section"><div class="section-head"><div class="h2">' + J.icon.shield + ' Jeu responsable & réglages</div></div>' +
         '<button class="btn ghost block" data-prof="responsible">Jeu responsable · mes limites</button>' +
         '<button class="btn ghost block mt-s" data-prof="about">À propos / Mentions légales</button>' +
         '<button class="btn ghost block mt-s" data-prof="reset">Réinitialiser ma progression</button>' +
@@ -4404,7 +4468,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     const vip = J.Wallet.vipInfo();
     const tiers = J.CONST.VIP;
     J.UI.modal({
-      title: '🏅 Programme VIP',
+      title: J.icon.medal + ' Programme VIP',
       sub: 'Basé sur le total misé (jetons virtuels)',
       body:
         '<div class="note">Gagne du rakeback et des récompenses de palier en avançant. Les paliers se débloquent au total misé cumulé.</div>' +
@@ -4412,7 +4476,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
           const reached = J.Store.state.vip.wagered >= t.need;
           const claimed = J.Store.state.vip.claimedLevels.includes(i);
           return '<div class="quest' + (reached ? ' done' : '') + (claimed ? ' claimed' : '') + '">' +
-            '<span class="q-ico">' + (claimed ? '✅' : reached ? '🎁' : '🔒') + '</span>' +
+            '<span class="q-ico">' + (claimed ? J.icon.check : reached ? J.icon.gift : J.icon.lock) + '</span>' +
             '<div class="grow"><div class="q-t">' + t.name + '</div>' +
             '<div class="q-s">' + U.fmt(t.need) + ' J misés · rakeback ' + t.rakeback.toFixed(2).replace('.', ',') + ' %' +
             (t.reward ? ' · récompense ' + U.fmt(t.reward) + ' J' : '') + '</div></div>' +
@@ -6213,7 +6277,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     openLimit() {
       const s = Shop.spendState();
       J.UI.modal({
-        title: '🛡️ Limite de dépenses mensuelle',
+        title: J.icon.shield + ' Limite de dépenses mensuelle',
         sub: 'Tu décides du plafond — il protège ton budget',
         body:
           '<div class="note">Cette limite s\'applique aux achats de packs de jetons. ' +
@@ -10810,6 +10874,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     if (st.settings.liveFeed) J.Live.init();
 
     // 6) Interface
+    J.UI.mountIcons();          // icônes SVG déclarées par le squelette HTML
     J.Wallet.renderBalance();
     J.Screen.renderAll();
 
@@ -10863,20 +10928,20 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   function firstRunWelcome() {
     J.Store.patch({ settings: { _welcomed: true } });
     J.UI.modal({
-      title: 'Bienvenue sur JACKPOTLY 👋',
+      title: 'Bienvenue sur JACKPOTLY',
       sub: '10 000 jetons virtuels pour commencer',
       closable: false,
       body:
         '<div class="note">Tu joues avec des <b>jetons virtuels sans aucune valeur monétaire</b> : ' +
         'pas de retrait, pas de conversion en argent ou en cadeau, pas d\'échange entre joueurs. ' +
         'L\'argent réel ne sert qu\'à acheter des packs de jetons (paiement simulé dans cette version). <b>18+</b>.</div>' +
-        '<div class="kv mt"><span class="k">🎁 Bonus quotidien</span><span class="v up"> +500 à +5 000 J</span></div>' +
-        '<div class="kv"><span class="k">🎡 Roue de la chance</span><span class="v up">1 tour gratuit / jour</span></div>' +
-        '<div class="kv"><span class="k">💸 Solde à zéro</span><span class="v up">recharge gratuite</span></div>' +
+        '<div class="kv mt"><span class="k">' + J.icon.gift + ' Bonus quotidien</span><span class="v up"> +500 à +5 000 J</span></div>' +
+        '<div class="kv"><span class="k">' + J.icon.fortune + ' Roue de la chance</span><span class="v up">1 tour gratuit / jour</span></div>' +
+        '<div class="kv"><span class="k">' + J.icon.refill + ' Solde à zéro</span><span class="v up">recharge gratuite</span></div>' +
         '<div class="note mt">Chaque jeu explique ses règles en un tap (bouton <b>?</b> en haut à droite). ' +
         'Rappel de pause automatique toutes les 30 minutes.</div>',
       actions: [
-        { label: '🎁 Prendre mon bonus', cls: 'gold', onClick: () => J.Rewards.openDaily() },
+        { label: J.icon.gift + ' Prendre mon bonus', cls: 'gold', onClick: () => J.Rewards.openDaily() },
         { label: 'Explorer les jeux', cls: 'primary' }
       ]
     });

@@ -104,7 +104,7 @@
     openLimit() {
       const s = Shop.spendState();
       J.UI.modal({
-        title: '🛡️ Limite de dépenses mensuelle',
+        title: J.icon.shield + ' Limite de dépenses mensuelle',
         sub: 'Tu décides du plafond — il protège ton budget',
         body:
           '<div class="note">Cette limite s\'applique aux achats de packs de jetons. ' +

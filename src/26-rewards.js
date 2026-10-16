@@ -42,7 +42,7 @@
         '</div>').join('');
 
       J.UI.modal({
-        title: '🎁 Bonus quotidien',
+        title: J.icon.gift + ' Bonus quotidien',
         sub: 'Jour ' + (idx + 1) + ' du cycle · ' + (d.claims || 0) + ' bonus déjà reçus',
         body:
           '<div class="note">Connecte-toi chaque jour : la récompense grimpe jusqu\'au 7ᵉ jour, puis le cycle recommence. ' +
@@ -100,7 +100,7 @@
     openWheel() {
       const canSpin = Rewards.canSpinWheel();
       J.UI.modal({
-        title: '🎡 Roue de la chance',
+        title: J.icon.fortune + ' Roue de la chance',
         sub: canSpin ? 'Un tour gratuit par jour' : 'Prochain tour gratuit demain',
         body:
           '<div class="wheel-wrap"><canvas id="wheelCv"></canvas>' +
@@ -110,7 +110,7 @@
             : 'Tu as déjà utilisé ton tour gratuit aujourd\'hui. Reviens demain !') + '</div>' +
           '<div class="sub center mt-s" style="font-size:10px">Tour gratuit · gain moyen ' + U.fmt(Rewards.expectedPrize()) + ' jetons (calculé sur les probabilités des segments)</div>',
         actions: [
-          { label: canSpin ? '🎡 Tourner' : 'Revenir demain', cls: canSpin ? 'gold' : 'ghost', keepOpen: true,
+          { label: canSpin ? J.icon.rotate + ' Tourner' : 'Revenir demain', cls: canSpin ? 'gold' : 'ghost', keepOpen: true,
             onClick: () => { if (canSpin) Rewards.spin(); } },
           { label: 'Fermer', cls: 'ghost' }
         ]
@@ -273,7 +273,7 @@
         const a = [];
         if (s.left > 0) {
           a.push({
-            label: s.ready ? '🎁 Recharger ' + U.fmt(s.amount) + ' jetons'
+            label: s.ready ? J.icon.refill + ' Recharger ' + U.fmt(s.amount) + ' jetons'
                            : (s.readyIn > 0 ? '⏳ Patienter ' + Math.ceil(s.readyIn / 1000) + ' s'
                                             : '⏳ Lancer le délai (' + Math.round(J.CONST.FREE_CHIPS_DELAY / 1000) + ' s)'),
             cls: s.ready ? 'primary' : 'ghost', keepOpen: true,
@@ -288,13 +288,13 @@
             }
           });
         }
-        a.push({ label: '🛒 Boutique', cls: 'gold', onClick: () => { J.UI.closeSheet(); J.UI.go('shop'); } });
+        a.push({ label: J.icon.cart + ' Boutique', cls: 'gold', onClick: () => { J.UI.closeSheet(); J.UI.go('shop'); } });
         a.push({ label: 'Fermer', cls: 'ghost' });
         return a;
       }
 
       J.UI.modal({
-        title: '💸 Solde épuisé',
+        title: J.icon.refill + ' Solde épuisé',
         sub: 'Jetons virtuels — aucune valeur monétaire',
         body: bodyHtml(st), actions: actionsFor(st)
       });
