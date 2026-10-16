@@ -112,7 +112,9 @@
       : originalsFilter === 'soon' ? all.filter((g) => g.status !== 'live')
       : all.filter((g) => g.category === originalsFilter);
     $('originalsGrid').innerHTML = list.length ? list.map(S.tile).join('')
-      : '<div class="empty">Aucun jeu dans cette catégorie.</div>';
+      : '<div class="empty">' + (originalsFilter === 'soon'
+        ? '🎉 Les 16 jeux sont livrés : la feuille de route est vide, il n\'y a plus rien à attendre ici.'
+        : 'Aucun jeu dans cette catégorie.') + '</div>';
     bindTiles($('originalsGrid'));
   };
 

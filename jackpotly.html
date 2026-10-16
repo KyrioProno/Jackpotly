@@ -13,7 +13,7 @@
 <title>JACKPOTLY — Casino Social (jetons virtuels, 18+)</title>
 <style>
 
-/* JACKPOTLY v0.3.0 — build a8ec3a49c0a0 — fichier généré, ne pas éditer (voir src/) */
+/* JACKPOTLY v0.3.0 — build 86bdb934aaa6 — fichier généré, ne pas éditer (voir src/) */
 
 /* =========================================================================
    JACKPOTLY — DESIGN SYSTEM (dark premium, ambiance Stake)
@@ -3672,7 +3672,9 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       : originalsFilter === 'soon' ? all.filter((g) => g.status !== 'live')
       : all.filter((g) => g.category === originalsFilter);
     $('originalsGrid').innerHTML = list.length ? list.map(S.tile).join('')
-      : '<div class="empty">Aucun jeu dans cette catégorie.</div>';
+      : '<div class="empty">' + (originalsFilter === 'soon'
+        ? '🎉 Les 16 jeux sont livrés : la feuille de route est vide, il n\'y a plus rien à attendre ici.'
+        : 'Aucun jeu dans cette catégorie.') + '</div>';
     bindTiles($('originalsGrid'));
   };
 
