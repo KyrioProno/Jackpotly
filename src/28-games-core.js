@@ -118,8 +118,10 @@
        (flux « gros gains ») s'effacent pour laisser la table lisible. */
     document.body.classList.add('in-game');
     /* Banque sonore : le jeu prend la main sur le timbre, puis joue sa
-       signature — deux ou trois notes qui identifient la table. */
-    J.Sfx.setGame(def.id);
+       signature — deux ou trois notes qui identifient la table. Un jeu à
+       plusieurs univers (machine à sous) déclare `sfxId(g)` pour que chaque
+       façade ait sa propre voix. */
+    J.Sfx.setGame(def.sfxId ? def.sfxId(g) : def.id);
     J.Sfx.motif();
     J.Bus.emit('game:open', g);
     return g;

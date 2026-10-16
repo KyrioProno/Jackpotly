@@ -147,6 +147,15 @@
       blackjack:  { wave: 'triangle', semi: -2, motif: [0, 3, 5, 8] },
       baccarat:   { wave: 'sine',     semi:  2, motif: [0, 5, 9] },
       slots:      { wave: 'sawtooth', semi:  6, motif: [0, 4, 9, 12] },
+      /* Une machine à sous, c'est un univers : chaque façade a son timbre, donc
+         ses propres bruits de rouleaux, de mise et de révélation. Le jingle de
+         gain reste commun (signature de la maison). */
+      'slot-egypte':   { wave: 'sine',     semi:  0, motif: [0, 5, 7, 12] },
+      'slot-dragon':   { wave: 'sawtooth', semi: -4, motif: [0, 3, 7] },
+      'slot-gemmes':   { wave: 'triangle', semi:  8, motif: [0, 4, 7, 11] },
+      'slot-fruits':   { wave: 'square',   semi:  5, motif: [0, 7, 12] },
+      'slot-bonbons':  { wave: 'triangle', semi: 12, motif: [0, 5, 9] },
+      'slot-aventure': { wave: 'sine',     semi: -2, motif: [0, 2, 7, 9] },
       videopoker: { wave: 'square',   semi: -6, motif: [0, 2, 7] },
       poker:      { wave: 'triangle', semi:  1, motif: [0, 4, 6] },
       default:    { wave: null,       semi:  0, motif: [0, 7] }        // hors table

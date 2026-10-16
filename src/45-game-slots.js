@@ -362,6 +362,9 @@
     rtp: 96.5,
     category: 'classics',
     tagline: '6 machines illustrées, 5 rouleaux, 20 lignes',
+    /* Chaque façade a sa voix : rouleaux, mises et révélations timbrés par
+       l'univers (le jingle de gain reste celui de la maison). */
+    sfxId: (g) => 'slot-' + (g.machineId || 'egypte'),
     volatility: 'Volatilité élevée',
     hot: true,
     rules:

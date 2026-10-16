@@ -539,10 +539,17 @@ section('4. Appuis réels (événements tactiles) : les commandes répondent');
   // Écran de bienvenue (première visite) : la modale et ses 2 boutons doivent tenir
   {
     const p2 = await newPage(DEVICES[0]);              // 320×568 : le plus serré
+    /* Les sections précédentes laissent plusieurs onglets ouverts : sans mise au
+       premier plan, le nouveau moteur de rendu peut n'avoir jamais peint, et le
+       test de tap (elementFromPoint) juge alors une mise en page périmée. */
+    await p2.bringToFront();
     await seed(p2, false);
     await p2.goto(ORIGIN + '/jackpotly.html', { waitUntil: 'load' });
     await waitFor(p2, 'getComputedStyle(document.getElementById("splash")).display === "none"', 9000);
     const shown = await waitFor(p2, 'document.getElementById("modalRoot").classList.contains("is-on")', 9000);
+    /* La modale entre en fondu (`visibility` transitionne) : on la laisse se
+       peindre avant de mesurer les cibles tactiles. */
+    await p2.evaluate(() => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 260))));
     const geo = await p2.evaluate(() => {
       const box = document.getElementById('modalBox');
       const acts = box.querySelector('[data-actions]');
@@ -550,7 +557,14 @@ section('4. Appuis réels (événements tactiles) : les commandes répondent');
       const btns = Array.from(acts.querySelectorAll('button')).map((b) => {
         const br = b.getBoundingClientRect();
         const hit = document.elementFromPoint(br.left + br.width / 2, br.top + br.height / 2);
-        return { label: b.textContent.trim(), bottom: Math.round(br.bottom), tappable: !!hit && (hit === b || b.contains(hit)) };
+        return {
+          label: b.textContent.trim(), bottom: Math.round(br.bottom),
+          tappable: !!hit && (hit === b || b.contains(hit)),
+          /* En cas d'échec, on veut savoir QUI a intercepté le tap. */
+          par: hit && !(hit === b || b.contains(hit))
+            ? hit.tagName.toLowerCase() + (hit.id ? '#' + hit.id : '') + (hit.className ? '.' + hit.className.toString().split(' ')[0] : '')
+            : ''
+        };
       });
       return { vh: innerHeight, bottom: Math.round(r.bottom), bodyScrolls: box.querySelector('.modal-body').scrollHeight > box.querySelector('.modal-body').clientHeight, btns };
     });
@@ -558,7 +572,7 @@ section('4. Appuis réels (événements tactiles) : les commandes répondent');
       'bas de modale à ' + geo.bottom + ' / ' + geo.vh + ' px');
     check('écran de bienvenue : les 2 boutons sont atteignables au doigt sans défiler',
       geo.btns.length === 2 && geo.btns.every((b) => b.tappable && b.bottom <= geo.vh + 1),
-      geo.btns.map((b) => b.label + (b.tappable ? ' ✓' : ' ✗')).join(' · '));
+      geo.btns.map((b) => b.label + (b.tappable ? ' ✓' : ' ✗ (intercepté par ' + b.par + ')')).join(' · '));
     // On ferme par un vrai tap sur « Explorer les jeux »
     const closed = await tapSel(p2, '#modalBox [data-actions] button:last-child');
     const gone = await waitFor(p2, '!document.getElementById("modalRoot").classList.contains("is-on")', 3000);

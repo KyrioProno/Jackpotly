@@ -332,7 +332,8 @@
           '<button class="link" id="bacClear">Effacer les mises</button></div>' +
         '<div class="chips mt-s" id="bacChips">' +
           [10, 50, 100, 500, 1000, 5000].map((v) =>
-            '<button class="casino-chip' + (v === 100 ? ' is-on' : '') + '" data-chip-val="' + v + '">' + U.fmtK(v) + '</button>').join('') +
+            '<button class="casino-chip chip-' + v + (v === 100 ? ' is-on' : '') +
+              '" data-chip-val="' + v + '">' + U.fmtK(v) + '</button>').join('') +
         '</div>' +
         '<div class="rui-betlist" id="bacList"></div>' +
         '<div class="btn-row two mt-s">' +

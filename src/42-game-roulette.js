@@ -543,7 +543,8 @@
             '<span class="sub" id="ruTotal"></span></div>' +
           '<div class="chips mt-s" id="ruChips">' +
             [10, 50, 100, 500, 1000, 5000].map((v) =>
-              '<button class="casino-chip' + (v === 100 ? ' is-on' : '') + '" data-chip-val="' + v + '">' + U.fmtK(v) + '</button>').join('') +
+              '<button class="casino-chip chip-' + v + (v === 100 ? ' is-on' : '') +
+                '" data-chip-val="' + v + '">' + U.fmtK(v) + '</button>').join('') +
           '</div>' +
           '<div class="rui-presets mt-s" id="ruPresets">' +
             PRESETS.map((p) => '<button class="rui-preset" data-preset="' + p.id + '">' +

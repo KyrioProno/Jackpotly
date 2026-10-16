@@ -1003,3 +1003,173 @@ body.in-game #liveFeed{ display:none; }
 }
 /* Aucun numéro tiré : l'afficheur reste sobre au lieu de montrer un tiret nu */
 .g-roulette .rui-read:empty::before{ content:'—'; opacity:.45; }
+
+/* ============================================== ÉTAPE 4b : FINITION DE SALLE -
+   La main du joueur ne doit jamais toucher « un tableau de bord ». Sous le
+   pouce : un jeton cranté, une plaque de laiton, un cabochon. Et le tapis ne
+   se fait plus couper net par le panneau : il glisse dessous.
+   ------------------------------------------------------------------------- */
+
+/* --- Jetons de valeur : une couleur par dénomination (10 → 5 000) -------- */
+.casino-chip.chip-10{ background:
+    repeating-conic-gradient(from 0deg, #fff 0 6deg, rgba(0,0,0,.12) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #ffffff 0 44%, #d7dde8 62%, #8e99ad 100%); color:#101828; }
+.casino-chip.chip-50{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.75) 0 6deg, rgba(0,0,0,.22) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #ffd0da 0 42%, var(--rubis) 68%, #7d1230 100%); color:#fff; }
+.casino-chip.chip-100{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.55) 0 6deg, rgba(0,0,0,.30) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #cfd8ea 0 42%, #33415c 68%, #131a2a 100%); color:#fff; }
+.casino-chip.chip-500{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.65) 0 6deg, rgba(0,0,0,.24) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #efdcff 0 42%, var(--violet) 68%, #3b1a6b 100%); color:#fff; }
+.casino-chip.chip-1000{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.85) 0 6deg, rgba(0,0,0,.18) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #fff6d6 0 44%, var(--or) 68%, #8a5a00 100%); color:#2a1c00; }
+.casino-chip.chip-5000{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.8) 0 6deg, rgba(0,0,0,.20) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #d8ffe9 0 42%, #0f9d63 68%, #05432a 100%); color:#04241a; }
+/* Le jeton en main se soulève et prend un liseré d'or : impossible de le rater */
+.casino-chip.is-on{
+  outline:2px solid var(--gold); outline-offset:3px;
+  box-shadow:0 8px 18px rgba(0,0,0,.6), 0 0 16px rgba(255,197,49,.45),
+             inset 0 0 0 3px rgba(255,255,255,.5), inset 0 -4px 10px rgba(0,0,0,.30);
+}
+
+/* --- Plaques de mise : Plein / Cheval / Carré / Sixain ------------------- */
+.g-roulette .rui-types .chip{
+  padding:6px 10px; font-size:11.5px;
+  background:linear-gradient(180deg, rgba(58,44,22,.86), rgba(20,14,6,.93));
+  border:1px solid rgba(255,210,87,.30); color:#f1e4c8;
+  box-shadow:0 3px 8px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.10);
+}
+.g-roulette .rui-types .chip.is-on{
+  background:linear-gradient(180deg,#ffe595,#d0a020 55%,#8a6100);
+  border-color:#ffe9ad; color:#2c1d00;
+  box-shadow:0 6px 16px rgba(255,197,49,.35), inset 0 1px 0 rgba(255,255,255,.6);
+}
+.g-roulette .rui-types .chip.is-on b{ color:#2c1d00; }
+/* La grille de numéros continue sous la ligne de flottaison : l'ombre basse
+   annonce le reste de la table au lieu de laisser croire à une coupe. */
+.g-roulette .rui-grid{
+  box-shadow:inset 0 0 24px rgba(0,0,0,.6), inset 0 -24px 22px -20px rgba(0,0,0,.92);
+}
+
+/* --- Boutons de jeu : laiton gravé et cabochon de jade ------------------ */
+#screen-game .btn{
+  border-radius:13px; border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(58,70,102,.82), rgba(18,23,40,.95));
+  color:#e4ecff; text-shadow:0 1px 0 rgba(0,0,0,.45);
+  box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.16),
+             inset 0 -2px 0 rgba(0,0,0,.32);
+}
+#screen-game .btn > *{ position:relative; z-index:1; }
+#screen-game .btn::after{                      /* reflet de verre, jamais du texte */
+  content:''; position:absolute; left:1px; right:1px; top:1px; height:46%;
+  border-radius:12px 12px 40% 40%/12px 12px 100% 100%;
+  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0));
+  pointer-events:none;
+}
+#screen-game .btn:active{ transform:translateY(1px) scale(.985); filter:brightness(1.06); }
+#screen-game .btn.primary{
+  background:linear-gradient(180deg,#8bf7bd 0%,#1ad883 40%,#008a51 100%);
+  color:#03230f; border-color:rgba(255,255,255,.30);
+  text-shadow:0 1px 0 rgba(255,255,255,.40);
+  box-shadow:0 8px 20px rgba(0,190,105,.32), 0 0 0 1px rgba(0,0,0,.35),
+             inset 0 1px 0 rgba(255,255,255,.7), inset 0 -3px 0 rgba(0,0,0,.22);
+}
+#screen-game .btn.gold{
+  background:linear-gradient(180deg,#fff0b8 0%,#ffce4d 42%,#c08600 100%);
+  color:#2e1e00; border-color:rgba(255,255,255,.42); text-shadow:0 1px 0 rgba(255,255,255,.45);
+  box-shadow:0 8px 20px rgba(255,197,49,.30), inset 0 1px 0 rgba(255,255,255,.75),
+             inset 0 -3px 0 rgba(0,0,0,.20);
+}
+#screen-game .btn.danger{
+  background:linear-gradient(180deg,#ff9aa6,#e0324a 45%,#8d1024 100%);
+  color:#fff; border-color:rgba(255,255,255,.24);
+  box-shadow:0 8px 18px rgba(224,50,74,.28), inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+/* --- Panneau de commandes : velours sombre, filet d'or ------------------ */
+body.in-game .game-panel{
+  position:relative;
+  background:
+    linear-gradient(180deg, rgba(255,210,87,.055), transparent 26px),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.014) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg, #0b0e1c, #06080f 72%);
+  border-top:1px solid rgba(255,210,87,.22);
+  box-shadow:0 -20px 34px rgba(0,0,0,.6);
+}
+body.in-game .game-panel::before{             /* le tapis se glisse sous le panneau */
+  content:''; position:absolute; left:0; right:0; top:-22px; height:22px;
+  background:linear-gradient(180deg, rgba(6,8,15,0), rgba(6,8,15,.94)); pointer-events:none;
+}
+
+/* Les plaquettes de mise de la machine (½, ×2, MAX) reçoivent la même matière
+   que les commandes de table : laiton sombre, reflet, enfoncement au doigt. */
+.spin-deck .sb-btn{
+  background:linear-gradient(180deg, rgba(62,52,30,.94), rgba(20,16,8,.96));
+  border:1px solid rgba(255,210,87,.32); color:#f4e6c6;
+  box-shadow:0 5px 12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.18),
+             inset 0 -2px 0 rgba(0,0,0,.4);
+}
+.spin-deck .sb-btn:active{ transform:translateY(1px) scale(.98); filter:brightness(1.12); }
+.spin-deck .sb-btn:disabled{ opacity:.4; }
+
+/* --- Symboles de rouleaux : plus d'ampleur dans la case ------------------ */
+/* Un symbole timide dans une case sombre donne une machine vide. On lui rend
+   la place qu'il occupe sur un vrai rouleau, sans déformer les dessins. */
+.cab .sym svg{ width:86%; height:86%; max-width:62px; max-height:62px; }
+.cab .sym.win svg{ filter:drop-shadow(0 0 8px rgba(255,210,87,.85)); }
+
+/* --- Pastilles de réglage du panneau : même métal que les plaques -------- */
+/* « 5 / 10 / 15 / 20 lignes », mise rapide… : ce sont des commandes de table,
+   pas des cases de formulaire. */
+#screen-game .game-panel .chips .chip{
+  padding:7px 11px; border-radius:10px;
+  background:linear-gradient(180deg, rgba(52,63,94,.66), rgba(14,18,32,.94));
+  border:1px solid rgba(255,255,255,.12); color:#cfd9f0;
+  font-weight:700; font-size:11.5px; letter-spacing:.01em;
+  box-shadow:0 3px 8px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.10);
+}
+#screen-game .game-panel .chips .chip:active{ transform:translateY(1px) scale(.98); }
+#screen-game .game-panel .chips .chip.is-on{
+  background:linear-gradient(180deg,#ffe595,#d0a020 55%,#8a6100);
+  border-color:#ffe9ad; color:#2c1d00; font-weight:900;
+  box-shadow:0 5px 14px rgba(255,197,49,.30), inset 0 1px 0 rgba(255,255,255,.62);
+}
+
+/* --- Tiroir « Table des gains » : une plaque de laiton qu'on ouvre ------- */
+#screen-game .sl-paybox{ border-radius:12px; }
+#screen-game .sl-paybox > summary{
+  padding:9px 12px; border-radius:12px; font-weight:800; font-size:12.5px; color:#f4e6c6;
+  background:linear-gradient(180deg, rgba(58,48,26,.72), rgba(14,11,6,.92));
+  border:1px solid rgba(255,210,87,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+/* --- Fenêtre des rouleaux : elle prend la vraie place du rouleau ---------- */
+/* L'ouverture peinte dans l'illustration est plus étroite que l'écran : les
+   cinq rouleaux n'y tenaient que sur 19 px de large, soit des symboles
+   illisibles. On élargit la fenêtre dans la zone sombre du meuble — là où se
+   trouve justement l'ouverture — et on l'encadre d'un filet d'or pour que la
+   découpe soit un choix, pas un accident. */
+.cab .cab-window{
+  left:13%; right:14%; top:35.5%; bottom:37.5%; border-radius:9px;
+  border:1px solid rgba(255,210,87,.34);
+  box-shadow:inset 0 0 26px 8px rgba(0,0,0,.88), inset 0 0 0 1px rgba(255,255,255,.06),
+             0 0 20px rgba(0,0,0,.65), 0 0 14px rgba(255,210,87,.10);
+}
+
+/* --- Réglette de compteurs : des cellules séparées, pas un mot collé ------ */
+.sl-hud{ gap:2px; padding:5px 4px; }
+.sl-hud span{ gap:4px; padding:0 5px; min-width:0; }
+.sl-hud span + span{ border-left:1px solid rgba(255,210,87,.20); }
+.sl-hud i{ font-size:8.5px; letter-spacing:.07em; }
+.sl-hud .ro-v{ font-size:12.5px; }
+.sl-hud .ro-win{ font-size:13px; }
+@media (max-width:360px){
+  .sl-hud i{ font-size:8px; letter-spacing:.04em; }
+  .sl-hud span{ padding:0 3px; }
+  .sl-hud .ro-v, .sl-hud .ro-win{ font-size:12px; }
+}

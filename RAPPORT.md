@@ -1,4 +1,4 @@
-# JACKPOTLY — rapport de validation v0.3.2
+# JACKPOTLY — rapport de validation v0.4.0
 
 **Date :** 16 octobre 2026 · **Livrable :** `jackpotly.html` — 502,1 Ko · 11 025 lignes · un seul fichier,
 aucune dépendance, aucune requête réseau.
@@ -7,6 +7,63 @@ Ce rapport clôt la **phase de validation** puis la **finition visuelle et sonor
 Il répond à trois questions : les 16 jeux sont-ils réellement jouables sur un téléphone ?
 les taux de retour annoncés sont-ils ceux du moteur ? les jetons fictifs peuvent-ils être
 créés ou perdus par erreur ?
+
+---
+
+## 0. Vague 4 (v0.4.0) — le casino devient un lieu
+
+**Livrable :** `jackpotly.html` — 1,8 Mo · 14 091 lignes · un seul fichier, aucune dépendance,
+aucune requête réseau (11 images WebP embarquées, musiques synthétisées à la volée).
+
+La vague 4 ne recolore pas l'existant : elle remplace la présentation. La logique de jeu
+(moteurs, RNG, tables de paiement, mises, historique) est restée intacte — c'est ce que
+confirment les 244 contrôles de `verify.mjs`, inchangés depuis la v0.3.2.
+
+### Ce qui a été implanté
+
+| Chantier | Réalisation vérifiée |
+| --- | --- |
+| **Hall immersif** | Décor de salle illustré (5 visuels : hall + galeries machines / tables / poker), néons animés, poussière et scanline, transitions d'écran. Sections Accueil, Machines à sous, Jeux de table, Poker, Originals & classiques, **Favoris** (filtres). Bandeau solde/profil allégé, quatre accès rapides au pouce. |
+| **6 machines = 6 univers** | Sable & Or (Égypte), Cœur de Braise (dragons), Éclat Facetté (gemmes), Rétro Néon (fruits), Confiserie (bonbons), Cap sur le Trésor (aventure). Chacune : façade illustrée, **9 symboles SVG dessinés par univers** (aucun emoji), palette, bandes de rouleaux, musique et timbre d'effets propres. |
+| **Vraie interface de machine** | 5 rouleaux × 3 lignes visibles dans une fenêtre encadrée d'or, rotation puis arrêt rouleau par rouleau, lueurs sur les lignes gagnantes, **compteur de gain animé** (valeur finale exacte = valeur du moteur), bouton SPIN cabochon central, plaquettes ½ / ×2 / MAX, réglette GAIN · MISE · LIGNES · RTP, retour à la galerie. |
+| **Habillage des 16 jeux** | Feutre, rail doré et cône de lumière par table (roulette vert profond, blackjack sarcelle, baccarat bordeaux, poker bleu nuit, video poker indigo) ; **cartes réalistes** avec index de coin ; **jetons crantés colorés par dénomination** (10 / 50 / 100 / 500 / 1 000 / 5 000) ; plaques de mise et commandes en laiton, bouton principal en cabochon de jade avec reflet, panneau de commandes en velours. |
+| **Musique & sons** | 16 pistes (lobby + 6 univers de machines + salles), banque d'effets par jeu et **timbre propre à chaque machine**. Réglages volume général / musique / effets + mode silencieux ; démarrage après interaction, une seule lecture à la fois, atténuation automatique pendant les gains. |
+| **Animations / VFX** | Néons scintillants, reflets métal, états de boutons, jetons et cartes animés, confettis et pièces proportionnés au gain, transitions entre écrans, respect de `prefers-reduced-motion`. |
+
+### Tests exécutés après reconstruction du fichier
+
+| Suite | Résultat | Durée |
+| --- | --- | --- |
+| `tests/smoke.mjs` | ✅ 14 étapes, 0 problème | 45 s |
+| `tests/verify.mjs` | ✅ 244 contrôles, 0 échec | 182 s |
+| `tests/credits.mjs 4` | ✅ 18 contrôles, 0 échec | 90 s |
+| `tests/mobile.mjs` | ✅ 49 contrôles, 0 échec (iPhone SE 320×568 → iPad mini) | 215 s |
+| `tables.diag.mjs` | 5 jeux de table : tapis + lumière détectés, 0 erreur | 155 s |
+| `slots.diag.mjs` | 6 machines × 2 formats : symboles, façade, spin, musique, 0 erreur | 174 s |
+| `t7.diag.mjs` | symbole de rouleau 29×33 px (390) / 20×23 px (320), 0 erreur | 33 s |
+
+### Ce que la vague a corrigé en chemin
+
+- **Bouton de roulette bloqué sur « La bille tourne… »** : `g.spinning` n'était jamais remis à
+  faux après le règlement. Corrigé dans `settle()` et par un dernier `renderActions()` en fin
+  de manche — le bouton redevient « Lancer la roue » dès l'arrêt de la bille.
+- **Collision de classes `.chip`** (icônes de profil et jetons) : les jetons sont désormais des
+  `.casino-chip` indépendants.
+- **Rouleaux illisibles** : la fenêtre des rouleaux ne laissait que 19 px par rouleau ; elle est
+  élargie dans la zone sombre du meuble et encadrée d'un filet d'or → symboles **2× plus grands**.
+- **Harnais mobile** : l'échec « écran de bienvenue » venait du test (onglet jamais peint +
+  entrée en fondu de la modale), pas du jeu. Le harnais met maintenant la page au premier plan
+  et attend la peinture avant de mesurer un tap.
+
+### Limites assumées
+
+- Les cinq décors et les six façades sont des illustrations embarquées : pas d'image derrière les
+  rouleaux, l'habillage des symboles est vectoriel (choix de netteté et de poids de fichier).
+- Sur 320 px de large, les rouleaux restent serrés (symboles ≈ 20 px) : jouable, mais l'iPhone
+  récent offre le rendu prévu.
+- Le panneau sous la machine garde mise, lignes jouées et table des gains : c'est dense par
+  construction (tout doit rester accessible sans quitter le jeu).
+- Le son ne peut démarrer qu'après la première interaction, comme l'exigent les navigateurs.
 
 ---
 
