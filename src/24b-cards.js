@@ -158,8 +158,13 @@
     const extra = cls ? ' ' + cls : '';
     if (c == null) return '<span class="pcard back' + extra + '"></span>';
     const r = c % 13, s = (c / 13) | 0;
-    return '<span class="pcard' + (s === 1 || s === 2 ? ' red' : '') + extra + '">' +
-      '<span class="pr">' + LABELS[r] + '</span><span class="ps">' + SUITS[s] + '</span></span>';
+    /* Index en coin (rang + enseigne) comme sur une vraie carte, plus le motif
+       central : les deux index sont décoratifs, le centre reste la référence
+       lisible (et c'est lui que lisent les tests). */
+    const corner = '<span class="pic"><b>' + LABELS[r] + '</b><i>' + SUITS[s] + '</i></span>';
+    return '<span class="pcard' + (s === 1 || s === 2 ? ' red' : '') + extra + '">' + corner +
+      '<span class="pr">' + LABELS[r] + '</span><span class="ps">' + SUITS[s] + '</span>' +
+      corner.replace('class="pic"', 'class="pic br"') + '</span>';
   }
 
   /** Texte court d'une carte, ex. « A♠ ». */

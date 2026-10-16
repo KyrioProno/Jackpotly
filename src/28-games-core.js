@@ -82,7 +82,9 @@
        façade de la machine occupe tout l'écran et garde son propre bouton de
        sortie. Le titre reste accessible aux lecteurs d'écran via aria-label. */
     const duo = def.id === 'slots';
-    host.className = duo ? 'duo' : '';
+    /* `duo` = mode « meuble » (machine à sous, plein cadre) ; `g-<id>` permet à
+       la feuille de style d'habiller chaque table (tapis, rail, feutre). */
+    host.className = (duo ? 'duo ' : '') + 'g-' + def.id;
     host.innerHTML =
       '<div class="game-head"' + (duo ? ' aria-hidden="true"' : '') + '>' +
         '<button class="icon-btn" data-g="back" aria-label="Retour">' +
@@ -112,6 +114,9 @@
     // 3) liaisons DOM propres au jeu
     if (def.mount) def.mount(g);
     J.UI.go('game');
+    /* Marqueur global : pendant une partie, les bandeaux d'ambiance du hall
+       (flux « gros gains ») s'effacent pour laisser la table lisible. */
+    document.body.classList.add('in-game');
     /* Banque sonore : le jeu prend la main sur le timbre, puis joue sa
        signature — deux ou trois notes qui identifient la table. */
     J.Sfx.setGame(def.id);
@@ -131,6 +136,7 @@
     if (g.ticket && g.ticket._open) J.Wallet.refund(g.ticket);
     saveBet(g.def.id, g.bet);
     current = null;
+    document.body.classList.remove('in-game');
     if (!silent) { J.UI.go('originals'); J.Screen.renderAll(); }
   };
 
@@ -527,6 +533,11 @@
         el: g.gainEl || g.multEl || g.multLbl || g.stageEl || g.panelEl
       });
     }
+
+    /* Dernier mot au rendu : certains jeux peignent encore leur plateau après
+       l'appel de finish() — le bouton principal doit toujours refléter l'état
+       FINAL de la manche (et non un « en cours » qui ne reviendrait pas). */
+    renderActions(g);
 
     J.Bus.emit('game:round', { game: g.def.id, mult, rec });
   };

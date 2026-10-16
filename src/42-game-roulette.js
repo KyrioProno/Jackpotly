@@ -345,6 +345,7 @@
   }
 
   function settle(g, num) {
+    g.spinning = false;              // la bille est posée : la manche est close
     const t = totals(g);
     const stake = g.ticket ? g.ticket.bet : t.stake;      // montant réellement débité
     const r = evaluate(g, num);

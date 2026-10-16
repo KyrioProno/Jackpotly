@@ -13,7 +13,7 @@
 <title>JACKPOTLY — Casino Social (jetons virtuels, 18+)</title>
 <style>
 
-/* JACKPOTLY v0.3.2 — build 767dab7768eb — fichier généré, ne pas éditer (voir src/) */
+/* JACKPOTLY v0.4.0 — build cda820e07158 — fichier généré, ne pas éditer (voir src/) */
 
 /* ===== 01-styles.css =================================================== */
 /* =========================================================================
@@ -2001,6 +2001,223 @@ body.no-motion .scene-dust{ opacity:.25; }
 #gameShell.duo #gScroll > *:not(#gControls) #gPayout{ font-size:10.5px; line-height:1.35; }
 #gameShell.duo #gScroll > *:not(#gControls) .bet-label{ white-space:nowrap; }
 #gameShell.duo #gControls .bet-label{ font-size:11.5px; }
+
+/* ============================================================================
+   ÉTAPE 4 — L'IDENTITÉ DES TABLES
+   Chaque table a son feutre, son rail et sa lumière. Les tapis sont dessinés en
+   CSS (dégradés + tissage + vignette) : aucun fichier à charger, donc aucune
+   image manquante possible ; les illustrations de salle restent derrière.
+   ========================================================================= */
+.g-roulette .game-stage, .g-blackjack .game-stage, .g-baccarat .game-stage,
+.g-poker .game-stage, .g-videopoker .game-stage{
+  position:relative; border-radius:14px; border:1px solid rgba(255,210,87,.22);
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,.35), inset 0 0 60px rgba(0,0,0,.55), 0 10px 26px rgba(0,0,0,.45);
+  background-color:var(--felt-2, #0d2418);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.020) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,.10) 0 2px, transparent 2px 4px),
+    radial-gradient(120% 80% at 50% 0%, var(--felt-1, #1d6b45) 0%, var(--felt-2, #0d2418) 62%, #050a08 100%);
+}
+/* Rail : un bourrelet sombre et doré tout autour du tapis */
+.g-roulette .game-stage::before, .g-blackjack .game-stage::before, .g-baccarat .game-stage::before,
+.g-poker .game-stage::before, .g-videopoker .game-stage::before{
+  content:''; position:absolute; inset:0; border-radius:14px; pointer-events:none; z-index:1;
+  border:6px solid transparent;
+  border-image:linear-gradient(180deg, rgba(255,224,150,.55), rgba(120,80,20,.28) 40%, rgba(255,224,150,.35)) 1;
+  opacity:.7;
+}
+/* Lumière de plafond : un cône doux au centre du tapis */
+.g-roulette .game-stage::after, .g-blackjack .game-stage::after, .g-baccarat .game-stage::after,
+.g-poker .game-stage::after, .g-videopoker .game-stage::after{
+  content:''; position:absolute; inset:0; border-radius:14px; pointer-events:none; z-index:0;
+  background:radial-gradient(70% 45% at 50% 12%, rgba(255,240,200,.10), transparent 70%);
+}
+.g-roulette .game-stage{ --felt-1:#1f7a4c; --felt-2:#0b2a1a; }
+.g-blackjack .game-stage{ --felt-1:#136b57; --felt-2:#07211d; }
+.g-baccarat .game-stage{ --felt-1:#6d1f33; --felt-2:#2a0a14; }
+.g-poker .game-stage{ --felt-1:#1c4d78; --felt-2:#0a1b2c; }
+.g-videopoker .game-stage{ --felt-1:#233257; --felt-2:#0a0f1e; }
+/* …et le panneau de mise reste sobre, comme la plinthe d'une table */
+.g-roulette .game-panel, .g-blackjack .game-panel, .g-baccarat .game-panel,
+.g-poker .game-panel, .g-videopoker .game-panel{ box-shadow:0 -8px 22px rgba(0,0,0,.45); }
+/* Le flux « gros gains » est une animation d'ambiance : jamais par-dessus un jeu */
+body.in-game #liveFeed{ display:none; }
+
+/* --------------------------------------------------------------- LES CARTES -
+   Index en coin, reflet, ombre portée : une carte doit se lire d'un coup d'œil
+   et se reconnaître à sa couleur, même en petit. */
+.pcard{ border:1px solid rgba(12,16,28,.18); border-radius:8px;
+  box-shadow:0 1px 0 #fff inset, 0 5px 12px rgba(0,0,0,.45), 0 12px 26px rgba(0,0,0,.28); }
+.pcard .pic{
+  position:absolute; top:3px; left:4px; display:flex; flex-direction:column; align-items:center;
+  font:900 9.5px/1 var(--font); letter-spacing:.02em;
+}
+.pcard .pic i{ font-style:normal; font-size:9px; }
+.pcard .pic.br{ top:auto; bottom:3px; right:4px; left:auto; transform:rotate(180deg); }
+.pcard .pr{ font-size:18px; }
+.pcard .ps{ font-size:16px; }
+.pcard.back{
+  background:
+    repeating-linear-gradient(45deg, rgba(255,210,87,.16) 0 3px, transparent 3px 7px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.07) 0 3px, transparent 3px 7px),
+    linear-gradient(155deg,#7d1230,#3a0f3d 55%,#120a22);
+  border:1px solid rgba(255,210,87,.42);
+}
+.pcard.back::after{ content:''; position:absolute; inset:5px; border-radius:5px;
+  border:1px solid rgba(255,210,87,.28); }
+.pcard.back-logo::after{ content:'J'; background:none; border:0; font:900 16px/1 var(--font); color:rgba(255,210,87,.6); }
+/* Tailles par table : plus généreuses, elles restent dans la largeur du tapis */
+.bj-cards .pcard{ width:46px; height:64px; }
+.bj-hand .pcard{ width:36px; height:50px; }
+.bj-hand .pcard .pr{ font-size:14px; } .bj-hand .pcard .ps{ font-size:12px; }
+.bac-cards .pcard{ width:44px; height:62px; }
+.vp-card .pcard{ width:56px; height:80px; }
+.pk-cards .pcard{ width:46px; height:66px; }
+.pk-board .pcard{ width:42px; height:60px; }
+@media (max-width:360px){
+  .vp-card .pcard{ width:48px; height:68px; }
+  .bj-cards .pcard{ width:42px; height:58px; }
+  .pk-cards .pcard{ width:42px; height:60px; }
+}
+
+/* --------------------------------------------------------------- LES JETONS -
+   Un jeton, c'est un disque cranté : bord cannelé, cœur coloré, valeur dorée. */
+.casino-chip{
+  border:0; background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.85) 0 6deg, rgba(0,0,0,.18) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #ffffff 0 42%, #cbd5e1 60%, #64748b 100%);
+  color:#101828; text-shadow:0 1px 0 rgba(255,255,255,.35);
+  box-shadow:0 5px 12px rgba(0,0,0,.55), inset 0 0 0 3px rgba(255,255,255,.55), inset 0 -4px 10px rgba(0,0,0,.30);
+}
+.casino-chip::after{
+  content:''; position:absolute; inset:5px; border-radius:50%;
+  border:1px dashed rgba(0,0,0,.25); pointer-events:none;
+}
+.casino-chip{ position:relative; }
+.casino-chip.c1{ background:
+    repeating-conic-gradient(from 0deg, #fff 0 6deg, rgba(0,0,0,.12) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #ffffff 0 44%, #d7dde8 62%, #8e99ad 100%); }
+.casino-chip.c5{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.75) 0 6deg, rgba(0,0,0,.22) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #ffd0da 0 42%, var(--rubis) 68%, #7d1230 100%); color:#fff; }
+.casino-chip.c25{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.75) 0 6deg, rgba(0,0,0,.22) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #d6ffe6 0 42%, #16a34a 68%, #065f46 100%); color:#fff; }
+.casino-chip.c100{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.55) 0 6deg, rgba(0,0,0,.30) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #cfd8ea 0 42%, #33415c 68%, #131a2a 100%); color:#fff; }
+.casino-chip.c500{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.65) 0 6deg, rgba(0,0,0,.24) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #efdcff 0 42%, var(--violet) 68%, #3b1a6b 100%); color:#fff; }
+.casino-chip.c1000{ background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.85) 0 6deg, rgba(0,0,0,.18) 6deg 12deg),
+    radial-gradient(circle at 50% 35%, #fff6d6 0 44%, var(--or) 68%, #8a5a00 100%); color:#2a1c00; }
+.casino-chip.is-on{ outline:2px solid #fff; outline-offset:3px; transform:translateY(-4px) scale(1.08); }
+.casino-chip:active{ transform:scale(.94); }
+
+/* ------------------------------------------- ÉTAPE 4 : LES TABLES EN DÉTAIL --
+   Les structures de jeu sont conservées : on leur donne seulement la matière
+   d'une vraie table (feutre, rail, jetons posés, cartes en relief). */
+
+/* --- ROULETTE : la grille devient un tapis de mises --- */
+.g-roulette .rui-stage{ position:relative; z-index:2; }
+.g-roulette .rui-grid{
+  padding:6px; border-radius:12px; gap:4px;
+  background:linear-gradient(180deg, rgba(6,26,17,.72), rgba(4,18,12,.86));
+  border:1px solid rgba(255,210,87,.28);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.6);
+}
+.g-roulette .rui-cell, .g-roulette .rui-zero, .g-roulette .rui-o{
+  border-radius:7px; border:1px solid rgba(255,210,87,.22);
+  font-family:var(--font); font-weight:800; letter-spacing:.02em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 2px 6px rgba(0,0,0,.35);
+}
+.g-roulette .rui-cell.red{ background:linear-gradient(180deg,#d02a3f,#8e1224); }
+.g-roulette .rui-cell.black{ background:linear-gradient(180deg,#232c40,#0d1320); }
+.g-roulette .rui-zero{ background:linear-gradient(180deg,#18a35c,#0a5c33); }
+.g-roulette .rui-o{ background:linear-gradient(180deg, rgba(9,40,27,.85), rgba(5,24,16,.9)); }
+.g-roulette .rui-o.red{ background:linear-gradient(180deg,#d02a3f,#8e1224); }
+.g-roulette .rui-o.black{ background:linear-gradient(180deg,#232c40,#0d1320); }
+.g-roulette .rui-cell.is-last, .g-roulette .rui-zero.is-last{
+  box-shadow:inset 0 0 0 2px #fff, 0 0 18px rgba(255,255,255,.6);
+}
+.g-roulette .rui-types .chip.is-on{
+  background:linear-gradient(180deg, rgba(255,210,87,.24), rgba(255,210,87,.06));
+  border-color:rgba(255,210,87,.6); color:#ffe6ae;
+}
+
+/* --- BACCARAT : les zones sont peintes sur le tapis --- */
+.g-baccarat .bac-zone{
+  height:52px; border-radius:10px; border:1px solid rgba(255,210,87,.30);
+  background:linear-gradient(180deg, rgba(8,20,14,.55), rgba(4,12,9,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+.g-baccarat .bac-zone b{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; }
+.g-baccarat .bac-zone.bank{ border-color:rgba(216,180,254,.55); background:linear-gradient(180deg, rgba(76,29,149,.42), rgba(30,10,60,.62)); }
+.g-baccarat .bac-zone.player{ border-color:rgba(147,197,253,.55); background:linear-gradient(180deg, rgba(21,58,120,.42), rgba(8,22,48,.62)); }
+.g-baccarat .bac-zone.tie{ border-color:rgba(110,231,183,.55); background:linear-gradient(180deg, rgba(6,78,59,.42), rgba(2,26,20,.62)); }
+.g-baccarat .bac-side{
+  border-radius:12px; padding:8px 10px;
+  background:linear-gradient(180deg, rgba(6,16,11,.62), rgba(3,10,7,.78));
+  border:1px solid rgba(255,210,87,.18);
+}
+.g-baccarat .bac-h{ border-radius:999px; padding:3px 10px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+.g-baccarat .bac-score{ border-radius:999px; font-weight:900; box-shadow:0 4px 10px rgba(0,0,0,.45); }
+
+/* --- BLACKJACK : la main du joueur sur un arc de table --- */
+.g-blackjack .bj-hand{
+  border-radius:16px 16px 60% 60% / 16px 16px 26% 26%;
+  background:linear-gradient(180deg, rgba(8,32,26,.62), rgba(4,18,15,.8));
+  border:1px solid rgba(255,210,87,.26);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.5);
+}
+.g-blackjack .bj-badge{ border-radius:999px; font-weight:900; box-shadow:0 4px 12px rgba(0,0,0,.5); }
+
+/* --- POKER : la table ovale, vue de dessus --- */
+.g-poker .pk-stage{
+  position:relative; margin:8px; padding:10px; border-radius:18px;
+  background:
+    radial-gradient(78% 58% at 50% 46%, var(--felt-1, #1c4d78) 0%, var(--felt-2, #0a1b2c) 72%, #050b14 100%);
+  border:1px solid rgba(255,210,87,.30);
+  box-shadow:inset 0 0 46px rgba(0,0,0,.6);
+}
+.g-poker .pk-seat{
+  border-radius:12px; background:linear-gradient(180deg, rgba(3,10,18,.72), rgba(2,6,12,.85));
+  border:1px solid rgba(255,255,255,.10);
+}
+.g-poker .pk-seat.me{
+  background:linear-gradient(180deg, rgba(6,60,45,.6), rgba(3,26,20,.8));
+  border-color:rgba(0,227,122,.42); box-shadow:0 0 22px rgba(0,227,122,.20);
+}
+.g-poker .pk-pot{
+  padding:5px 14px; border-radius:999px; font-weight:800;
+  background:linear-gradient(180deg, rgba(9,7,18,.85), rgba(4,3,9,.92));
+  border:1px solid rgba(255,210,87,.34); box-shadow:0 6px 16px rgba(0,0,0,.5);
+}
+.g-poker .pk-board{ padding:8px 10px; border-radius:12px; background:rgba(2,8,14,.42); }
+
+/* --- VIDEO POKER : la borne, écran et encadrement --- */
+.g-videopoker .vp-stage{
+  border-radius:12px; padding:10px;
+  background:linear-gradient(180deg, rgba(10,16,32,.72), rgba(4,7,16,.86));
+  border:1px solid rgba(56,189,248,.30);
+  box-shadow:inset 0 0 34px rgba(0,0,0,.55), 0 0 22px rgba(56,189,248,.10);
+}
+.g-videopoker .vp-card{
+  border-radius:10px; padding:6px; background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+}
+.g-videopoker .vp-card.is-hold{ background:rgba(255,210,87,.12); border-color:rgba(255,210,87,.45); }
+
+/* L'écran de jeu se pose sur le décor de la salle : un voile sombre garantit le
+   contraste des cartes et des rouleaux, tout en laissant deviner l'ambiance. */
+#screen-game.is-on{
+  background:
+    radial-gradient(140% 90% at 50% -10%, rgba(255,210,87,.06), transparent 55%),
+    linear-gradient(180deg, rgba(8,6,14,.93), rgba(4,3,9,.96));
+}
+/* Aucun numéro tiré : l'afficheur reste sobre au lieu de montrer un tiret nu */
+.g-roulette .rui-read:empty::before{ content:'—'; opacity:.45; }
 </style>
 </head>
 <body>
@@ -2247,7 +2464,7 @@ body.no-motion .scene-dust{ opacity:.25; }
 
   /** Espace de noms unique du jeu. Tous les modules s'y rattachent. */
   const J = (window.JACKPOTLY = window.JACKPOTLY || {});
-  J.VERSION = '0.3.2';           // vague 3.2 : finition — célébrations, transitions, icônes, son
+  J.VERSION = '0.4.0';           // vague 4 : univers de casino — décors, machines par univers, audio
   J.SAVE_KEY = 'jackpotly.state.v1';
 
   /* ------------------------------------------------------------------ UTIL */
@@ -5115,8 +5332,13 @@ body.no-motion .scene-dust{ opacity:.25; }
     const extra = cls ? ' ' + cls : '';
     if (c == null) return '<span class="pcard back' + extra + '"></span>';
     const r = c % 13, s = (c / 13) | 0;
-    return '<span class="pcard' + (s === 1 || s === 2 ? ' red' : '') + extra + '">' +
-      '<span class="pr">' + LABELS[r] + '</span><span class="ps">' + SUITS[s] + '</span></span>';
+    /* Index en coin (rang + enseigne) comme sur une vraie carte, plus le motif
+       central : les deux index sont décoratifs, le centre reste la référence
+       lisible (et c'est lui que lisent les tests). */
+    const corner = '<span class="pic"><b>' + LABELS[r] + '</b><i>' + SUITS[s] + '</i></span>';
+    return '<span class="pcard' + (s === 1 || s === 2 ? ' red' : '') + extra + '">' + corner +
+      '<span class="pr">' + LABELS[r] + '</span><span class="ps">' + SUITS[s] + '</span>' +
+      corner.replace('class="pic"', 'class="pic br"') + '</span>';
   }
 
   /** Texte court d'une carte, ex. « A♠ ». */
@@ -6745,7 +6967,9 @@ body.no-motion .scene-dust{ opacity:.25; }
        façade de la machine occupe tout l'écran et garde son propre bouton de
        sortie. Le titre reste accessible aux lecteurs d'écran via aria-label. */
     const duo = def.id === 'slots';
-    host.className = duo ? 'duo' : '';
+    /* `duo` = mode « meuble » (machine à sous, plein cadre) ; `g-<id>` permet à
+       la feuille de style d'habiller chaque table (tapis, rail, feutre). */
+    host.className = (duo ? 'duo ' : '') + 'g-' + def.id;
     host.innerHTML =
       '<div class="game-head"' + (duo ? ' aria-hidden="true"' : '') + '>' +
         '<button class="icon-btn" data-g="back" aria-label="Retour">' +
@@ -6775,6 +6999,9 @@ body.no-motion .scene-dust{ opacity:.25; }
     // 3) liaisons DOM propres au jeu
     if (def.mount) def.mount(g);
     J.UI.go('game');
+    /* Marqueur global : pendant une partie, les bandeaux d'ambiance du hall
+       (flux « gros gains ») s'effacent pour laisser la table lisible. */
+    document.body.classList.add('in-game');
     /* Banque sonore : le jeu prend la main sur le timbre, puis joue sa
        signature — deux ou trois notes qui identifient la table. */
     J.Sfx.setGame(def.id);
@@ -6794,6 +7021,7 @@ body.no-motion .scene-dust{ opacity:.25; }
     if (g.ticket && g.ticket._open) J.Wallet.refund(g.ticket);
     saveBet(g.def.id, g.bet);
     current = null;
+    document.body.classList.remove('in-game');
     if (!silent) { J.UI.go('originals'); J.Screen.renderAll(); }
   };
 
@@ -7190,6 +7418,11 @@ body.no-motion .scene-dust{ opacity:.25; }
         el: g.gainEl || g.multEl || g.multLbl || g.stageEl || g.panelEl
       });
     }
+
+    /* Dernier mot au rendu : certains jeux peignent encore leur plateau après
+       l'appel de finish() — le bouton principal doit toujours refléter l'état
+       FINAL de la manche (et non un « en cours » qui ne reviendrait pas). */
+    renderActions(g);
 
     J.Bus.emit('game:round', { game: g.def.id, mult, rec });
   };
@@ -11063,6 +11296,7 @@ body.no-motion .scene-dust{ opacity:.25; }
   }
 
   function settle(g, num) {
+    g.spinning = false;              // la bille est posée : la manche est close
     const t = totals(g);
     const stake = g.ticket ? g.ticket.bet : t.stake;      // montant réellement débité
     const r = evaluate(g, num);
@@ -12316,6 +12550,31 @@ body.no-motion .scene-dust{ opacity:.25; }
   const LINE_CHOICES = [5, 10, 15, 20];
   const MAX_WIN_MULT = 5000;              // plafond de gain (multiples de la mise)
 
+  /* --------------------------------------------------------- COMPTEUR DE GAIN
+     Un seul compteur par manche : la génération invalide l'animation précédente
+     dès qu'un nouveau tirage commence, donc l'affichage ne peut jamais sauter
+     d'un gain à l'autre. */
+  let winGen = 0;
+  function countUp(g, target) {
+    const els = [g.winEl, g.winDuoEl].filter(Boolean);
+    if (!els.length) return;
+    const gen = ++winGen;
+    const show = (v) => els.forEach((el) => { el.textContent = U.fmt(v); });
+    if (!J.Store.state.settings.motion || target <= 0 || g.spinning) { show(target); return; }
+    const from = g._winShown || 0;
+    g._winShown = target;
+    if (from === target) { show(target); return; }
+    const t0 = performance.now(), dur = Math.min(900, 260 + target / Math.max(1, g.bet) * 45);
+    const step = (now) => {
+      if (gen !== winGen) return;
+      const p = Math.min(1, (now - t0) / dur);
+      show(Math.round(from + (target - from) * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+      else show(target);
+    };
+    requestAnimationFrame(step);
+  }
+
   /* ------------------------------------------------------------------ ÉTAT */
   function state(g) {
     /* La machine se choisit dans la galerie du lobby (une façade = un univers) :
@@ -12476,13 +12735,13 @@ body.no-motion .scene-dust{ opacity:.25; }
     });
 
     /* Afficheur de la machine : gain du tour, lignes jouées, mise. */
-    const winTxt = U.fmt(g.lastWin || 0);
-    const big = (g.lastWin || 0) >= g.bet * 5;
-    [g.winEl, g.winDuoEl].forEach((el) => {
-      if (!el) return;
-      el.textContent = winTxt;
-      el.classList.toggle('big', big);
-    });
+    /* Compteur de gain ANIMÉ : il grimpe de 0 au gain réel (jamais au-delà :
+       c'est le résultat du moteur qui est affiché, l'animation ne fait que le
+       dérouler). Sans animations, la valeur s'affiche d'un coup. */
+    const target = g.lastWin || 0;
+    const big = target >= g.bet * 5;
+    [g.winEl, g.winDuoEl].forEach((el) => { if (el) el.classList.toggle('big', big); });
+    countUp(g, target);
     if (g.linesRoEl) g.linesRoEl.textContent = g.lines;
     if (g.betRoEl) g.betRoEl.textContent = U.fmtK(g.bet) + ' J';
     if (g.betDuoEl) g.betDuoEl.textContent = U.fmtK(g.bet);
@@ -12500,6 +12759,8 @@ body.no-motion .scene-dust{ opacity:.25; }
     g.scatterCells = null;
     g.lastWin = 0;
     g.msg = 'Rouleaux…';
+    g._winShown = 0;
+    countUp(g, 0);
     g.grid = makeGrid(g);
     g.display = g.grid.map(() => ['F', 'F', 'F']);
     g.spinFlags = [true, true, true, true, true];

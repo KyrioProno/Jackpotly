@@ -23,6 +23,31 @@
   const LINE_CHOICES = [5, 10, 15, 20];
   const MAX_WIN_MULT = 5000;              // plafond de gain (multiples de la mise)
 
+  /* --------------------------------------------------------- COMPTEUR DE GAIN
+     Un seul compteur par manche : la génération invalide l'animation précédente
+     dès qu'un nouveau tirage commence, donc l'affichage ne peut jamais sauter
+     d'un gain à l'autre. */
+  let winGen = 0;
+  function countUp(g, target) {
+    const els = [g.winEl, g.winDuoEl].filter(Boolean);
+    if (!els.length) return;
+    const gen = ++winGen;
+    const show = (v) => els.forEach((el) => { el.textContent = U.fmt(v); });
+    if (!J.Store.state.settings.motion || target <= 0 || g.spinning) { show(target); return; }
+    const from = g._winShown || 0;
+    g._winShown = target;
+    if (from === target) { show(target); return; }
+    const t0 = performance.now(), dur = Math.min(900, 260 + target / Math.max(1, g.bet) * 45);
+    const step = (now) => {
+      if (gen !== winGen) return;
+      const p = Math.min(1, (now - t0) / dur);
+      show(Math.round(from + (target - from) * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+      else show(target);
+    };
+    requestAnimationFrame(step);
+  }
+
   /* ------------------------------------------------------------------ ÉTAT */
   function state(g) {
     /* La machine se choisit dans la galerie du lobby (une façade = un univers) :
@@ -183,13 +208,13 @@
     });
 
     /* Afficheur de la machine : gain du tour, lignes jouées, mise. */
-    const winTxt = U.fmt(g.lastWin || 0);
-    const big = (g.lastWin || 0) >= g.bet * 5;
-    [g.winEl, g.winDuoEl].forEach((el) => {
-      if (!el) return;
-      el.textContent = winTxt;
-      el.classList.toggle('big', big);
-    });
+    /* Compteur de gain ANIMÉ : il grimpe de 0 au gain réel (jamais au-delà :
+       c'est le résultat du moteur qui est affiché, l'animation ne fait que le
+       dérouler). Sans animations, la valeur s'affiche d'un coup. */
+    const target = g.lastWin || 0;
+    const big = target >= g.bet * 5;
+    [g.winEl, g.winDuoEl].forEach((el) => { if (el) el.classList.toggle('big', big); });
+    countUp(g, target);
     if (g.linesRoEl) g.linesRoEl.textContent = g.lines;
     if (g.betRoEl) g.betRoEl.textContent = U.fmtK(g.bet) + ' J';
     if (g.betDuoEl) g.betDuoEl.textContent = U.fmtK(g.bet);
@@ -207,6 +232,8 @@
     g.scatterCells = null;
     g.lastWin = 0;
     g.msg = 'Rouleaux…';
+    g._winShown = 0;
+    countUp(g, 0);
     g.grid = makeGrid(g);
     g.display = g.grid.map(() => ['F', 'F', 'F']);
     g.spinFlags = [true, true, true, true, true];
