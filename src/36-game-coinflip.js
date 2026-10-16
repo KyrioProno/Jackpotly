@@ -45,7 +45,7 @@
         '</div>' +
         '<div class="row between mt-s"><span class="sub">Série en cours</span>' +
           '<span class="mono up" id="cfStreakLbl">0 victoire · ' + U.fmtMult(0.99) + ' avant gain</span></div>' +
-        '<div class="sub mt-s">En mode Auto-bet, la série s\'arrête au multiplicateur indiqué par « STOP SI MULT ≥ ».';
+        '<div class="sub mt-s">En mode Auto-bet, la série s\'arrête au multiplicateur indiqué par « STOP SI MULT ≥ ».</div>';
     },
 
     payoutHint(g) {

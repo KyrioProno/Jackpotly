@@ -18,11 +18,12 @@ Livré en **un seul fichier HTML autonome** : `jackpotly.html` (aucune dépendan
 | `src/` | Sources séparées (design system, modules JS, un fichier par jeu). |
 | `tools/build.mjs` | Assemble les sources en `jackpotly.html` + contrôles d'intégrité. |
 | `tools/serve.mjs` | Serveur de développement sans dépendance (`PORT=4173 npm run serve`). |
-| `tests/` | Suites de vérification (mathématiques, crypto, parcours interface). |
+| `tests/` | Suites de vérification : maths/crypto (`verify`), parcours (`smoke`), crédits (`credits`), navigateur mobile réel (`mobile`). |
 
 ```bash
 npm run build     # reconstruit jackpotly.html (+ index.html)
-npm test          # build + 243 contrôles + 14 étapes de parcours
+npm test          # build + 243 contrôles + 14 étapes de parcours + audit des crédits
+npm run mobile    # 49 contrôles dans un vrai navigateur mobile (Chromium, doigt simulé)
 npm run serve     # http://localhost:4173
 ```
 
@@ -35,17 +36,17 @@ L'aperçu live d'Arena passe par le proxy du sandbox, qui **exige un jeton** : l
 (`https://<port>-<sandbox>.e2b.app`) affiche une demande de token si on l'ouvre directement.
 Le jeu n'ayant besoin d'aucun serveur, voici trois voies qui n'utilisent aucun jeton :
 
-**1. Rendu direct dans le navigateur (un tap, aucune installation)** — fichiers figés sur le tag `v0.3.0` :
+**1. Rendu direct dans le navigateur (un tap, aucune installation)** — fichiers figés sur le tag `v0.3.1` :
 
-- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.3.0/jackpotly.html
-- https://cdn.statically.io/gh/KyrioProno/Jackpotly/v0.3.0/jackpotly.html
-- https://raw.githack.com/KyrioProno/Jackpotly/v0.3.0/jackpotly.html
-- https://htmlpreview.github.io/?https://github.com/KyrioProno/Jackpotly/blob/v0.3.0/jackpotly.html
+- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.3.1/jackpotly.html
+- https://cdn.statically.io/gh/KyrioProno/Jackpotly/v0.3.1/jackpotly.html
+- https://raw.githack.com/KyrioProno/Jackpotly/v0.3.1/jackpotly.html
+- https://htmlpreview.github.io/?https://github.com/KyrioProno/Jackpotly/blob/v0.3.1/jackpotly.html
 
 **2. Téléchargement puis lecture hors ligne (le plus fiable sur mobile)**
 
-- Fichier : https://github.com/KyrioProno/Jackpotly/blob/v0.3.0/jackpotly.html → « Download raw file »
-- Archive complète : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.3.0
+- Fichier : https://github.com/KyrioProno/Jackpotly/blob/v0.3.1/jackpotly.html → « Download raw file »
+- Archive complète : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.3.1
 - Ensuite : ouvrir `jackpotly.html` dans le navigateur, ou « Ajouter à l'écran d'accueil »
   pour l'avoir en plein écran. Aucune connexion n'est nécessaire pour jouer.
 
@@ -253,6 +254,19 @@ npm test
   chaque réglage, les **16 jeux** avec toutes leurs commandes, l'auto-bet, la boutique, la roue,
   la recharge) en vérifiant qu'aucune exception ni message d'erreur n'apparaît et que l'état
   reste cohérent.
+- `tests/credits.mjs` — **18 contrôles d'intégrité des crédits** : les 16 jeux sont rejoués pour de vrai
+  (mise 100 J, gestes du joueur) et chaque manche doit vérifier `Δ solde = −mise + gain`,
+  `gain = arrondi(mise × multiplicateur)` et la cohérence des cumuls misé/rendu. Vérifie aussi que le
+  RTP annoncé correspond aux tables du moteur (Roulette 36/37, moyenne des 60 segments de la roue,
+  RTP exact des 3 thèmes de machines à sous) et que **chaque jeton gratuit est plafonné**
+  (recharge : 2 500 J × 3/jour après 25 s d'attente, bonus et roue quotidiens, 5 packs dont l'offre
+  de bienvenue, limite de dépenses mensuelle, primes VIP une seule fois par palier).
+- `tests/mobile.mjs` — **49 contrôles dans un vrai navigateur** (Chromium/Blink, `--shots` pour des
+  captures) sur 6 formats de téléphone : débordements, cibles tactiles mesurées au pixel (zones
+  élargies comprises), chevauchements réels (`elementFromPoint`), modales et feuilles qui tiennent
+  dans l'écran, libellés tronqués, et **une manche complète au doigt sur les 6 classiques** avec
+  solde affiché = solde du moteur. C'est cette suite qui a révélé le bouton « Encaisser » inerte de
+  Mines, la roulette figée par un appel audio non fini et les libellés coupés à 320 px.
 - `tests/probe.mjs` — sonde de développement : monte un jeu dans un DOM simulé et clique **tous**
   ses boutons un par un pour traquer les exceptions avant d'écrire les tests définitifs
   (`node tests/probe.mjs roulette 2`).

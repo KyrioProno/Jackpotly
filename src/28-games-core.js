@@ -151,8 +151,22 @@
   function renderPanel(g) {
     const def = g.def;
     const history = (J.Store.state.stats.perGame[def.id] || {});
-    g.panelEl.innerHTML =
-      '<div id="gControls">' + (def.controls ? def.controls(g) : '') + '</div>' +
+    // Le panneau se reconstruit (changement de risque au Keno, de cible à la roue…) :
+    // on restitue la position de défilement pour ne pas remonter sous le doigt.
+    const prevScroll = g.panelEl.querySelector('#gScroll');
+    const keepScroll = prevScroll ? prevScroll.scrollTop : 0;
+    // Le panneau est construit avec de VRAIS nœuds : les réglages d'un jeu sont
+    // posés dans leur propre conteneur, donc un `<div>` oublié dans un jeu ne
+    // peut plus engloutir le bouton principal ni casser la mise en page.
+    g.panelEl.innerHTML = '';
+    const scroll = document.createElement('div');
+    scroll.id = 'gScroll';
+    const controls = document.createElement('div');
+    controls.id = 'gControls';
+    controls.innerHTML = def.controls ? def.controls(g) : '';   // les balises non fermées restent ici
+    scroll.appendChild(controls);
+    const rest = document.createElement('div');
+    rest.innerHTML =
       '<div class="row between" style="margin:9px 0 5px">' +
         '<span class="bet-label">Mise (jetons)</span>' +
         '<span class="sub" id="gPayout"></span>' +
@@ -172,13 +186,19 @@
         '<button data-bet="max">Max</button>' +
         '<button data-bet="custom">Perso</button>' +
       '</div>' +
-      '<div class="btn-row mt' + ({ 2: ' two', 3: ' three', 4: ' four' }[(def.actions ? def.actions(g).length : 1)] || '') + '" id="gActions"></div>' +
       '<div class="row between mt-s" style="font-size:10.5px;color:var(--muted)">' +
         '<span>Session : <b class="mono" id="gStatRounds">0</b> parties · net ' +
           '<b class="mono" id="gStatNet">0</b> J</span>' +
         '<button class="link" id="gAdvanced">' + (def.auto === false ? '' : 'Auto-bet ▾') + '</button>' +
       '</div>' +
       '<div class="bet-panel-advanced' + (g._advOpen ? ' is-on' : '') + '" id="gAdvancedPanel"></div>';
+    while (rest.firstChild) scroll.appendChild(rest.firstChild);
+    const actions = document.createElement('div');
+    actions.id = 'gActions';
+    actions.className = 'btn-row mt' + ({ 2: ' two', 3: ' three', 4: ' four' }[(def.actions ? def.actions(g).length : 1)] || '');
+    g.panelEl.appendChild(scroll);
+    g.panelEl.appendChild(actions);          // toujours enfant direct du panneau
+    if (keepScroll) scroll.scrollTop = keepScroll;
 
     // Actions spécifiques au jeu (ex. « Cash out »)
     renderActions(g);

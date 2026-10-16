@@ -328,7 +328,7 @@
       const ballR = 0.32 + (1 - e) * 0.62;
       drawWheel(g, g.angle, ballA, ballR);
       if (!lastTick || now - lastTick > 90 - 60 * e) {          // tic-tac de la bille
-        J.Sfx.wheelTick(); lastTick = now;
+        J.Sfx.wheelTick(1 - e); lastTick = now;
       }
       if (p < 1) g._raf = requestAnimationFrame(frame);
       else { g.spinning = false; g.angle = target; drawWheel(g, g.angle, null); }

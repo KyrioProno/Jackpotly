@@ -208,6 +208,9 @@
     if (cash) {
       const cur2 = multFor(g.picked.length, g.mineCount);
       cash.innerHTML = '💰 Encaisser · +' + U.fmt(Math.round(g.ticket.bet * cur2));
+      // Le bouton est né désactivé (aucune case révélée) : il doit devenir
+      // actif dès la première gemme, sinon le gain est affiché mais encaissable… jamais.
+      if (g.picked.length > 0) { cash.disabled = false; cash.removeAttribute('aria-disabled'); }
     }
   }
 

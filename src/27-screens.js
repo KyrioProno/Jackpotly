@@ -342,7 +342,7 @@
           '<div class="grow"><div style="font-weight:800;font-size:16px">' + U.esc(st.pseudo) + '</div>' +
           '<div class="row mt-s"><span class="badge ' + vip.tier.badge + '">🏅 ' + vip.tier.name + '</span>' +
           '<span class="badge">RTP ' + U.fmtPct(s.rtp, 1) + '</span></div></div>' +
-          '<button class="btn xs ghost" data-prof="editName">Modifier</button>' +
+          '<button class="btn xs ghost" data-prof="editName" aria-label="Modifier le pseudo">Éditer</button>' +
         '</div>' +
         '<div class="progress mt"><i style="width:' + vip.pct.toFixed(1) + '%"></i></div>' +
         '<div class="row between mt-s"><span class="sub">' + U.fmt(st.vip.wagered) + ' J misés au total</span>' +

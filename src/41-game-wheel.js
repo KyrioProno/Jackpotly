@@ -107,7 +107,7 @@
         '<div class="row between mt-s"><span class="sub">Sinon (segment non gagnant)</span>' +
           '<span class="mono" style="color:var(--txt-2)">' + U.fmt(consol) + ' J (' + U.fmtMult(t.lossMult) + ')</span></div>' +
         '<div class="sub mt-s">' + t.wins + ' segments paient <b class="gold">' + U.fmtMult(t.top) + '</b> · ' +
-          (SEGMENTS - t.wins) + ' paient <b>' + U.fmtMult(t.lossMult) + '</b> · RTP réel ' + t.rtp.toFixed(2) + ' %';
+          (SEGMENTS - t.wins) + ' paient <b>' + U.fmtMult(t.lossMult) + '</b> · RTP réel ' + t.rtp.toFixed(2) + ' %</div>';
     },
 
     payoutHint(g) {

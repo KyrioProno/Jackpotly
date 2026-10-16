@@ -41,39 +41,47 @@
     }
 
     /** Une note (ou un glissando si slide est fourni). */
+    /** Une valeur utilisable pour l'API audio (jamais NaN / Infinity). */
+    const fin = (v, def) => (Number.isFinite(v) ? v : def);
+
     function tone(o) {
       const c = ensure(); if (!c) return;
-      const t0 = c.currentTime + (o.delay || 0);
+      const freq = fin(o.freq, 440), dur = fin(o.dur, 0.1);
+      if (dur <= 0) return;
+      const t0 = c.currentTime + fin(o.delay, 0);
       const osc = c.createOscillator();
       const g = c.createGain();
       osc.type = o.type || 'sine';
-      osc.frequency.setValueAtTime(o.freq, t0);
-      if (o.slide) osc.frequency.exponentialRampToValueAtTime(Math.max(20, o.slide), t0 + o.dur);
-      const vol = (o.gain == null ? 0.25 : o.gain);
+      osc.frequency.setValueAtTime(freq, t0);
+      if (o.slide) osc.frequency.exponentialRampToValueAtTime(Math.max(20, fin(o.slide, freq)), t0 + dur);
+      const vol = Math.max(0.0002, fin(o.gain, 0.25));
       g.gain.setValueAtTime(0.0001, t0);
-      g.gain.exponentialRampToValueAtTime(vol, t0 + Math.min(0.02, o.dur * 0.25));
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + o.dur);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + Math.min(0.02, dur * 0.25));
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
       osc.connect(g).connect(master);
-      osc.start(t0); osc.stop(t0 + o.dur + 0.03);
+      osc.start(t0); osc.stop(t0 + dur + 0.03);
     }
 
     /** Percussion / whoosh à partir du bruit blanc. */
     function noise(o) {
       const c = ensure(); if (!c || !noiseBuf) return;
-      const t0 = c.currentTime + (o.delay || 0);
+      const dur = fin(o.dur, 0.1);
+      if (dur <= 0) return;
+      const t0 = c.currentTime + fin(o.delay, 0);
       const src = c.createBufferSource(); src.buffer = noiseBuf;
       const f = c.createBiquadFilter();
       f.type = o.filter || 'bandpass';
-      f.frequency.setValueAtTime(o.freq || 1200, t0);
-      if (o.slide) f.frequency.exponentialRampToValueAtTime(Math.max(60, o.slide), t0 + o.dur);
-      f.Q.value = o.q == null ? 1.6 : o.q;
+      const f0 = fin(o.freq, 1200);
+      f.frequency.setValueAtTime(f0, t0);
+      if (o.slide) f.frequency.exponentialRampToValueAtTime(Math.max(60, fin(o.slide, f0)), t0 + dur);
+      f.Q.value = fin(o.q, 1.6);
       const g = c.createGain();
-      const vol = o.gain == null ? 0.2 : o.gain;
+      const vol = Math.max(0.0002, fin(o.gain, 0.2));
       g.gain.setValueAtTime(0.0001, t0);
       g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + o.dur);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
       src.connect(f).connect(g).connect(master);
-      src.start(t0); src.stop(t0 + o.dur + 0.02);
+      src.start(t0); src.stop(t0 + dur + 0.02);
     }
 
     /** Arpège (gains, niveaux, jackpot). */
@@ -98,6 +106,7 @@
       bet() { arp([NOTES.C5, NOTES.E5], { step: 0.045, dur: 0.10, gain: 0.16 }); },
       /** Gain standard */
       win(mult) {
+        mult = Number.isFinite(mult) ? mult : 1;
         if (mult >= 10) return arp([NOTES.C5, NOTES.E5, NOTES.G5, NOTES.C6, NOTES.E6], { step: 0.055, dur: 0.22, gain: 0.24 });
         if (mult >= 2) return arp([NOTES.C5, NOTES.E5, NOTES.G5], { step: 0.05, dur: 0.18, gain: 0.22 });
         return arp([NOTES.E5, NOTES.G5], { step: 0.05, dur: 0.15, gain: 0.20 });
@@ -110,7 +119,7 @@
       lose() { tone({ freq: 220, dur: 0.30, type: 'sawtooth', gain: 0.13, slide: 90 }); },
       bust() { tone({ freq: 180, dur: 0.7, type: 'sawtooth', gain: 0.2, slide: 45 }); noise({ freq: 420, slide: 90, dur: 0.65, gain: 0.16, filter: 'lowpass' }); },
       /** Tick de multiplicateur (crash / roue) */
-      tick(v) { tone({ freq: 1000 + Math.min(900, v * 40), dur: 0.035, type: 'square', gain: 0.055 }); },
+      tick(v) { tone({ freq: 1000 + Math.min(900, (Number.isFinite(v) ? v : 0) * 40), dur: 0.035, type: 'square', gain: 0.055 }); },
       cashout() { arp([NOTES.G5, NOTES.C6, NOTES.E6], { step: 0.045, dur: 0.22, gain: 0.26 }); },
       /** Révélation de case (mines, keno) */
       reveal(safe) {
@@ -123,7 +132,7 @@
       /** Recharge / bonus */
       bonus() { arp([NOTES.G5, NOTES.C6, NOTES.E6, NOTES.G6], { step: 0.07, dur: 0.28, gain: 0.24 }); },
       /** Compteur de roue qui ralentit */
-      wheelTick(speed) { tone({ freq: 780 + speed * 340, dur: 0.03, type: 'square', gain: 0.05 }); }
+      wheelTick(speed) { tone({ freq: 780 + (Number.isFinite(speed) ? speed : 0.5) * 340, dur: 0.03, type: 'square', gain: 0.05 }); }
     };
   })());
 
@@ -135,7 +144,7 @@
       if (navigator.vibrate) { try { navigator.vibrate(pattern); } catch (e) { /* ignoré */ } }
     },
     tap() { this.buzz(8); },
-    win(mult) { this.buzz(mult >= 10 ? [16, 40, 16, 40, 60] : mult >= 2 ? [14, 30, 22] : 12); },
+    win(mult) { mult = Number.isFinite(mult) ? mult : 1; this.buzz(mult >= 10 ? [16, 40, 16, 40, 60] : mult >= 2 ? [14, 30, 22] : 12); },
     lose() { this.buzz([28, 50, 28]); },
     big() { this.buzz([18, 44, 18, 44, 18, 60, 90]); }
   };

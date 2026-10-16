@@ -1,5 +1,8 @@
 # Dépendances de développement (outils de test uniquement)
 node_modules/
+# Captures d'écran générées par `node tests/mobile.mjs --shots`
+tests/screens/
+
 # Fichiers temporaires
 *.log
 .DS_Store

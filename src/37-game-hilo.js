@@ -86,7 +86,7 @@
           '<span class="mono up" id="hlStepsLbl">' + g.autoSteps + '</span></div>' +
         '<input type="range" id="hlSteps" min="1" max="9" step="1" value="' + g.autoSteps + '" class="thin mt-s">' +
         '<div class="sub mt-s">Nombre de prédictions tentées automatiquement par partie en mode Auto-bet ' +
-        '(le jeu choisit toujours l\'option la plus probable).';
+        '(le jeu choisit toujours l\'option la plus probable).</div>';
     },
 
     payoutHint(g) {
