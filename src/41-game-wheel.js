@@ -278,17 +278,15 @@
     const bet = g.ticket.bet;
     const payout = Math.round(bet * segMult);
     if (won) {
-      J.Sfx.win(g.target); J.haptic.win(g.target);
       g.msgEl.innerHTML = '🎉 Segment gagnant <b class="gold">' + U.fmtMult(segMult) + '</b> — +' + U.fmt(payout) + ' jetons';
-      J.floatText('+' + U.fmt(payout), { el: g.cv, color: 'var(--green)', size: 22 });
-      J.FX.confetti({ count: g.target >= 10 ? 120 : 40, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 90 });
+      J.FX.celebrate({ mult: segMult, payout: payout, el: g.cv });
       if (g.target >= 10) J.Live.playerWin('wheel', g.target, payout);
     } else {
       g.msgEl.innerHTML = 'Segment à <b>' + U.fmtMult(segMult) + '</b> — cible ' + U.fmtMult(g.target) +
         (payout > 0 ? ' · consolation +' + U.fmt(payout) : '');
       J.Sfx.lose(); J.haptic.lose();
     }
-    J.Games.finish(g, segMult, { detail: 'segment ' + U.fmtMult(segMult) + ' · cible ' + U.fmtMult(g.target) });
+    J.Games.finish(g, segMult, { detail: 'segment ' + U.fmtMult(segMult) + ' · cible ' + U.fmtMult(g.target), celebrated: true });
   }
 
   /* Exposé pour les tests (vérification du RTP par cible) */

@@ -16,6 +16,10 @@
   const SCREEN_NAV = { home: 'home', originals: 'originals', rank: 'rank', shop: 'shop', profile: 'profile', game: null };
 
   /** Affiche un écran (avec fondu) et met à jour la navigation basse. */
+  /* Ordre des onglets de la barre basse : il donne le SENS du glissement
+     (les écrans défilent de gauche à droite comme les onglets). */
+  const TAB_ORDER = ['home', 'originals', 'rank', 'shop', 'profile'];
+
   UI.go = function (id) {
     if (!SCREEN_NAV.hasOwnProperty(id)) id = 'home';
     if (id === current && id !== 'game') return;
@@ -23,12 +27,38 @@
     if (current === 'game' && id !== 'game' && J.Games) J.Games.close(true);
     const prev = document.getElementById('screen-' + current);
     const next = document.getElementById('screen-' + id);
+    const from = TAB_ORDER.indexOf(current), to = TAB_ORDER.indexOf(id);
+    const dir = from >= 0 && to >= 0 ? (to > from ? 'right' : to < from ? 'left' : 'right') : 'right';
     if (prev && prev !== next) {
-      prev.classList.remove('is-on');
+      prev.classList.remove('is-on', 'enter-right', 'enter-left');
+      // L'écran sortant s'efface du côté opposé à l'arrivée du nouveau.
+      prev.classList.add(dir === 'right' ? 'leave-left' : 'leave-right');
+      window.setTimeout(() => prev.classList.remove('leave-left', 'leave-right'), 260);
       J.Bus.emit('screen:leave', current);
     }
     current = id;
-    if (next) { next.classList.add('is-on'); next.scrollTop = id === 'game' ? 0 : next.scrollTop; }
+    if (next) {
+      next.classList.remove('leave-left', 'leave-right');
+      next.classList.add('enter-' + dir);          // position de départ
+      void next.offsetWidth;                       // on force un reflow
+      next.classList.add('is-on');
+      next.scrollTop = id === 'game' ? 0 : next.scrollTop;
+      // Arrivée : on relâche la position, puis les blocs du nouvel écran
+      // apparaissent en cascade (les écrans de jeu ont leurs propres animations).
+      const target = next;
+      requestAnimationFrame(() => {
+        target.classList.remove('enter-right', 'enter-left');
+        if (id !== 'game') {
+          Array.prototype.forEach.call(target.children, (el) => {
+            const pos = getComputedStyle(el).position;
+            if (pos === 'fixed' || pos === 'absolute') return;
+            el.classList.remove('cascade');
+            void el.offsetWidth;
+            el.classList.add('cascade');
+          });
+        }
+      });
+    }
     document.querySelectorAll('.nav-btn').forEach((b) => b.classList.toggle('is-on', b.dataset.go === id));
     J.Bus.emit('screen:enter', id);
   };

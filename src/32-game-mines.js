@@ -158,12 +158,10 @@
       const mult = multFor(g.picked.length, g.mineCount);
       g.active = false;
       const payout = Math.round(g.ticket.bet * mult);
-      J.Sfx.cashout(); J.haptic.win(mult);
       revealMines(g);
-      J.floatText('+' + U.fmt(payout), { el: g.gainEl, color: 'var(--green)', size: 24 });
-      J.FX.confetti({ count: mult >= 5 ? 90 : 40, x: window.innerWidth / 2, y: g.gridEl.getBoundingClientRect().top + 60 });
+      J.FX.celebrate({ mult: mult, payout: payout, el: g.gainEl });
       if (mult >= 5) J.Live.playerWin('mines', mult, payout);
-      J.Games.finish(g, mult, { detail: g.picked.length + ' diamants' });
+      J.Games.finish(g, mult, { detail: g.picked.length + ' diamants', celebrated: true });
     }
   });
 

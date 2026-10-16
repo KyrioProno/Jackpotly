@@ -354,10 +354,11 @@
     if (g.recent.length > 14) g.recent.pop();
     paintReadout(g);
     paintRecent(g);
-    if (r.mult > 2) { J.Sfx.bigwin(); J.haptic.big(); }
-    else if (r.mult > 0) { J.Sfx.cashout(); J.haptic.win(r.mult * 4); }
-    else { J.Sfx.lose(); J.haptic.lose(); }
-    J.Games.finish(g, r.mult, { detail: 'Numéro ' + num + ' · ' + t.spots + ' mise(s)' });
+    // La roulette est un jeu de tapis : le gain se fête à hauteur du
+    // multiplicateur net rapporté à la mise totale de la manche.
+    J.FX.celebrate({ mult: r.mult, payout: Math.round(stake * r.mult), el: g.readEl || g.gridEl });
+    if (r.mult === 0) { J.Sfx.lose(); J.haptic.lose(); }
+    J.Games.finish(g, r.mult, { detail: 'Numéro ' + num + ' · ' + t.spots + ' mise(s)', celebrated: true });
 
     // Tapis insuffisant après une perte : on réduit la valeur du jeton pour que
     // les mises restées en place restent jouables (le joueur peut aussi « Effacer »).

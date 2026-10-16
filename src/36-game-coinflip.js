@@ -176,15 +176,13 @@
     const payout = Math.round(g.ticket.bet * mult);
     g.phase = 'idle';
     g.msgEl.innerHTML = '💰 <b class="up">Encaissé</b> à ' + U.fmtMult(mult) + ' après ' + g.streak + ' lancer(s)';
-    J.Sfx.cashout(); J.haptic.win(mult);
-    J.floatText('+' + U.fmt(payout), { el: g.resEl, color: 'var(--green)', size: 24 });
-    if (mult >= 3.96) J.FX.confetti({ count: mult >= 30 ? 100 : 45, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 80 });
+    J.FX.celebrate({ mult: mult, payout: payout, el: g.resEl });
     if (mult >= 7.92) J.Live.playerWin('coinflip', mult, payout);
     const streakEnd = g.streak;
     g.streak = 0;
     renderDots(g);
     syncStreakLabel(g);
-    J.Games.finish(g, mult, { detail: streakEnd + ' victoires' });
+    J.Games.finish(g, mult, { detail: streakEnd + ' victoires', celebrated: true });
   }
 
   /* ----------------------------------------------------------- AFFICHAGE */

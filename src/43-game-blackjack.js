@@ -274,10 +274,12 @@
       ' · croupier ' + dv;
     if (!g.insurance) g.msg = (net > 0 ? 'Gagné ' : net < 0 ? 'Perdu ' : 'Égalité · ') + (net !== 0 ? U.fmtSigned(net) + ' J' : '');
     paint(g);
-    if (net > 0) { J.Sfx.win(mult); J.haptic.win(mult); }
+    // Le multiplicateur de la manche est net (mise reprise incluse) : on fête
+    // le profit réel, pas la remise en jeu du tapis.
+    if (net > 0) J.FX.celebrate({ mult: mult, payout: Math.round(returned), el: g.stageEl || g.viewEl });
     else if (net < 0) { J.Sfx.lose(); J.haptic.lose(); }
     else J.Sfx.tap();
-    J.Games.finish(g, mult, { detail: g.detail });
+    J.Games.finish(g, mult, { detail: g.detail, celebrated: true });
   }
 
   /* ------------------------------------------------- STRATÉGIE DE BASE (auto) */

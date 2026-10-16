@@ -326,15 +326,17 @@
     const mult = g.multiplier;
     const payout = Math.round(g.ticket.bet * mult);
     drawBoard(g, { x: bucketX(g.landed), y: bucketY() + G.bucketH * 0.5, result: g.landed });
-    if (mult >= 1) {
-      J.Sfx.win(mult); J.haptic.win(mult);
-      J.floatText('+' + U.fmt(payout - g.ticket.bet), { el: g.legendEl, color: 'var(--green)', size: 22 });
-      const strong = mult >= 5;
-      J.FX.confetti({ count: strong ? 80 : 20, x: window.innerWidth / 2 + (g.landed - g.rows / 2) * 10, y: g.stageEl.getBoundingClientRect().bottom - 26 });
-      if (strong) J.Live.playerWin('plinko', mult, payout);
+    if (mult > 1) {
+      // La célébration part de la caisse touchée, en bas du plateau.
+      J.FX.celebrate({
+        mult: mult, payout: payout, el: g.legendEl,
+        x: window.innerWidth / 2 + (g.landed - g.rows / 2) * 10,
+        y: g.stageEl.getBoundingClientRect().bottom - 26
+      });
+      if (mult >= 5) J.Live.playerWin('plinko', mult, payout);
     } else {
       J.Sfx.lose(); J.haptic.lose();
     }
-    J.Games.finish(g, mult, { detail: U.fmtMult(mult) + ' (caisse ' + (g.landed + 1) + '/' + (g.rows + 1) + ')' });
+    J.Games.finish(g, mult, { detail: U.fmtMult(mult) + ' (caisse ' + (g.landed + 1) + '/' + (g.rows + 1) + ')', celebrated: true });
   }
 })();

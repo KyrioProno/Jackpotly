@@ -275,13 +275,11 @@
     g.phase = 'idle';
     renderChoices(g);
     g.msgEl.innerHTML = '💰 <b class="up">Encaissé</b> à ' + U.fmtMult(mult) + ' après ' + g.steps + ' prédiction(s)';
-    J.Sfx.cashout(); J.haptic.win(mult);
-    J.floatText('+' + U.fmt(payout), { el: g.cardEl, color: 'var(--green)', size: 22 });
-    if (mult >= 4) J.FX.confetti({ count: mult >= 20 ? 100 : 45, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 80 });
+    J.FX.celebrate({ mult: mult, payout: payout, el: g.cardEl });
     if (mult >= 8) J.Live.playerWin('hilo', mult, payout);
     const steps = g.steps;
     g.steps = 0;
     g.mult = HOUSE;
-    J.Games.finish(g, mult, { detail: steps + ' prédiction(s) juste(s)' });
+    J.Games.finish(g, mult, { detail: steps + ' prédiction(s) juste(s)', celebrated: true });
   }
 })();

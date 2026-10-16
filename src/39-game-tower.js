@@ -272,12 +272,10 @@
     const payout = Math.round(g.ticket.bet * mult);
     g.active = false;
     revealTail(g);
-    J.Sfx.cashout(); J.haptic.win(mult);
-    J.floatText('+' + U.fmt(payout), { el: g.multLbl, color: 'var(--green)', size: 22 });
-    if (mult >= 4) J.FX.confetti({ count: mult >= 20 ? 110 : 50, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 70 });
+    J.FX.celebrate({ mult: mult, payout: payout, el: g.multLbl });
     if (mult >= 8) J.Live.playerWin('tower', mult, payout);
     g.msgEl.innerHTML = '💰 <b class="up">Encaissé</b> à l\'étage ' + g.floor + ' · ' + U.fmtMult(mult);
-    J.Games.finish(g, mult, { detail: g.floor + ' étage(s) franchi(s)' });
+    J.Games.finish(g, mult, { detail: g.floor + ' étage(s) franchi(s)', celebrated: true });
   }
 
   /** Après encaissement : on montre les pièges des étages non joués. */

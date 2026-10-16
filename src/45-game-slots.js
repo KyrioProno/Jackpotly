@@ -223,9 +223,9 @@
       g.msg = 'Gagné ' + U.fmt(base) + ' J' + (r.wins.length ? ' · ' + r.wins.length + ' ligne(s)' : '') +
         (r.scatters >= 3 ? ' · ' + r.scatters + ' scatters' : '');
       g.lastWin = base;
-      J.Sfx.win(mult);
-      if (mult >= 20) J.Sfx.bigwin();
-      if (mult >= 20) J.FX.confetti ? J.FX.confetti() : null;
+      // Les rouleaux ont déjà leur propre animation : la célébration part de la
+      // grille et reste sobre sous 5×, spectaculaire au-delà.
+      J.FX.celebrate({ mult: mult, payout: base, el: g.stageEl || g.viewEl });
     } else {
       g.msg = 'Aucun gain sur ce tour';
       J.Sfx.lose();
@@ -290,7 +290,7 @@
       (capped < total ? ' · plafond ' + MAX_WIN_MULT + 'x appliqué' : '');
     g.paintInfo = g.msg;
     paint(g);
-    J.Games.finish(g, mult, { detail: g.detail });
+    J.Games.finish(g, mult, { detail: g.detail, celebrated: true });
   }
 
   /* ------------------------------------------------------------------- JEU */

@@ -147,16 +147,14 @@
 
     if (win) {
       const payout = Math.round(g.ticket.bet * target);
-      J.Sfx.win(target); J.haptic.win(target);
       g.msgEl.innerHTML = '🎉 <b class="up">Gagné</b> — ' + U.fmtMult(result) + ' ≥ cible ' + U.fmtMult(target);
-      J.floatText('+' + U.fmt(payout - g.ticket.bet), { el: g.numEl, color: 'var(--green)', size: 24 });
-      J.FX.confetti({ count: target >= 10 ? 90 : 30, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 90 });
+      J.FX.celebrate({ mult: target, payout: payout, el: g.numEl });
       if (target >= 10) J.Live.playerWin('limbo', target, payout);
     } else {
       J.Sfx.lose(); J.haptic.lose();
       g.msgEl.innerHTML = '❌ <b class="down">Perdu</b> — ' + U.fmtMult(result) + ' < cible ' + U.fmtMult(target);
       J.shake(g.stageEl);
     }
-    J.Games.finish(g, win ? target : 0, { detail: U.fmtMult(result) + ' vs cible ' + U.fmtMult(target) });
+    J.Games.finish(g, win ? target : 0, { detail: U.fmtMult(result) + ' vs cible ' + U.fmtMult(target), celebrated: true });
   }
 })();

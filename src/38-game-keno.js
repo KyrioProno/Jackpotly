@@ -284,15 +284,13 @@
 
     if (mult > 0) {
       g.msgEl.innerHTML = '🎉 <b class="up">' + hits + ' / ' + k + '</b> correspondances — gain ' + U.fmtMult(mult);
-      J.Sfx.win(mult); J.haptic.win(mult);
-      J.floatText('+' + U.fmt(payout), { el: g.ballsEl, color: 'var(--green)', size: 22 });
-      J.FX.confetti({ count: mult >= 20 ? 110 : mult >= 5 ? 50 : 18, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 60 });
+      J.FX.celebrate({ mult: mult, payout: payout, el: g.ballsEl });
       if (mult >= 50) J.Live.playerWin('keno', mult, payout);
     } else {
       g.msgEl.innerHTML = '❌ <b class="down">' + hits + ' / ' + k + '</b> correspondances — aucun gain';
       J.Sfx.lose(); J.haptic.lose();
     }
-    J.Games.finish(g, mult || 0, { detail: hits + '/' + k + ' numéros' });
+    J.Games.finish(g, mult || 0, { detail: hits + '/' + k + ' numéros', celebrated: true });
     // Nouvelle grille pour le tirage suivant
     g.drawn = [];
     J.Games.schedule(g, () => { paintGrid(g); }, 500);

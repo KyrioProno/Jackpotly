@@ -146,11 +146,9 @@
     moveCursor(g, roll);
     onMark(g, roll);
     if (win) {
-      J.Sfx.win(mult); J.haptic.win(mult);
       g.msgEl.innerHTML = '🎉 <b class="up">Gagné</b> — ' + roll.toFixed(2).replace('.', ',') + ' ' +
         (g.mode === 'under' ? '<' : '>') + ' ' + g.target.toFixed(2).replace('.', ',');
-      J.floatText('+' + U.fmt(Math.round(g.ticket.bet * mult) - g.ticket.bet), { el: g.numEl, color: 'var(--green)', size: 24 });
-      J.FX.confetti({ count: mult >= 10 ? 90 : 34, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 90 });
+      J.FX.celebrate({ mult: mult, payout: Math.round(g.ticket.bet * mult), el: g.numEl });
       if (mult >= 10) J.Live.playerWin('dice', mult, Math.round(g.ticket.bet * mult));
     } else {
       J.Sfx.lose(); J.haptic.lose();
@@ -158,7 +156,7 @@
         (g.mode === 'under' ? '≥' : '≤') + ' ' + g.target.toFixed(2).replace('.', ',');
       J.shake(g.stageEl);
     }
-    J.Games.finish(g, win ? mult : 0, { detail: roll.toFixed(2) + (win ? ' gagné' : ' perdu') });
+    J.Games.finish(g, win ? mult : 0, { detail: roll.toFixed(2) + (win ? ' gagné' : ' perdu'), celebrated: true });
   }
 
   /** Synchronise l'interface avec le seuil/mode courants. */

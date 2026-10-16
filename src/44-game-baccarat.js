@@ -269,10 +269,10 @@
       (winning.length ? ' · gagné : ' + winning.join(', ') : '');
     g.msg = g.outcome === 'egalite' ? 'Égalité' : (g.outcome === 'joueur' ? 'Le Joueur gagne' : 'La Banque gagne');
     paint(g);
-    if (mult > 2) { J.Sfx.bigwin(); J.haptic.big(); }
-    else if (mult > 0) { J.Sfx.win(mult); J.haptic.win(mult); }
-    else { J.Sfx.lose(); J.haptic.lose(); }
-    J.Games.finish(g, mult, { detail: g.detail });
+    const total = Object.keys(g.spots).reduce((a, k) => a + g.spots[k].w, 0) * g.chip;
+    J.FX.celebrate({ mult: mult, payout: Math.round(total * mult), el: g.zoneEl });
+    if (mult === 0) { J.Sfx.lose(); J.haptic.lose(); }
+    J.Games.finish(g, mult, { detail: g.detail, celebrated: true });
   }
 
   /* ------------------------------------------------------------------- JEU */

@@ -494,6 +494,17 @@
         g._autoTimer = schedule(g, () => { if (g.auto.on) play(g, { auto: true }); }, a.speed);
       }
     }
+    /* Célébration du gain : un seul chemin pour les 16 jeux (particules, bandeau,
+       jingle, haptique), déclenché ici pour que tout nouveau jeu en bénéficie
+       sans code. Un jeu qui a déjà fêté sa manche au bon endroit sur son plateau
+       passe { celebrated: true } dans ses options pour éviter un doublon. */
+    if (rec && !(extra && extra.celebrated)) {
+      J.FX.celebrate({
+        mult: mult, payout: rec.payout, bet: rec.bet,
+        el: g.gainEl || g.multEl || g.multLbl || g.stageEl || g.panelEl
+      });
+    }
+
     J.Bus.emit('game:round', { game: g.def.id, mult, rec });
   };
 

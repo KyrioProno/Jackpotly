@@ -242,11 +242,9 @@
     const payout = Math.round(g.ticket.bet * m);
     if (g.multEl) { g.multEl.textContent = U.fmtMult(m); g.multEl.className = 'crash-mult cashed'; }
     if (g.subEl) g.subEl.textContent = '✅ Encaissé à ' + U.fmtMult(m) + ' · +' + U.fmt(payout - g.ticket.bet) + ' jetons';
-    J.Sfx.cashout(); J.haptic.win(m);
-    J.floatText('+' + U.fmt(payout), { el: g.multEl, color: 'var(--green)', size: 24 });
-    if (m >= 2) J.FX.confetti({ count: m >= 10 ? 120 : 55, x: window.innerWidth / 2, y: g.stageEl.getBoundingClientRect().top + 70 });
+    J.FX.celebrate({ mult: m, payout: payout, el: g.multEl });
     if (m >= 5) J.Live.playerWin('crash', m, payout);
-    J.Games.finish(g, m, { detail: 'cash out ' + U.fmtMult(m) });
+    J.Games.finish(g, m, { detail: 'cash out ' + U.fmtMult(m), celebrated: true });
   }
 
   /** Rafraîchit le libellé du bouton d'encaissement sans reconstruire le DOM. */
