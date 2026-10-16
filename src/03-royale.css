@@ -1049,10 +1049,11 @@ body.in-game #liveFeed{ display:none; }
   box-shadow:0 6px 16px rgba(255,197,49,.35), inset 0 1px 0 rgba(255,255,255,.6);
 }
 .g-roulette .rui-types .chip.is-on b{ color:#2c1d00; }
-/* La grille de numéros continue sous la ligne de flottaison : l'ombre basse
-   annonce le reste de la table au lieu de laisser croire à une coupe. */
+/* Le tapis défile en entier (une seule surface) : l'ombre profonde du tapis
+   reste, sans le dégradé qui annonçait autrefois une grille coupée. */
 .g-roulette .rui-grid{
-  box-shadow:inset 0 0 24px rgba(0,0,0,.6), inset 0 -24px 22px -20px rgba(0,0,0,.92);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.6);
+  padding-bottom:6px;
 }
 
 /* --- Boutons de jeu : laiton gravé et cabochon de jade ------------------ */
@@ -1172,4 +1173,89 @@ body.in-game .game-panel::before{             /* le tapis se glisse sous le pann
   .sl-hud i{ font-size:8px; letter-spacing:.04em; }
   .sl-hud span{ padding:0 3px; }
   .sl-hud .ro-v, .sl-hud .ro-win{ font-size:12px; }
+}
+
+/* --- HI-LO : trois paris lisibles au pouce ------------------------------- */
+/* Trois choix au lieu de deux : sur un écran de téléphone, on garde la même
+   grille mais on rend chaque pari identifiable (haut = vert, égalité = or,
+   bas = rouge) et on met en avant le plus probable. */
+.g-hilo .hilo-choices{ grid-template-columns:repeat(3,1fr); gap:6px; }
+.g-hilo .hilo-choice{
+  padding:8px 4px; gap:2px; border-radius:12px;
+  background:linear-gradient(180deg, rgba(30,38,60,.86), rgba(10,13,24,.94));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.g-hilo .hilo-choice span{ font-size:11px; font-weight:800; letter-spacing:-.01em; }
+.g-hilo .hilo-choice b{ font:800 13px var(--mono); }
+.g-hilo .hilo-choice small{ font-size:9px; line-height:1.15; }
+.g-hilo .hilo-choice.up b{ color:#5cf0a4; }
+.g-hilo .hilo-choice.down b{ color:#ff8f9e; }
+.g-hilo .hilo-choice.tie b{ color:var(--or); }
+.g-hilo .hilo-choice.is-best{
+  border-color:rgba(255,210,87,.55);
+  box-shadow:0 6px 18px rgba(255,197,49,.22), inset 0 1px 0 rgba(255,255,255,.14);
+}
+.g-hilo .hilo-choice.is-best::after{
+  content:'le plus probable'; position:absolute; left:50%; transform:translateX(-50%);
+  bottom:-15px; white-space:nowrap; font-size:8.5px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--or); opacity:.9;
+}
+.g-hilo .hilo-choice{ position:relative; }
+@media (max-width:360px){ .g-hilo .hilo-choice span{ font-size:10px; } .g-hilo .hilo-choice b{ font-size:12px; } }
+
+/* ============================================ TÉLÉPHONE EN PORTRAIT (court) --
+   Rien de tout ceci ne redessine une table : sur un écran de 568 px de haut,
+   la place manque et le tapis doit rester jouable AU DOIGT sans chasse au
+   trésor. Ces règles vivent en fin de feuille pour passer après l'habillage. */
+@media (max-height:760px){
+  /* --- En-tête et panneau : ils rendent ~25 px à la scène --- */
+  .game-head{ padding:7px var(--pad) 6px; gap:8px; }
+  .game-head .h2{ font-size:15px; }
+  .game-head .sub{ font-size:10.5px; line-height:1.25; white-space:nowrap; }
+  .game-head .sub-vol{ display:none; }
+  body.in-game .game-panel{ padding:7px var(--pad) calc(7px + env(safe-area-inset-bottom,0px)); }
+
+  /* --- Baccarat : les cinq zones de mise tiennent dans la scène --- */
+  .g-baccarat .bac-stage{ gap:5px; margin:8px; padding:7px; }
+  .g-baccarat .bac-hands{ gap:5px; }
+  .g-baccarat .bac-side{ padding:4px 6px; gap:3px; }
+  .g-baccarat .bac-cards{ min-height:46px; }
+  .g-baccarat .bac-cards .pcard{ width:34px; height:48px; }
+  .g-baccarat .bac-score{ min-width:28px; height:28px; font-size:15px; }
+  .g-baccarat .bac-info{ font-size:11px; padding:4px 7px; }
+  /* Ordre de service : Banque | Joueur, puis Égalité, les paires ensuite.
+     Quatre rangées de zones deviennent trois et tout tient à l'écran. */
+  .g-baccarat .bac-zone{ height:38px; }
+  .g-baccarat .bac-zone.pair{ height:32px; }
+  .g-baccarat .bac-zone.bank{ order:0; }
+  .g-baccarat .bac-zone.player{ order:1; }
+  .g-baccarat .bac-zone.pair{ order:2; }
+  .g-baccarat .bac-zone.tie{ order:3; }
+  .g-baccarat .bac-zone b{ font-size:10.5px; }
+  .g-baccarat .bac-zone span{ font-size:9px; line-height:1; }
+
+  /* --- Roulette : le tapis de numéros d'abord, sous le pouce --- */
+  .g-roulette .rui-stage{ gap:6px; padding:6px 0 8px; }
+  .g-roulette .rui-top{ order:0; gap:8px; padding:0 8px; }
+  .g-roulette .history-strip.rui-hist{ order:1; }
+  .g-roulette .rui-grid{ order:2; padding:6px 8px; }
+  .g-roulette .rui-out{ order:3; padding:6px 8px 0; }
+  .g-roulette .rui-types{ order:4; padding:0 8px; }
+  .g-roulette .rui-dirbox{ order:5; padding:0 8px; }
+  .g-roulette .rui-betlist{ order:6; padding:6px 8px 0; }
+  .g-roulette .rui-canvas{ width:66px; height:66px; }
+  .g-roulette .rui-num{ width:44px; height:44px; border-radius:12px; }
+  .g-roulette .rui-read .sub{ margin-top:4px; font-size:11px; }
+  .g-roulette .rui-win, .g-roulette .rui-lose{ margin-top:4px; font-size:13px; }
+  .g-roulette .rui-types .chip{ padding:5px 8px; font-size:11px; }
+  .g-roulette .rui-cell{ font-size:12px; }
+  .g-roulette .rui-o{ height:28px; }
+  /* Les préréglages passent en une seule rangée qui défile : en grille de deux,
+     ils poussaient « Effacer / Relancer » hors du panneau. */
+  .g-roulette .rui-presets{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
+  .g-roulette .rui-presets::-webkit-scrollbar{ display:none; }
+  .g-roulette .rui-preset{ flex:0 0 auto; padding:5px 9px; }
+  .g-roulette .rui-preset b{ font-size:11px; }
+  .g-roulette .rui-preset span{ font-size:9px; }
 }

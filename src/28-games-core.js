@@ -91,7 +91,11 @@
           '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' +
         '</button>' +
         '<div class="grow"><div class="h2">' + def.name + '</div>' +
-          '<div class="sub">RTP ' + def.rtp + ' %' + (def.volatility ? ' · ' + def.volatility : '') + '</div></div>' +
+          /* Le RTP reste toujours affiché ; la volatilité s'efface seulement sur
+             les écrans très étroits, où elle faisait passer l'en-tête à deux
+             lignes et volait 20 px à la scène. */
+          '<div class="sub">RTP ' + def.rtp + ' %' +
+            (def.volatility ? '<span class="sub-vol"> · ' + def.volatility + '</span>' : '') + '</div></div>' +
         '<button class="icon-btn" data-g="info" aria-label="Règles">' +
           '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.1"/></svg>' +
         '</button>' +
@@ -136,6 +140,10 @@
     g._timers.forEach(clearTimeout);
     g.auto.on = false;
     if (g.ticket && g.ticket._open) J.Wallet.refund(g.ticket);
+    /* La manche est remboursée : le jeu ne doit plus la considérer comme en
+       cours. Les animations qui interrogent le ticket (roue, machines) voient
+       donc la fermeture et s'arrêtent au lieu de tourner dans le vide. */
+    g.ticket = null;
     saveBet(g.def.id, g.bet);
     current = null;
     document.body.classList.remove('in-game');
@@ -272,9 +280,14 @@
     g.actionsEl = box;
     const acts = (g.def.actions ? g.def.actions(g) : null) ||
       [{ label: g.def.playLabel || 'Jouer', cls: 'primary wide-lg grow', act: 'play' }];
+    /* Pendant une manche, une commande qui n'est pas prévue pour agir en cours
+       de jeu est INERTE (le garde-fou ci-dessous) : elle doit donc aussi
+       apparaître désactivée. Un bouton qui a l'air actif mais qui ignore le
+       doigt est le premier symptôme d'un jeu « bloqué » — on ne le montre plus. */
+    const idle = (a) => a.disabled === true || (g.busy && !a.alsoWhenBusy);
     box.innerHTML = acts.map((a, i) =>
       '<button class="btn ' + (a.cls || 'ghost') + '" data-act="' + (a.act || 'custom') + '" data-i="' + i + '"' +
-      (a.disabled ? ' disabled' : '') + '>' + a.label + '</button>').join('');
+      (idle(a) ? ' disabled aria-disabled="true"' : '') + '>' + a.label + '</button>').join('');
     box.querySelectorAll('[data-act]').forEach((b) => {
       const a = acts[parseInt(b.dataset.i, 10)];
       b.onclick = () => {
@@ -482,6 +495,11 @@
     g.ticket = J.Wallet.stake(g.bet, g.def.id, opts && opts.meta);
     if (!g.ticket) { g.busy = false; return; }
     J.Sfx.spinup();               // départ de manche, dans le timbre du jeu
+    /* La manche est ouverte : on réaffiche les commandes AVANT de démarrer le
+       jeu, pour que celles qui n'agissent pas en cours de manche apparaissent
+       inertes (et non actives mais sans effet). Les jeux qui ont des commandes
+       propres à la manche (encaisser, tirer, rester…) les posent dans start(). */
+    renderActions(g);
     g.def.start(g);
   }
   Games.play = play;

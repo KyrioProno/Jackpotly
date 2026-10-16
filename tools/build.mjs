@@ -8,9 +8,12 @@
      src/2x..4x *.js      modules JavaScript (ordre alphabétique)
      src/99-tail.html     fermeture du document
    Aucune dépendance externe : tout est en ligne, aucune requête réseau.
-   Usage : node tools/build.mjs
+   Usage : node tools/build.mjs           reconstruit le livrable
+           node tools/build.mjs --check    vérifie que les fichiers livrés
+                                          correspondent EXACTEMENT aux sources
+                                          (aucune écriture ; sortie 1 si écart)
    ========================================================================= */
-import { readFileSync, writeFileSync, readdirSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, copyFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -53,9 +56,25 @@ const html = [
 ].join('\n');
 
 const out = join(root, 'jackpotly.html');
+const out2 = join(root, 'index.html');
+/* `--check` : on n'écrit RIEN, on compare le fichier livré au résultat du build
+   des sources. C'est la garantie que le fichier distribué (téléchargement, CDN,
+   GitHub Pages) est exactement celui que produisent les sources versionnées. */
+if (process.argv.includes('--check')) {
+  const lire = (f) => (existsSync(f) ? readFileSync(f, 'utf8') : null);
+  const disque = lire(out), copie = lire(out2);
+  const meme = disque === html && copie === html;
+  console.log('JACKPOTLY — vérification du livrable v' + version + ' (build ' + fingerprint + ')');
+  console.log('  ' + (disque === html ? '✓' : '✗') + ' jackpotly.html identique au build des sources' +
+    (disque === null ? ' (fichier absent)' : ''));
+  console.log('  ' + (copie === html ? '✓' : '✗') + ' index.html identique au build des sources' +
+    (copie === null ? ' (fichier absent)' : ''));
+  if (!meme) console.error('Écart entre les sources et le fichier livré : relancer `node tools/build.mjs`.');
+  process.exit(meme ? 0 : 1);
+}
 writeFileSync(out, html, 'utf8');
 // Copie servie par défaut (aperçu, GitHub Pages) — identique au fichier livré
-copyFileSync(out, join(root, 'index.html'));
+copyFileSync(out, out2);
 
 /* ---------------------------------------------------------------- CONTRÔLES */
 // Version « code seul » (commentaires retirés) pour les analyses de source

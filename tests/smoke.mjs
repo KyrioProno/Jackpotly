@@ -220,7 +220,23 @@ step('les 10 jeux : ouverture, commandes, une partie', async () => {
     // La partie en vol est terminée proprement (encaissement si le jeu le permet)
     let opened = $('[data-act="cashout"]');
     if (opened && !opened.disabled) opened.click();
-    if (!await waitIdle(g)) throw new Error(id + ' : la partie en vol ne se termine pas');
+    /* Jeux à décision (hi-lo, blackjack, mines, tour, coin flip…) : après l'arrêt
+       de l'auto-bet, la manche attend un geste du joueur. On joue ce geste comme
+       un vrai joueur — ce qui serait un bug, c'est une manche qui n'offre PLUS
+       AUCUNE commande jouable et qui ne se termine donc jamais. */
+    for (let i = 0; i < 8 && g.busy; i++) {
+      const cash = $('[data-act="cashout"]');
+      const move = (cash && !cash.disabled) ? cash
+        : ['#hlHigh', '#hlLow', '#hlTie', '#mnGrid [data-tile]:not(.picked):not(.bomb)',
+           '#twFloors .tower-tile', '#cfSide [data-side]'].map((sel) => $(sel)).find((el) => el && !el.disabled);
+      if (!move) break;
+      move.click();
+      if (await waitIdle(g, 1400)) break;
+    }
+    if (!await waitIdle(g, 2000)) {
+      throw new Error(id + ' : la manche reste ouverte sans commande jouable (phase=' + (g.phase || '?') +
+        ', busy=' + g.busy + ', commandes actives=' + doc.querySelectorAll('#gActions button:not([disabled])').length + ')');
+    }
     if (!J.Rewards.rechargeState().started) J.Store.patch({ balance: 50000 });
 
     // Une partie manuelle

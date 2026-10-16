@@ -111,6 +111,7 @@
   }
 
   function nextStreet(g) {
+    if (g.phase === 'idle' || g.phase === 'done' || g.phase === 'showdown') return;
     g.myBet = 0; g.botBet = 0;
     g.actedMe = false; g.actedBot = false;
     g.toAct = 'bot';                       // le bot parle en premier après le flop
@@ -242,6 +243,14 @@
     else meAct(g, 'fold');
   }
 
+  /** Annule les rappels en attente de la main (les timers de l'auto-bet sont
+   *  planifiés par finish(), donc après cet appel : ils sont préservés). */
+  function clearHandTimers(g) {
+    if (!g._timers || !g._timers.length) return;
+    g._timers.forEach(clearTimeout);
+    g._timers.length = 0;
+  }
+
   /* ----------------------------------------------------------- ABATTAGE */
   function showdown(g) {
     g.phase = 'showdown';
@@ -257,6 +266,12 @@
   }
 
   function endHand(g) {
+    /* La main est finie : les rappels encore planifiés (réflexion du bot, rue
+       suivante, abattage) appartiennent à la main qui vient de se terminer. On
+       les annule AVANT finish(), qui planifie l'auto-bet : sans cela, un bot
+       programmé continuait d'agir sur la manche finie et l'écran se figeait sur
+       « Abattage… » (bouton inerte) pendant plus d'une seconde. */
+    clearHandTimers(g);
     const s = stack(g);
     const p = pot(g);
     const myLeft = s - g.myComm;
@@ -387,9 +402,11 @@
         return [{ label: 'Nouvelle main · ' + U.fmtK(g.bet) + ' J ♠', cls: 'primary wide-lg grow', act: 'play' }];
       }
       if (g.toAct !== 'me' || g.phase === 'showdown') {
+        /* Ce n'est pas au joueur de parler : « Se passer » n'aurait aucun effet,
+           il est donc annoncé comme indisponible au lieu de rester cliquable. */
         return [
           { label: g.phase === 'showdown' ? 'Abattage…' : 'Le bot réfléchit…', cls: 'primary wide-lg grow', disabled: true },
-          { label: 'Se passer', cls: 'ghost', alsoWhenBusy: true, onClick: (gg) => meAct(gg, 'fold') }
+          { label: 'Se passer', cls: 'ghost', alsoWhenBusy: true, disabled: true }
         ];
       }
       const need = toCall(g);

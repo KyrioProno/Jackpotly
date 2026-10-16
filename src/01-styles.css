@@ -965,8 +965,11 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 .rui-dirs .chip b{ color:var(--green); }
 .rui-grid{
   display:grid; grid-template-columns:repeat(6,1fr); gap:3px;
-  padding:0 12px; overflow-y:auto; flex:1 1 auto;
-  min-height:118px;                     /* ~3 rangées de numéros toujours visibles */
+  padding:0 12px;
+  /* Le tapis ne défile qu'une fois : c'est la scène qui défile, pas la grille.
+     Un second défilement imbriqué retenait le doigt des paris extérieurs
+     (Rouge/Noir, douzaines) qui devenaient inatteignables. */
+  overflow:visible; flex:0 0 auto; min-height:0;
 }
 .rui-zero{
   grid-column:span 6; height:32px; border-radius:8px; font-weight:900; font-size:13px;
@@ -992,6 +995,8 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 }
 .rui-o b{ color:var(--gold); }
 .rui-o.wide2{ grid-column:span 2; }
+/* Téléphone court : la roue et les réglages se resserrent pour que le tapis de
+   mises (numéros + paris extérieurs) arrive à l'écran dès l'ouverture. */
 .rui-o.red{ background:linear-gradient(180deg,#e0344a,#a81b2c); color:#fff; }
 .rui-o.black{ background:linear-gradient(180deg,#2a3653,#161f33); color:#fff; }
 .rui-o:active{ transform:scale(.96); }
@@ -1040,7 +1045,10 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
 /* ---------------------------------------------------------------- BACCARAT */
 .bac-stage{ flex:1; display:flex; flex-direction:column; gap:7px; margin:10px; padding:9px; min-height:0; overflow-y:auto; }
-.bac-hands{ display:flex; flex-direction:column; gap:7px; }
+/* Banque et Joueur côte à côte : sur un téléphone, deux mains empilées
+   poussaient les zones de mise hors de la scène (« impossible de poser une
+   mise » alors que le tapis était simplement plus bas). */
+.bac-hands{ display:grid; grid-template-columns:1fr 1fr; gap:7px; }
 .bac-side{
   border-radius:var(--r-sm); background:rgba(0,0,0,.22); border:1px solid var(--line-soft);
   padding:6px 9px; display:flex; flex-direction:column; gap:4px;
@@ -1063,6 +1071,8 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   width:22px; height:22px; border-radius:6px; display:grid; place-items:center;
   font:800 10.5px var(--mono); background:rgba(255,255,255,.08); color:var(--txt-2);
 }
+/* Écran court (téléphone en portrait) : le tapis se resserre pour que la
+   main, l'annonce ET les cinq zones de mise tiennent dans la scène. */
 .bac-h.joueur{ background:linear-gradient(180deg,#1d8cf0,#1552a8); color:#fff; }
 .bac-h.banque{ background:linear-gradient(180deg,#8b5cf6,#5b32c9); color:#fff; }
 .bac-h.egalite{ background:linear-gradient(180deg,#16b463,#0b6b3a); color:#fff; }
@@ -1193,3 +1203,8 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 /* Boutons texte + icône : espacement homogène, icône jamais comprimée */
 .btn .ic{ margin-right:2px; }
 .btn .ic:only-child{ margin-right:0; }
+
+/* Un écran sortant garde sa place le temps de la transition : il ne doit pas
+   capter les appuis destinés à l'écran qui arrive (sinon un tap rapide tombe
+   sur une commande qui n'est plus la bonne). */
+.screen:not(.is-on){ pointer-events:none; }

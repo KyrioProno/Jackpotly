@@ -7,7 +7,7 @@
 
   /** Espace de noms unique du jeu. Tous les modules s'y rattachent. */
   const J = (window.JACKPOTLY = window.JACKPOTLY || {});
-  J.VERSION = '0.4.0';           // vague 4 : univers de casino — décors, machines par univers, audio
+  J.VERSION = '0.4.1';           // v0.4.1 : audit et fiabilisation des 16 jeux (règles, crédits, mobilité)
   J.SAVE_KEY = 'jackpotly.state.v1';
 
   /* ------------------------------------------------------------------ UTIL */

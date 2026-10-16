@@ -42,7 +42,13 @@
     state(g) {
       g.mode = g.mode || 'under';
       g.target = clampTarget(g.mode, g.target == null ? 50 : g.target);
+      g._raf = null;              // animation en cours (annulable à la sortie de jeu)
+      g._seq = 0;                 // numéro de la manche : une seule résolution chacune
     },
+
+    /* La sortie de jeu annule l'animation : le tirage ne doit pas se régler
+       après coup sur une manche déjà remboursée. */
+    stop(g) { if (g._raf) { cancelAnimationFrame(g._raf); g._raf = null; } },
 
     /* ------------------------------------------------------------- OPTIONS */
     controls(g) {
@@ -122,17 +128,24 @@
       J.Sfx.bet();
       g.msgEl.textContent = 'Tirage en cours…';
 
+      const seq = ++g._seq;
       const frame = (t) => {
+        /* Manche clôturée ailleurs (sortie de jeu, remboursement, rechargement)
+           ou remplacée par une plus récente : l'animation s'arrête au lieu de
+           régler une manche qui n'existe plus (l'ancien code lisait alors
+           g.ticket.bet sur un ticket nul → exception dans une image rAF). */
+        if (g._seq !== seq || !g.ticket) { g._raf = null; return; }
         const p = Math.min(1, (t - t0) / dur);
         if (p < 1) {
           g.numEl.textContent = U.rnd(0, 99.99).toFixed(2).replace('.', ',');
           moveCursor(g, parseFloat(g.numEl.textContent.replace(',', '.')));
-          requestAnimationFrame(frame);
+          g._raf = requestAnimationFrame(frame);
         } else {
+          g._raf = null;
           settle(g, roll, mult, win);
         }
       };
-      requestAnimationFrame(frame);
+      g._raf = requestAnimationFrame(frame);
     },
 
     /* ---------------------------------------------------- RÉSOLUTION */
@@ -141,6 +154,8 @@
 
   /** Résout la partie : affichage, sons, encaissement. */
   function settle(g, roll, mult, win) {
+    if (!g.ticket) return;                     // manche déjà réglée : on ne règle jamais deux fois
+    const stake = g.ticket.bet;
     g.numEl.textContent = roll.toFixed(2).replace('.', ',');
     g.numEl.className = 'dice-num ' + (win ? 'win' : 'lose');
     moveCursor(g, roll);
@@ -148,8 +163,8 @@
     if (win) {
       g.msgEl.innerHTML = '🎉 <b class="up">Gagné</b> — ' + roll.toFixed(2).replace('.', ',') + ' ' +
         (g.mode === 'under' ? '<' : '>') + ' ' + g.target.toFixed(2).replace('.', ',');
-      J.FX.celebrate({ mult: mult, payout: Math.round(g.ticket.bet * mult), el: g.numEl });
-      if (mult >= 10) J.Live.playerWin('dice', mult, Math.round(g.ticket.bet * mult));
+      J.FX.celebrate({ mult: mult, payout: Math.round(stake * mult), el: g.numEl });
+      if (mult >= 10) J.Live.playerWin('dice', mult, Math.round(stake * mult));
     } else {
       J.Sfx.lose(); J.haptic.lose();
       g.msgEl.innerHTML = '❌ <b class="down">Perdu</b> — ' + roll.toFixed(2).replace('.', ',') + ' ' +

@@ -36,17 +36,17 @@ L'aperçu live d'Arena passe par le proxy du sandbox, qui **exige un jeton** : l
 (`https://<port>-<sandbox>.e2b.app`) affiche une demande de token si on l'ouvre directement.
 Le jeu n'ayant besoin d'aucun serveur, voici trois voies qui n'utilisent aucun jeton :
 
-**1. Rendu direct dans le navigateur (un tap, aucune installation)** — fichiers figés sur le tag `v0.4.0` :
+**1. Rendu direct dans le navigateur (un tap, aucune installation)** — fichiers figés sur le tag `v0.4.1` :
 
-- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.4.0/jackpotly.html
-- https://cdn.statically.io/gh/KyrioProno/Jackpotly/v0.4.0/jackpotly.html
-- https://raw.githack.com/KyrioProno/Jackpotly/v0.4.0/jackpotly.html
-- https://htmlpreview.github.io/?https://github.com/KyrioProno/Jackpotly/blob/v0.4.0/jackpotly.html
+- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.4.1/jackpotly.html
+- https://cdn.statically.io/gh/KyrioProno/Jackpotly/v0.4.1/jackpotly.html
+- https://raw.githack.com/KyrioProno/Jackpotly/v0.4.1/jackpotly.html
+- https://htmlpreview.github.io/?https://github.com/KyrioProno/Jackpotly/blob/v0.4.1/jackpotly.html
 
 **2. Téléchargement puis lecture hors ligne (le plus fiable sur mobile)**
 
-- Fichier : https://github.com/KyrioProno/Jackpotly/blob/v0.4.0/jackpotly.html → « Download raw file »
-- Archive complète : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.4.0
+- Fichier : https://github.com/KyrioProno/Jackpotly/blob/v0.4.1/jackpotly.html → « Download raw file »
+- Archive complète : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.4.1
 - Ensuite : ouvrir `jackpotly.html` dans le navigateur, ou « Ajouter à l'écran d'accueil »
   pour l'avoir en plein écran. Aucune connexion n'est nécessaire pour jouer.
 

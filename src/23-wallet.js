@@ -48,6 +48,10 @@
         id: U.uid(), game: gameId, bet: amount, t: Date.now(),
         meta: meta || null, _open: true
       };
+      /* La manche en cours est notée dans l'état persisté : si la page est
+         rechargée (ou l'application fermée) avant le règlement, la mise est
+         rendue au démarrage suivant — jamais perdue, jamais créditée deux fois. */
+      st.pending = { id: ticket.id, game: gameId, bet: amount, t: ticket.t };
       J.Store.save();
       W.renderBalance();
       J.Bus.emit('wallet:stake', ticket);
@@ -73,6 +77,7 @@
       const g = st.stats.perGame[ticket.game];
       if (g) g.wagered += amount;
       ticket.bet += amount;
+      st.pending = { id: ticket.id, game: ticket.game, bet: ticket.bet, t: ticket.t };
       J.Store.save();
       W.renderBalance();
       J.Bus.emit('stats:changed');
@@ -85,6 +90,7 @@
       if (!ticket || !ticket._open) return null;
       ticket._open = false;
       const st = J.Store.state;
+      st.pending = null;                        // la manche est réglée : plus rien en vol
       const mult = Math.max(0, Number(multiplier) || 0);
       const payout = U.tokens(ticket.bet * mult);
       const profit = payout - ticket.bet;
@@ -125,6 +131,7 @@
       if (!ticket || !ticket._open) return;
       ticket._open = false;
       const st = J.Store.state;
+      st.pending = null;
       st.balance += ticket.bet;
       st.stats.bets = Math.max(0, st.stats.bets - 1);
       st.stats.wagered = Math.max(0, st.stats.wagered - ticket.bet);
@@ -133,6 +140,31 @@
       if (g) { g.bets = Math.max(0, g.bets - 1); g.wagered = Math.max(0, g.wagered - ticket.bet); }
       J.Store.save();
       W.renderBalance();
+      /* Un remboursement est un mouvement du solde comme un autre : les autres
+         modules (quêtes, flux, tests) doivent le voir passer. */
+      J.Bus.emit('wallet:refund', ticket);
+    },
+
+    /**
+     * Récupère une manche restée ouverte à la fermeture de la page : la mise a
+     * été débitée mais aucun gain n'a été crédité, on la rend donc au joueur.
+     * Appelée une seule fois au démarrage (l'enregistrement est effacé aussitôt).
+     */
+    recoverPending() {
+      const st = J.Store.state;
+      const p = st.pending;
+      st.pending = null;
+      if (!p || !(p.bet > 0)) return null;
+      st.balance += p.bet;
+      st.stats.bets = Math.max(0, st.stats.bets - 1);
+      st.stats.wagered = Math.max(0, st.stats.wagered - p.bet);
+      st.vip.wagered = Math.max(0, st.vip.wagered - p.bet);
+      const g = st.stats.perGame[p.game];
+      if (g) { g.bets = Math.max(0, g.bets - 1); g.wagered = Math.max(0, g.wagered - p.bet); }
+      J.Store.save();
+      W.renderBalance('up');
+      J.Bus.emit('wallet:recovered', p);
+      return p;
     },
 
     /** Crédit libre (bonus, récompense VIP, achat de pack, recharge gratuite). */

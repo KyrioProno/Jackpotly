@@ -1235,12 +1235,18 @@ section('20. Les 6 classiques : une manche complète au doigt');
   tap(q('#gActions [data-act="play"]'));
   check('Hold\'em : nouvelle main, blinds postées, 2 cartes en main', bets() === 1 && g.myHole.length === 2);
   guard = 0;
+  let acted = 0;
   while (g.phase !== 'done' && g.phase !== 'showdown' && guard++ < 40) {
-    if (!tap(btn(/Suivre|Checker/)) && !tap(btn(/Se passer/))) break;
+    /* Après le flop le bot parle en premier : un vrai joueur attend que la
+       commande « Suivre / Checker » apparaisse au lieu de taper dans le vide
+       (une commande indisponible n'est pas un appui). */
+    const mine = btn(/Suivre|Checker/);
+    if (mine) { tap(mine); acted++; }
     await wait(420);
   }
   check('Hold\'em : les tours d\'enchères avancent en cliquant Suivre (flop, turn, river)',
-    guard < 40 && (g.board.length >= 3 || g.phase === 'done'), 'tapis ' + g.board.length + ' cartes · ' + guard + ' clics');
+    guard < 40 && acted >= 1 && (g.board.length >= 3 || g.phase === 'done'),
+    'tapis ' + g.board.length + ' cartes · ' + acted + ' appui(s) · ' + guard + ' attente(s)');
   await wait(2200);
   check('Hold\'em : la main se termine, le pot est payé et l\'historique écrit',
     g.phase === 'done' && g.busy === false && g.history.length === 1 && (g.myComm + g.botComm) > 0,

@@ -585,11 +585,13 @@
       g.totalLine = g.panelEl.querySelector('#ruTotal');
       g.chipRow = g.panelEl.querySelector('#ruChips');
 
-      // La roue occupe environ 40 % de la hauteur de scène, bornée pour rester lisible
-
+      // La roue occupe environ un tiers de la hauteur de scène, bornée pour
+      // rester lisible. Sur un petit téléphone (320 × 568, scène de 190 px),
+      // l'ancien plancher de 140 px mangeait la moitié de la scène et repoussait
+      // tout le tapis de mises sous la ligne de flottaison.
       const box = g.stageEl.getBoundingClientRect();
-      g.size = Math.round(Math.min(box.width - 40, Math.max(120, box.height * 0.42)));
-      g.size = Math.max(140, Math.min(g.size, 230));
+      const partH = Math.max(84, Math.min(box.height * 0.36, 170));
+      g.size = Math.round(Math.max(84, Math.min(box.width - 44, partH)));
       drawWheel(g, g.angle, null);
       paintReadout(g);
       paintRecent(g);

@@ -186,7 +186,7 @@
     // bandeau de tours gratuits
     if (g.freeEl) g.freeEl.classList.toggle('is-on', !!g.free);
     if (g.free && g.freeEl) {
-      g.freeEl.innerHTML = '<b>TOURS GRATUITS</b> ' + (g.free.done + 1) + ' / ' + g.free.total +
+      g.freeEl.innerHTML = '<b>TOURS GRATUITS</b> ' + Math.min(g.free.done + 1, g.free.total) + ' / ' + g.free.total +
         ' · multiplicateur <b class="gold">x' + g.free.mult + '</b>' +
         '<span class="sub"> · déjà gagné ' + U.fmt(g.free.won) + ' J</span>';
     }
@@ -224,133 +224,181 @@
     J.Games.renderActions(g);
   }
 
-  /* --------------------------------------------------------------- MANCHE */
+  /* --------------------------------------------------------------- MANCHE ---
+     Une manche = une rotation payante, puis éventuellement N rotations
+     gratuites. Chaque rotation porte un NUMÉRO DE SÉQUENCE : une rotation
+     lancée avant un changement d'état (bonus, fermeture du jeu, nouvelle
+     manche) ne peut plus ni régler la manche ni en relancer une autre. C'est
+     ce verrou qui manquait : la pose du 5ᵉ rouleau rappelait la résolution de
+     la rotation payante, qui réinitialisait le compteur de tours gratuits à
+     chaque tour — le bonus ne pouvait donc jamais finir. */
+  function nextSeq(g) { g.seq = (g.seq || 0) + 1; return g.seq; }
+
   function start(g) {
-    const stake = g.ticket.bet;
+    const seq = nextSeq(g);
     g.free = null;
     g.highlight = [];
     g.scatterCells = null;
     g.lastWin = 0;
-    g.msg = 'Rouleaux…';
     g._winShown = 0;
-    countUp(g, 0);
     g.grid = makeGrid(g);
     g.display = g.grid.map(() => ['F', 'F', 'F']);
-    g.spinFlags = [true, true, true, true, true];
-    g.spinning = true;
-    g.round = evaluate(g, g.grid);
+    g.msg = 'Rouleaux…';
+    g.spinning = true;                      // rotation payante en cours
+    g.round = evaluate(g, g.grid);          // résultat TIRÉ à l'avance (provably fair)
+    countUp(g, 0);
+    spinReels(g, seq, 520, 170);
     paint(g);
     J.Sfx.bet();
-
-    // arrêt progressif des rouleaux
-    for (let i = 0; i < 5; i++) blurReel(g, i, 520 + i * 170);
   }
 
-  function blurReel(g, i, delay) {
+  /** Fait défiler les 5 rouleaux puis les pose un par un (arrêt progressif). */
+  function spinReels(g, seq, first, gap) {
+    for (let i = 0; i < 5; i++) spinReel(g, i, first + i * gap, seq);
+  }
+
+  function spinReel(g, i, delay, seq) {
+    g.spinFlags[i] = true;
     const step = () => {
-      if (!g.spinFlags[i]) return;
+      if (seq !== g.seq || !g.spinFlags[i]) return;
       const el = g.reelEls[i];
       if (el) el.innerHTML = blurTriple(g).map((k) => cellHTML(k, g)).join('');
       g._blur[i] = setTimeout(step, 55);
     };
     step();
     J.Games.schedule(g, () => {
+      if (seq !== g.seq) return;             // rotation abandonnée : on n'écrit plus
       g.spinFlags[i] = false;
       clearTimeout(g._blur[i]);
       g.display[i] = g.grid[i];
       J.Sfx.tick(i);
       J.haptic.tap();
-      if (g.reelEls[i]) {
-        g.reelEls[i].parentElement.classList.remove('is-spinning');
-        g.reelEls[i].innerHTML = g.grid[i].map((k) => cellHTML(k, g)).join('');
+      const strip = g.reelEls[i];
+      if (strip) {
+        strip.parentElement.classList.remove('is-spinning');
+        strip.innerHTML = g.grid[i].map((k) => cellHTML(k, g)).join('');
       }
-      if (i === 4) afterReels(g, g.ticket.bet);   // la mise vient du ticket, pas de la portée de start()
+      if (i === 4) resolveSpin(g, seq);      // UNE seule résolution par rotation
     }, delay);
   }
 
-  function afterReels(g, stake) {
-    const r = g.round;
-    const lineBet = stake / g.lines;
-    const lineTokens = r.lineWin * lineBet;
-    const scatterTokens = r.scatterWin * stake;
-    const base = Math.round(lineTokens + scatterTokens);
+  /** Gain d'une rotation, dans la monnaie du joueur. Le multiplicateur du bonus
+   *  ne s'applique qu'aux lignes : les scatters gardent leur propre paiement
+   *  (c'est le modèle qui rend le RTP calculable exactement). */
+  function roundWin(g, r, stake, mult) {
+    return Math.round(r.lineWin * (stake / g.lines) * mult + r.scatterWin * stake);
+  }
 
+  function resolveSpin(g, seq) {
+    if (seq !== g.seq || g.resolved === seq) return;   // jamais deux résolutions
+    g.resolved = seq;
+    g.spinning = false;
+    const stake = g.ticket ? g.ticket.bet : g.bet;
+    if (g.free) freeResolve(g, stake);
+    else baseResolve(g, stake);
+  }
+
+  /* --- Rotation payante ---------------------------------------------------- */
+  function baseResolve(g, stake) {
+    const r = g.round;
+    const base = roundWin(g, r, stake, 1);
     g.highlight = r.wins.reduce((a, w) => a.concat(w.cells), []);
     g.scatterCells = r.scatters >= 3 ? r.scCells : null;
+    g.lastWin = base;
 
     if (base > 0) {
-      const mult = base / stake;
       g.msg = 'Gagné ' + U.fmt(base) + ' J' + (r.wins.length ? ' · ' + r.wins.length + ' ligne(s)' : '') +
         (r.scatters >= 3 ? ' · ' + r.scatters + ' scatters' : '');
-      g.lastWin = base;
-      // Les rouleaux ont déjà leur propre animation : la célébration part de la
-      // grille et reste sobre sous 5×, spectaculaire au-delà.
-      J.FX.celebrate({ mult: mult, payout: base, el: g.stageEl || g.viewEl });
+      J.FX.celebrate({ mult: base / stake, payout: base, el: g.stageEl || g.viewEl });
     } else {
       g.msg = 'Aucun gain sur ce tour';
       J.Sfx.lose();
     }
-    paint(g);
 
     if (r.freeSpins) {
-      g.free = { total: r.freeSpins, done: 0, mult: theme(g).multSchedule[0], won: 0, base, stake };
+      /* Le bonus s'ouvre ICI, une seule fois. Ensuite, seuls les tours gratuits
+         écrivent dans g.free : le compteur ne peut plus repartir de zéro. */
+      const t = theme(g);
+      g.free = { total: r.freeSpins, done: 0, mult: t.multSchedule[0], won: 0, base, stake };
       g.msg = r.freeSpins + ' TOURS GRATUITS !';
-      J.toast('🎉 ' + r.freeSpins + ' tours gratuits déclenchés !', 'ok');
+      J.toast('🎉 ' + r.freeSpins + ' tours gratuits !', 'ok');
       paint(g);
-      J.Games.schedule(g, () => freeSpin(g), 1600);
+      J.Games.schedule(g, () => nextFreeSpin(g), 1500);
       return;
     }
+    paint(g);
     finishRound(g, base);
   }
 
-  /* --------------------------------------------------------- TOURS GRATUITS */
-  function freeSpin(g) {
-    const t = theme(g);
+  /* --- Tours gratuits ------------------------------------------------------ */
+  function nextFreeSpin(g) {
     const f = g.free;
-    if (!f || f.done >= f.total) { finishRound(g, f ? f.base + f.won : g.lastWin); return; }
+    if (!f) return;                                   // bonus déjà clos
+    if (f.done >= f.total) { finishRound(g, f.base + f.won); return; }
+    const t = theme(g);
     f.mult = t.multSchedule[Math.min(f.done, t.multSchedule.length - 1)];
+    const seq = nextSeq(g);
     g.highlight = [];
     g.scatterCells = null;
     g.grid = makeGrid(g);
     g.display = g.grid.map(() => ['F', 'F', 'F']);
-    g.spinFlags = [true, true, true, true, true];
-    g.spinning = true;
-    g.msg = 'Tour gratuit ' + (f.done + 1) + ' / ' + f.total + ' · x' + f.mult;
+    g.msg = 'Tour gratuit ' + (f.done + 1) + ' / ' + f.total;
+    g.spinning = true;                      // rotation gratuite en cours
+    spinReels(g, seq, 420, 140);
     paint(g);
+  }
 
-    for (let i = 0; i < 5; i++) blurReel(g, i, 420 + i * 140);
-    J.Games.schedule(g, () => {
-      const r = evaluate(g, g.grid);
-      const lineBet = f.stake / g.lines;
-      const win = Math.round(r.lineWin * lineBet * f.mult + r.scatterWin * f.stake);
-      f.won += win;
-      f.done++;
-      g.highlight = r.wins.reduce((a, w) => a.concat(w.cells), []);
-      g.scatterCells = r.scatters >= 3 ? r.scCells : null;
-      g.spinning = false;
-      g.msg = win > 0
-        ? 'Tour gratuit ' + f.done + ' : +' + U.fmt(win) + ' J (x' + f.mult + ')'
-        : 'Tour gratuit ' + f.done + ' : rien';
-      if (win > 0) { J.Sfx.win(win / f.stake); if (win / f.stake >= 10) J.Sfx.bigwin(); }
-      paint(g);
-      J.Games.schedule(g, () => freeSpin(g), win > 0 ? 1100 : 700);
-    }, 1200);
+  function freeResolve(g, stake) {
+    const f = g.free;
+    const r = evaluate(g, g.grid);
+    const win = roundWin(g, r, f.stake, f.mult);
+    f.won += win;
+    f.done++;
+    g.highlight = r.wins.reduce((a, w) => a.concat(w.cells), []);
+    g.scatterCells = r.scatters >= 3 ? r.scCells : null;
+    g.lastWin = f.base + f.won;                       // le compteur suit le gain réel
+    g.msg = win > 0
+      ? 'Tour ' + f.done + '/' + f.total + ' : +' + U.fmt(win) + ' J (x' + f.mult + ')'
+      : 'Tour ' + f.done + '/' + f.total + ' : rien';
+    /* Règle affichée : pendant le bonus, les scatters paient mais ne rendent pas
+       de tours supplémentaires. C'est cette règle fixe qui permet d'annoncer un
+       RTP exact de 96,50 % (le joueur est prévenu au lieu de subir un silence). */
+    if (r.scatters >= 3) g.msg += ' · scatters payés, pas de tours en plus';
+    if (win > 0) { J.Sfx.win(win / f.stake); if (win / f.stake >= 10) J.Sfx.bigwin(); }
+    paint(g);
+    const done = f.done >= f.total;
+    J.Games.schedule(g, done
+      ? () => finishRound(g, f.base + f.won)
+      : () => nextFreeSpin(g), done ? (win > 0 ? 900 : 520) : (win > 0 ? 1000 : 640));
   }
 
   /* ------------------------------------------------------------- RÈGLEMENT */
   function finishRound(g, total) {
-    const stake = g.ticket.bet;
+    const stake = g.ticket ? g.ticket.bet : g.bet;
     const capped = Math.min(total, Math.round(stake * MAX_WIN_MULT));
     const mult = stake > 0 ? capped / stake : 0;
+    nextSeq(g);                                       // plus aucune rotation en vol
     g.spinning = false;
     g.spinFlags = [false, false, false, false, false];
+    (g._blur || []).forEach(clearTimeout);
     g.free = null;
+    g.lastWin = capped;
     g.detail = (g.round && g.round.wins.length ? g.round.wins.length + ' ligne(s)' : 'aucune ligne') +
       (g.round && g.round.scatters ? ' · ' + g.round.scatters + ' scatter(s)' : '') +
       (capped < total ? ' · plafond ' + MAX_WIN_MULT + 'x appliqué' : '');
     g.paintInfo = g.msg;
     paint(g);
     J.Games.finish(g, mult, { detail: g.detail, celebrated: true });
+  }
+
+  /** Interrompt la manche en cours en la réglant à sa valeur acquise : une
+   *  sortie de jeu pendant un bonus ne fait perdre ni la mise ni les gains. */
+  function settleInFlight(g) {
+    if (!g.ticket || !g.ticket._open) return;
+    nextSeq(g);
+    if (g.free) { finishRound(g, g.free.base + g.free.won); return; }
+    if (g.round) { finishRound(g, roundWin(g, g.round, g.ticket.bet, 1)); return; }
+    J.Games.abort(g, 'Manche interrompue');           // rien n'était engagé : remboursé
   }
 
   /* ------------------------------------------------------------------- JEU */
@@ -374,7 +422,9 @@
       'le <b>joker</b> 💎 remplace n\'importe quel symbole.<br><br>' +
       '<b>Scatters</b> : 3 scatters ou plus n\'importe où rapportent 1× / 5× / 25× la mise totale et ' +
       'déclenchent <b>10 tours gratuits</b> avec multiplicateurs progressifs ' +
-      '<b>1·1·1·2·2·2·3·3·3·4</b>.<br>' +
+      '<b>1·1·1·2·2·2·3·3·3·4</b> (le multiplicateur s\'applique aux gains de lignes).<br>' +
+      'Pendant le bonus, les scatters continuent de payer mais <b>ne rajoutent pas</b> de tours : ' +
+      'cette règle fixe est ce qui permet d\'annoncer un RTP exact.<br>' +
       'Le gain est plafonné à <b>5 000×</b> la mise.<br><br>' +
       'Les bandes de rouleaux et les tables de gains sont calibrées pour un <b>RTP exact de 96,50 %</b> ' +
       'sur les trois thèmes (calcul analytique, pas une estimation) — ' +
@@ -382,10 +432,15 @@
     playLabel: 'Tourner 🎰',
 
     state, start,
+    /* Fermer la machine en pleine manche ne jette pas ce qui est acquis : la
+       rotation payante était déjà tirée, les tours gratuits déjà gagnés le
+       restent. On règle donc la manche, puis le moteur ne rembourse que ce qui
+       n'a jamais été engagé. */
     stop(g) {
       g.spinning = false;
       g.spinFlags = [false, false, false, false, false];
       (g._blur || []).forEach(clearTimeout);
+      settleInFlight(g);
     },
 
     stage(g) {

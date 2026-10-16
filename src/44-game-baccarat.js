@@ -171,15 +171,22 @@
     J.Games.updateHints(g);
   }
 
-  const wins = (k, g) => {
-    if (!g.outcome) return false;
-    if (k === 'joueur') return g.outcome === 'joueur';
-    if (k === 'banque') return g.outcome === 'banque';
-    if (k === 'egalite') return g.outcome === 'egalite';
-    if (k === 'paireJ') return isPair(g.player);
-    if (k === 'paireB') return isPair(g.banker);
-    return false;
+  /** Paiement d'une case : 0 = perdue, 1 = rendue (push), > 1 = gagnante.
+   *
+   *  Règle du Punto Banco : sur une <b>égalité</b>, les mises Joueur et Banque
+   *  sont <b>rendues</b> (push) — c'est ce que suppose le RTP annoncé
+   *  (Joueur 98,76 % · Banque 98,94 %). Les mises de côté (Égalité, Paires) se
+   *  règlent sur leur propre événement, indépendamment du vainqueur. */
+  const payMult = (k, g) => {
+    if (!g.outcome) return 0;
+    if (k === 'joueur') return g.outcome === 'joueur' ? SPOTS.joueur.mult : (g.outcome === 'egalite' ? 1 : 0);
+    if (k === 'banque') return g.outcome === 'banque' ? SPOTS.banque.mult : (g.outcome === 'egalite' ? 1 : 0);
+    if (k === 'egalite') return g.outcome === 'egalite' ? SPOTS.egalite.mult : 0;
+    if (k === 'paireJ') return isPair(g.player) ? SPOTS.paireJ.mult : 0;
+    if (k === 'paireB') return isPair(g.banker) ? SPOTS.paireB.mult : 0;
+    return 0;
   };
+  const wins = (k, g) => payMult(k, g) > 0;
 
   /* ------------------------------------------------------------- MOUVEMENTS */
   function place(g, k, silent) {
@@ -255,10 +262,10 @@
     const winning = [];
     KEYS.forEach((k) => {
       if (!g.spots[k]) return;
-      if (wins(k, g)) {
-        mult += (g.spots[k] / t.w) * SPOTS[k].mult;
-        winning.push(SPOTS[k].label + ' ' + SPOTS[k].mult.toFixed(2).replace('.', ',') + 'x');
-      }
+      const p = payMult(k, g);
+      if (p <= 0) return;
+      mult += (g.spots[k] / t.w) * p;
+      winning.push(SPOTS[k].label + ' ' + (p === 1 ? 'remboursée (égalité)' : p.toFixed(2).replace('.', ',') + 'x'));
     });
     g.phase = 'done';
     g.recent.unshift(g.outcome);
@@ -269,8 +276,13 @@
       (winning.length ? ' · gagné : ' + winning.join(', ') : '');
     g.msg = g.outcome === 'egalite' ? 'Égalité' : (g.outcome === 'joueur' ? 'Le Joueur gagne' : 'La Banque gagne');
     paint(g);
-    const total = Object.keys(g.spots).reduce((a, k) => a + g.spots[k].w, 0) * g.chip;
-    J.FX.celebrate({ mult: mult, payout: Math.round(total * mult), el: g.zoneEl });
+    /* Le tapis du baccarat compte des JETONS (un entier par case), pas des
+       objets pondérés comme ceux de la roulette : le montant misé est donc
+       t.w × valeur du jeton. (L'ancienne ligne lisait `g.spots[k].w`, qui
+       n'existe pas ici : le gain affiché partait en NaN et la célébration ne
+       se déclenchait jamais — le gain n'était pas fêté, mais bien crédité.) */
+    const payout = Math.round(stake * mult);
+    J.FX.celebrate({ mult: mult, payout: payout, el: g.zoneEl });
     if (mult === 0) { J.Sfx.lose(); J.haptic.lose(); }
     J.Games.finish(g, mult, { detail: g.detail, celebrated: true });
   }
@@ -292,6 +304,8 @@
       '<b>Aucune décision</b> : le tableau officiel de la 3ᵉ carte décide de tout.<br><br>' +
       '<b>Paiements</b> : Banque <b>0,95:1</b> (RTP 98,94 %) · Joueur <b>1:1</b> (RTP 98,76 %) · ' +
       'Égalité <b>8:1</b> (RTP 85,64 %) · Paire <b>11:1</b> (RTP 89,64 %).<br>' +
+      'Sur une <b>égalité</b>, tes mises <b>Joueur</b> et <b>Banque</b> te sont <b>rendues</b> ' +
+      '(push, ni gain ni perte) ; seules les mises Égalité et Paire restent en jeu.<br>' +
       'Tu peux cumuler plusieurs mises sur le même coup (par exemple Banque + Paire). ' +
       'Une main qui fait 8 ou 9 d\'entrée est un <b>naturel</b> : plus de tirage.',
     playLabel: 'Distribuer 🎴',
@@ -388,6 +402,13 @@
       };
       paintChips(g);
       paint(g);
+      /* Les zones de mise doivent être sous les yeux dès l'ouverture : sur un
+         écran court le tapis (cartes + annonce) les repoussait sous le pli de
+         la scène et le joueur croyait le jeu bloqué sur « Place ta mise ». */
+      setTimeout(() => {
+        const z = g.zoneEl;
+        if (z && z.scrollIntoView) z.scrollIntoView({ block: 'nearest' });
+      }, 80);
     }
   });
 

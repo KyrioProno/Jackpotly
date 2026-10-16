@@ -28,8 +28,15 @@
 
     // 6) Interface
     J.UI.mountIcons();          // icônes SVG déclarées par le squelette HTML
+    /* Une manche interrompue par un rechargement de page : la mise débitée
+       mais jamais réglée est rendue au joueur (et annoncée, pour qu'il
+       comprenne pourquoi son solde remonte au démarrage). */
+    const pending = J.Wallet.recoverPending();
     J.Wallet.renderBalance();
     J.Screen.renderAll();
+    if (pending) {
+      setTimeout(() => J.toast('Manche interrompue : mise de ' + U.fmt(pending.bet) + ' J rendue', 'ok'), 2600);
+    }
 
     // 7) Écran d'accueil animé puis disparition
     const splash = document.getElementById('splash');

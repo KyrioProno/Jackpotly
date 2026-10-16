@@ -145,7 +145,7 @@
       });
     },
 
-    stop(g) { g.spinning = false; },
+    stop(g) { g.spinning = false; if (g._raf) { cancelAnimationFrame(g._raf); g._raf = null; } },
 
     /* ---------------------------------------------------------- BOUTONS */
     actions(g) {
@@ -173,17 +173,20 @@
       let lastTick = 0;
 
       const frame = (t) => {
-        if (!g.ticket) { g.spinning = false; return; }
+        /* La manche a été clôturée ailleurs (sortie de jeu remboursée, nouvelle
+           manche) : on arrête l'animation ET on rend la main, au lieu de laisser
+           une roue figée avec des commandes inaccessibles. */
+        if (!g.ticket) { g._raf = null; g.spinning = false; g.busy = false; J.Games.renderActions(g); return; }
         const p = Math.min(1, (t - t0) / dur);
         const e = 1 - Math.pow(1 - p, 3.2);
         g.angle = from + delta * e;
         draw(g, g.angle);
         const speed = delta * 3.2 * Math.pow(Math.max(0.001, 1 - p), 2.2) / (dur / 1000);
         if (t - lastTick > 55 && speed > 1.5) { lastTick = t; J.Sfx.wheelTick(U.clamp(speed / 40, 0, 1)); }
-        if (p < 1) requestAnimationFrame(frame);
-        else finish(g, seg, won);
+        if (p < 1) g._raf = requestAnimationFrame(frame);
+        else { g._raf = null; finish(g, seg, won); }
       };
-      requestAnimationFrame(frame);
+      g._raf = requestAnimationFrame(frame);
     }
   });
 
