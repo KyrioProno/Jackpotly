@@ -20,102 +20,57 @@
     return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
   };
 
-  /** Vignette de jeu réutilisable (lobby, catalogue). */
+  /** Vignette de jeu (repli si le lobby n'est pas encore chargé). */
   S.tile = function (g) {
-    const locked = g.status !== 'live';
-    return '<button class="game-tile' + (locked ? ' locked' : '') + '" data-game="' + g.id + '" style="--tint:' + hexA(g.color, .34) + '">' +
-      (g.status === 'live' && g.hot ? '<span class="tag-hot">HOT</span>' : '') +
-      (locked ? '<span class="lock-chip">' + (g.wave === 2 ? 'VAGUE 2' : 'VAGUE 3') + '</span>' : '') +
-      '<span class="gt-ico" style="color:' + g.color + '">' + J.icon[g.icon] + '</span>' +
-      '<span class="gt-name">' + g.name + '</span>' +
-      '<span class="gt-meta">' + (locked ? 'Bientôt disponible' : (g.tagline || '')) + '</span>' +
-      '<span class="gt-rtp">RTP ' + g.rtp + ' %</span>' +
-    '</button>';
+    if (J.Lobby && J.Lobby.card) return J.Lobby.card(g);
+    return '<button class="game-tile" data-game="' + g.id + '"><span class="gt-name">' + g.name + '</span></button>';
   };
 
   /* =============================================================== LOBBY */
+  /* Le hall, ses salles et ses vitrines sont construits par src/27b-lobby.js :
+     ici on ne fait que déléguer, pour garder un seul point d'entrée (les tests
+     et le bus d'événements continuent d'appeler S.renderHome). */
   S.renderHome = function () {
-    const st = J.Store.state;
-    $('homePseudo').textContent = U.esc(st.pseudo);
-    const h = new Date().getHours();
-    $('homeGreeting').textContent = h < 6 ? 'Bonne nuit — pense à dormir 😴'
-      : h < 12 ? 'Bonne matinée et bonne chance !'
-      : h < 18 ? 'Bonne après-midi !'
-      : 'Bonne soirée !';
-
-    // Cartes promo (bonus, roue, recharge, VIP)
-    const promos = [];
-    if (J.Rewards.canClaimDaily()) {
-      promos.push({ ico: J.icon.gift, t: 'Bonus quotidien', s: 'Prêt à récupérer !', act: 'daily', cls: 'glow-green' });
-    }
-    if (J.Rewards.canSpinWheel()) {
-      promos.push({ ico: J.icon.fortune, t: 'Roue de la chance', s: '1 tour gratuit disponible', act: 'wheel', cls: 'glow-gold' });
-    }
-    if (J.Wallet.balance < J.CONST.MIN_BET) {
-      promos.push({ ico: J.icon.refill, t: 'Solde épuisé', s: 'Recharge gratuite disponible', act: 'recharge', cls: '' });
-    }
-    const vip = J.Wallet.vipInfo();
-    promos.push({
-      ico: J.icon.medal, t: 'Statut ' + vip.tier.name, s: vip.next ? U.fmtK(vip.remaining) + ' J avant ' + vip.next.name : 'Palier maximum', act: 'vip', cls: ''
-    });
-    promos.push({ ico: J.icon.cart, t: 'Packs de jetons', s: 'Jetons virtuels · paiement simulé', act: 'shop', cls: '' });
-
-    $('homePromos').innerHTML = promos.map((p, i) =>
-      '<button class="promo-card ' + p.cls + '" data-promo="' + p.act + '" data-i="' + i + '">' +
-        '<div class="pc-emoji">' + p.ico + '</div>' +
-        '<div class="pc-title">' + p.t + '</div>' +
-        '<div class="pc-txt">' + p.s + '</div>' +
-      '</button>').join('');
-    $('homePromos').querySelectorAll('[data-promo]').forEach((b) => {
-      b.onclick = () => {
-        J.Sfx.click();
-        const a = b.dataset.promo;
-        if (a === 'daily') J.Rewards.openDaily();
-        else if (a === 'wheel') J.Rewards.openWheel();
-        else if (a === 'recharge') J.Rewards.openRecharge();
-        else if (a === 'shop') J.UI.go('shop');
-        else if (a === 'vip') S.openVip();
-      };
-    });
-
-    // Originals en vedette
-    const live = (J.GAMES || []).filter((g) => g.category === 'originals');
-    $('homeOriginals').innerHTML = live.slice(0, 4).map(S.tile).join('');
-    const classics = (J.GAMES || []).filter((g) => g.category === 'classics').slice(0, 4);
-    $('homeClassics').innerHTML = classics.map(S.tile).join('');
-    bindTiles($('homeOriginals')); bindTiles($('homeClassics'));
-
-    // Flux des gros gains (les 5 derniers)
-    const feed = J.Live.recent.slice(0, 5);
-    $('homeFeed').innerHTML = feed.length ? feed.map((f) =>
-      '<div class="row between" style="padding:6px 0;border-bottom:1px solid var(--line-soft)">' +
-        '<div class="row grow"><span class="avatar" style="width:24px;height:24px;font-size:10px;background:' + f.color + '">' +
-          U.esc(f.name.charAt(0).toUpperCase()) + '</span>' +
-          '<span style="font-size:12px;font-weight:700" class="ellipsis">' + U.esc(f.name) + '</span>' +
-          '<span class="sub" style="font-size:10.5px">' + U.esc(f.gameName) + '</span></div>' +
-        '<div class="row"><span class="mono up" style="font-size:11.5px">' + U.fmtMult(f.mult) + '</span>' +
-        '<span class="mono gold" style="font-size:11.5px">+' + U.fmtK(f.amount) + '</span></div>' +
-      '</div>').join('') : '<div class="sub">Chargement du flux…</div>';
-    $('feedCount').textContent = 'mise à jour auto';
+    if (J.Lobby) J.Lobby.render();
   };
 
-  function bindTiles(rootEl) {
-    rootEl.querySelectorAll('[data-game]').forEach((b) => {
-      b.onclick = () => J.Games.open(b.dataset.game);
-    });
-  }
-
   /* ========================================================== CATALOGUE */
+  /* Filtres par famille. Les six machines à sous apparaissent à l'unité :
+     chacune est un univers complet, pas une déclinaison de couleur. */
+  const FILTERS = {
+    all: () => (J.GAMES || []).map((g) => ({ g })),
+    originals: () => (J.GAMES || []).filter((g) => g.category === 'originals').map((g) => ({ g })),
+    classics: () => (J.GAMES || []).filter((g) => g.category === 'classics').map((g) => ({ g })),
+    slots: () => (J.GAMES || []).filter((g) => g.id === 'slots')
+      .flatMap((g) => LB().MACHINES.map((m) => ({ g, machine: m }))),
+    tables: () => ['roulette', 'blackjack', 'baccarat'].map((id) => ({ g: J.Games.byId(id) })).filter((x) => x.g),
+    poker: () => ['videopoker', 'poker'].map((id) => ({ g: J.Games.byId(id) })).filter((x) => x.g),
+    favoris: () => {
+      const list = (J.Store.state.favorites || []);
+      const games = (J.GAMES || []).filter((g) => g.id !== 'slots' && list.indexOf(g.id) >= 0).map((g) => ({ g }));
+      const machines = list.indexOf('slots') >= 0 && !list.some((k) => k.indexOf('slots-') === 0)
+        ? LB().MACHINES.map((m) => ({ g: J.Games.byId('slots'), machine: m }))
+        : LB().MACHINES.filter((m) => list.indexOf('slots-' + m.id) >= 0)
+            .map((m) => ({ g: J.Games.byId('slots'), machine: m }));
+      return games.concat(machines);
+    }
+  };
+  /* Le lobby (27b) se charge après ce fichier : on le lit toujours à l'appel. */
+  const LB = () => J.Lobby || {};
+
   S.renderOriginals = function () {
-    const all = J.GAMES || [];
-    const list = originalsFilter === 'all' ? all
-      : originalsFilter === 'soon' ? all.filter((g) => g.status !== 'live')
-      : all.filter((g) => g.category === originalsFilter);
-    $('originalsGrid').innerHTML = list.length ? list.map(S.tile).join('')
-      : '<div class="empty">' + (originalsFilter === 'soon'
-        ? '🎉 Les 16 jeux sont livrés : la feuille de route est vide, il n\'y a plus rien à attendre ici.'
-        : 'Aucun jeu dans cette catégorie.') + '</div>';
-    bindTiles($('originalsGrid'));
+    const build = FILTERS[originalsFilter] || FILTERS.all;
+    const list = build().filter((x) => x.g);
+    const count = $('catCount');
+    if (count) count.textContent = list.length + ' jeu' + (list.length > 1 ? 'x' : '');
+    const grid = $('originalsGrid');
+    grid.className = 'grid2 mt';
+    grid.innerHTML = list.length
+      ? list.map((x) => (LB().card ? LB().card(x.g, { machine: x.machine, favKey: x.machine ? 'slots-' + x.machine.id : x.g.id }) : S.tile(x.g))).join('')
+      : '<div class="empty" style="grid-column:1/-1">' + (originalsFilter === 'favoris'
+        ? '<div class="e-ico">' + J.icon.heart + '</div>Aucun favori : appuie sur le cœur d\'une carte.'
+        : 'Aucun jeu dans cette famille.') + '</div>';
+    if (LB().bindCards) LB().bindCards(grid); else bindTiles(grid);
   };
 
   $('originalsSeg').addEventListener('click', (e) => {

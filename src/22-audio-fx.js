@@ -10,19 +10,43 @@
   /* ------------------------------------------------------------------ SON */
   /** Petit moteur audio : oscillateurs + bruit blanc, tout synthétisé. */
   const Sfx = (J.Sfx = (function () {
-    let ctx = null, master = null, noiseBuf = null, unlocked = false;
+    let ctx = null, master = null, sfxBus = null, musicBus = null, noiseBuf = null, unlocked = false;
+
+    /** Volumes voulus par le joueur (0-1). Le mode silencieux coupe le bus
+        entier : les moteurs continuent de tourner, rien ne sort. */
+    function levels() {
+      const s = J.Store.state.settings;
+      const n = (v, def) => (typeof v === 'number' && isFinite(v) ? v : def);
+      return {
+        master: n(s.volMaster, 0.9),
+        sfx: s.sound === false ? 0 : n(s.volSfx, 0.9),
+        music: s.music === false ? 0 : n(s.volMusic, 0.5)
+      };
+    }
+
+    /** Applique les volumes aux bus (appelé à chaque réglage et au démarrage). */
+    function applyLevels() {
+      if (!ctx) return;
+      const l = levels();
+      master.gain.value = l.master;
+      sfxBus.gain.value = l.sfx;
+      musicBus.gain.value = l.music;
+    }
 
     function ensure() {
-      if (!J.Store.state.settings.sound) return null;
       if (!ctx) {
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return null;
         ctx = new AC();
         master = ctx.createGain();
-        master.gain.value = 0.9;
         const comp = ctx.createDynamicsCompressor();
         comp.threshold.value = -12; comp.ratio.value = 6;
         master.connect(comp).connect(ctx.destination);
+        // Deux bus : effets (boutons, gains, percussions) et musique.
+        sfxBus = ctx.createGain();
+        musicBus = ctx.createGain();
+        sfxBus.connect(master);
+        musicBus.connect(master);
         // Buffer de bruit blanc réutilisable (percussions, whoosh)
         const n = ctx.sampleRate * 0.6;
         noiseBuf = ctx.createBuffer(1, n, ctx.sampleRate);
@@ -30,6 +54,7 @@
         for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
       }
       if (ctx.state === 'suspended') ctx.resume();
+      applyLevels();
       return ctx;
     }
 
@@ -62,7 +87,7 @@
       g.gain.setValueAtTime(0.0001, t0);
       g.gain.exponentialRampToValueAtTime(vol, t0 + Math.min(0.02, dur * 0.25));
       g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      osc.connect(g).connect(master);
+      osc.connect(g).connect(sfxBus);
       osc.start(t0); osc.stop(t0 + dur + 0.03);
     }
 
@@ -85,7 +110,7 @@
       g.gain.setValueAtTime(0.0001, t0);
       g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      src.connect(f).connect(g).connect(master);
+      src.connect(f).connect(g).connect(sfxBus);
       src.start(t0); src.stop(t0 + dur + 0.02);
     }
 
@@ -147,7 +172,17 @@
 
     return {
       unlock,
-      setEnabled(on) { if (on) ensure(); else Sfx.ambience(false); },
+      /** Contexte audio partagé avec le moteur musical (créé à la demande). */
+      audioCtx: () => ensure(),
+      /** Bus de la musique : le moteur musical s'y raccorde, volumes compris. */
+      musicBus: () => { ensure(); return musicBus; },
+      /** Niveau courant de la musique (0-1) : sert au « ducking » des fanfares. */
+      musicLevel: () => levels().music,
+      /** Recalcule les volumes après un changement de réglage. */
+      applyLevels,
+      levels,
+      isReady: () => !!ctx && ctx.state === 'running',
+      setEnabled(on) { if (on) ensure(); else Sfx.ambience(false); applyLevels(); },
       /** Clic UI discret */
       click() { tone({ freq: 620, dur: 0.045, type: 'square', gain: 0.07, slide: 780 }); },
       tap() { tone({ freq: 320, dur: 0.05, type: 'sine', gain: 0.10 }); },
@@ -263,7 +298,7 @@
           o.start();
           return o;
         });
-        filter.connect(gain).connect(master);
+        filter.connect(gain).connect(sfxBus);
         gain.gain.setTargetAtTime(0.030, c.currentTime, 1.2);
         lfo.start();
         osc.push(lfo);
@@ -378,7 +413,7 @@
             y: oy,
             vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 1,
             g: 0.22 + Math.random() * 0.12,
-            w: 4 + Math.random() * 6, h: 6 + Math.random() * 9,
+            w: 3 + Math.random() * 3, h: 4.5 + Math.random() * 4.5,   // particules discrètes : elles habillent le gain sans masquer les rouleaux
             rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.34,
             color: opts.colors ? J.util.pick(opts.colors) : J.util.pick(COLORS),
             shape: opts.shape || (Math.random() < 0.25 ? 'circle' : 'rect'),
@@ -501,8 +536,8 @@
         if (!motion) return true;
 
         // --- particules : graduées selon le palier
-        if (nice) this.confetti({ count: strong ? (big ? 150 : 80) : 38, x: x, y: y, power: strong ? 9 : 6, spread: 60 });
-        if (strong) this.coins(big ? 70 : 26, x, y - 10);
+        if (nice) this.confetti({ count: strong ? (big ? 90 : 46) : 22, x: x, y: y, power: strong ? 9 : 6, spread: 60 });
+        if (strong) this.coins(big ? 40 : 16, x, y - 10);
         if (big) this.burst({ x: x, y: y, count: 34, power: 11 });
 
         // --- bandeau de palier

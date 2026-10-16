@@ -48,9 +48,16 @@
       else if (J.Store.state.settings.liveFeed) J.Live.start();
     });
 
-    // 9) Le son ne peut démarrer qu'après une interaction (règles navigateurs)
-    const unlock = () => { J.Sfx.unlock(); window.removeEventListener('pointerdown', unlock); };
+    /* 9) Le son ne peut démarrer qu'après une interaction (règles navigateurs).
+       On en profite pour lancer la musique d'ambiance déjà demandée par
+       l'écran : elle ne démarre donc jamais toute seule, et jamais deux fois. */
+    const unlock = () => {
+      J.Sfx.unlock();
+      if (J.Music) J.Music.onUnlock();
+      window.removeEventListener('pointerdown', unlock);
+    };
     window.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && J.Music) J.Music.onUnlock(); });
 
     // 10) Solde épuisé : message + offre de recharge (une fois par épuisement)
     let warnedEmpty = false;

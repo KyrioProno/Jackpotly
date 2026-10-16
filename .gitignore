@@ -10,6 +10,9 @@ tests/screens/
 apply-*.py
 docs-update.py
 
+# Images sources brutes (lourdes) : seules les versions optimisées sont suivies
+assets/raw/
+
 # Fichiers temporaires
 *.log
 .DS_Store

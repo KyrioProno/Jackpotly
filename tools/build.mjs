@@ -19,7 +19,12 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
 
 const head = readFileSync(join(src, '00-head.html'), 'utf8');
-const css = readFileSync(join(src, '01-styles.css'), 'utf8');
+/* Design system assemblé dans l'ordre des préfixes numériques : le noyau
+   (01-styles) puis les couches de l'univers de casino (Royale, salles, jeux). */
+const cssFiles = readdirSync(src).filter((f) => f.endsWith('.css')).sort();
+if (!cssFiles.length) { console.error('Aucun CSS trouvé dans src/'); process.exit(1); }
+const css = cssFiles.map((f) => '/* ===== ' + f + ' ' + '='.repeat(Math.max(0, 64 - f.length)) + ' */\n' +
+  readFileSync(join(src, f), 'utf8').trimEnd()).join('\n\n');
 const body = readFileSync(join(src, '10-body.html'), 'utf8');
 const tail = readFileSync(join(src, '99-tail.html'), 'utf8');
 
@@ -69,6 +74,7 @@ const checks = [
 
 console.log('JACKPOTLY — build v' + version + ' (' + fingerprint + ')');
 console.log('Modules JS : ' + jsFiles.length + ' → ' + jsFiles.join(', '));
+console.log('Feuilles CSS : ' + cssFiles.length + ' → ' + cssFiles.join(', '));
 let ok = true;
 for (const [label, pass] of checks) {
   console.log((pass ? '  ✓ ' : '  ✗ ') + label);

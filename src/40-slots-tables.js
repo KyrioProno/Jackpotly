@@ -1,6 +1,9 @@
 /* =========================================================================
    JACKPOTLY — MACHINES À SOUS : DONNÉES ET MATHÉMATIQUES EXACTES
-   Trois machines (5 rouleaux × 3 lignes visibles, 20 lignes de paiement).
+   Six machines (5 rouleaux × 3 lignes visibles, 20 lignes de paiement).
+   Les six partagent la MÊME structure de bandes (compteurs C1..C5) : seules
+   les graines de mélange changent, donc les probabilités et le RTP sont
+   identiques d'une machine à l'autre — seule la disposition diffère.
 
    Modèle « bandes de rouleaux » : chaque rouleau est une bande de 40 symboles
    tirée au hasard à chaque tour. Les bandes sont construites ici de façon
@@ -130,6 +133,60 @@
         S: { e: '💰', n: 'Scatter' }
       },
       pays: { W: { 3: 75.19, 4: 375.94, 5: 2506.26 }, A: { 3: 62.66, 4: 250.63, 5: 1253.13 }, P: { 3: 37.59, 4: 150.38, 5: 626.57 }, C: { 3: 25.06, 4: 100.25, 5: 375.94 }, K: { 3: 15.04, 4: 50.13, 5: 200.5 }, J: { 3: 12.53, 4: 37.59, 5: 150.38 }, T: { 3: 10.03, 4: 30.08, 5: 112.78 }, F: { 3: 7.52, 4: 25.06, 5: 100.18 } }
+    },
+    {
+      id: 'dragon',
+      name: 'Royaume des Dragons',
+      tagline: 'Le pacte du feu',
+      colors: { from: '#3b0a0a', to: '#12060a', accent: '#ff3d3d' },
+      sym: {
+        A: { e: '🐲', n: 'Dragon' },
+        P: { e: '👑', n: 'Couronne de feu' },
+        C: { e: '🛡️', n: 'Écu' },
+        K: { e: '🗡️', n: 'Dague' },
+        J: { e: '🔥', n: 'Braise' },
+        T: { e: '🥚', n: 'Œuf de dragon' },
+        F: { e: '🪙', n: 'Pièce d\'or' },
+        W: { e: '💠', n: 'Joker' },
+        S: { e: '🌋', n: 'Volcan' }
+      },
+      pays: { W: { 3: 75.19, 4: 375.94, 5: 2506.26 }, A: { 3: 62.66, 4: 250.63, 5: 1253.13 }, P: { 3: 37.59, 4: 150.38, 5: 626.57 }, C: { 3: 25.06, 4: 100.25, 5: 375.94 }, K: { 3: 15.04, 4: 50.13, 5: 200.5 }, J: { 3: 12.53, 4: 37.59, 5: 150.38 }, T: { 3: 10.03, 4: 30.08, 5: 112.78 }, F: { 3: 7.52, 4: 25.06, 5: 100.18 } }
+    },
+    {
+      id: 'gemmes',
+      name: 'Gemmes & Luxe',
+      tagline: 'Le salon des bijoux',
+      colors: { from: '#2a0b45', to: '#0d0f2a', accent: '#a855f7' },
+      sym: {
+        A: { e: '💎', n: 'Diamant' },
+        P: { e: '👑', n: 'Diadème' },
+        C: { e: '💜', n: 'Améthyste' },
+        K: { e: '🧿', n: 'Émeraude' },
+        J: { e: '🔮', n: 'Rubis' },
+        T: { e: '💠', n: 'Topaze' },
+        F: { e: '🪙', n: 'Jeton d\'argent' },
+        W: { e: '✨', n: 'Joker' },
+        S: { e: '💍', n: 'Écrin' }
+      },
+      pays: { W: { 3: 75.19, 4: 375.94, 5: 2506.26 }, A: { 3: 62.66, 4: 250.63, 5: 1253.13 }, P: { 3: 37.59, 4: 150.38, 5: 626.57 }, C: { 3: 25.06, 4: 100.25, 5: 375.94 }, K: { 3: 15.04, 4: 50.13, 5: 200.5 }, J: { 3: 12.53, 4: 37.59, 5: 150.38 }, T: { 3: 10.03, 4: 30.08, 5: 112.78 }, F: { 3: 7.52, 4: 25.06, 5: 100.18 } }
+    },
+    {
+      id: 'bonbons',
+      name: 'Sucre Rapide',
+      tagline: 'La machine gourmande',
+      colors: { from: '#3d0b2e', to: '#12202a', accent: '#ff8fc8' },
+      sym: {
+        A: { e: '🍭', n: 'Sucette' },
+        P: { e: '🎂', n: 'Gâteau' },
+        C: { e: '🧁', n: 'Cupcake' },
+        K: { e: '🍩', n: 'Donut' },
+        J: { e: '🍫', n: 'Chocolat' },
+        T: { e: '🍬', n: 'Bonbon' },
+        F: { e: '🍬', n: 'Sucre d\'orge' },
+        W: { e: '⭐', n: 'Joker' },
+        S: { e: '🎁', n: 'Boîte surprise' }
+      },
+      pays: { W: { 3: 75.19, 4: 375.94, 5: 2506.26 }, A: { 3: 62.66, 4: 250.63, 5: 1253.13 }, P: { 3: 37.59, 4: 150.38, 5: 626.57 }, C: { 3: 25.06, 4: 100.25, 5: 375.94 }, K: { 3: 15.04, 4: 50.13, 5: 200.5 }, J: { 3: 12.53, 4: 37.59, 5: 150.38 }, T: { 3: 10.03, 4: 30.08, 5: 112.78 }, F: { 3: 7.52, 4: 25.06, 5: 100.18 } }
     }
   ];
 
@@ -137,7 +194,10 @@
   const SEEDS = {
     egypte: [11, 101, 202, 307, 401],
     neon: [17, 131, 233, 331, 433],
-    jackpotly: [23, 149, 257, 353, 457]
+    jackpotly: [23, 149, 257, 353, 457],
+    dragon: [3, 5, 5, 5, 3],
+    gemmes: [4, 6, 6, 6, 4],
+    bonbons: [5, 7, 7, 7, 5]
   };
 
   THEMES.forEach((t) => {

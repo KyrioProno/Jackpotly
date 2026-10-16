@@ -30,8 +30,10 @@
     return def;
   };
 
-  /** Ouvre un jeu (ou annonce sa sortie si encore verrouillé). */
-  Games.open = function (id) {
+  /** Ouvre un jeu (ou annonce sa sortie si encore verrouillé).
+   *  `opts` est transmis au jeu : les machines à sous y reçoivent la machine
+   *  choisie dans la galerie du lobby ({ machine: 'dragon' }). */
+  Games.open = function (id, opts) {
     const def = J.GAMES.find((g) => g.id === id);
     if (!def) return;
     if (def.status !== 'live') {
@@ -51,18 +53,19 @@
       });
       return;
     }
-    Games.mount(def);
+    Games.mount(def, opts);
   };
 
   Games.byId = (id) => J.GAMES.find((g) => g.id === id);
 
   /* ============================================================== INSTANCE */
   /** Construit et monte un jeu dans l'écran dédié. */
-  Games.mount = function (def) {
+  Games.mount = function (def, opts) {
     Games.close(true);
     const host = document.getElementById('gameShell');
     const g = {
       def,
+      opts: opts || {},                 // options de lancement (machine choisie, etc.)
       bet: loadBet(def.id),
       busy: false,
       rounds: 0,
@@ -74,8 +77,14 @@
     };
     current = g;
 
+    /* La coque d'un jeu : en-tête (retour, titre, règles), scène, panneau.
+       En mode « plein cadre » (machine à sous), l'en-tête est masqué : la
+       façade de la machine occupe tout l'écran et garde son propre bouton de
+       sortie. Le titre reste accessible aux lecteurs d'écran via aria-label. */
+    const duo = def.id === 'slots';
+    host.className = duo ? 'duo' : '';
     host.innerHTML =
-      '<div class="game-head">' +
+      '<div class="game-head"' + (duo ? ' aria-hidden="true"' : '') + '>' +
         '<button class="icon-btn" data-g="back" aria-label="Retour">' +
           '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' +
         '</button>' +
@@ -90,6 +99,7 @@
 
     g.stageEl = host.querySelector('#gStage');
     g.panelEl = host.querySelector('#gPanel');
+    g.headEl = host.querySelector('.game-head');
 
     host.querySelector('[data-g="back"]').onclick = () => { J.Sfx.click(); Games.close(); };
     host.querySelector('[data-g="info"]').onclick = () => { J.Sfx.click(); J.UI.gameInfo(def); };
@@ -243,8 +253,15 @@
   Games.renderPanel = renderPanel;
 
   function renderActions(g) {
-    const box = g.panelEl.querySelector('#gActions');
+    /* Le conteneur est mémorisé : un jeu qui présente ses commandes sur son
+       propre meuble (machine à sous) peut le déplacer une fois, et le moteur
+       continue de le remplir au même endroit. Si le panneau a été reconstruit
+       entre-temps, l'ancien conteneur n'est plus dans la page : on reprend
+       celui du panneau courant. */
+    let box = g.actionsEl;
+    if (!box || (box.isConnected === false)) box = g.panelEl.querySelector('#gActions');
     if (!box) return;
+    g.actionsEl = box;
     const acts = (g.def.actions ? g.def.actions(g) : null) ||
       [{ label: g.def.playLabel || 'Jouer', cls: 'primary wide-lg grow', act: 'play' }];
     box.innerHTML = acts.map((a, i) =>

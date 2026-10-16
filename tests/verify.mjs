@@ -926,14 +926,14 @@ section('15. Baccarat — probabilités exactes du Punto Banco et RTP');
     '200 000 donnes simulées en ' + ms + ' ms');
 }
 
-/* ================== 16. MACHINES À SOUS : RTP EXACT DES 3 THÈMES */
+/* ============== 16. MACHINES À SOUS : RTP EXACT DES 6 MACHINES */
 section('16. Machines à sous — RTP exact calculé sur les bandes');
 {
   const D = win.JACKPOTLY.SLOTS_DATA;
   check('20 lignes de paiement distinctes et valides', D.LINES.length === 20 &&
     new Set(D.LINES.map((l) => l.join(''))).size === 20 &&
     D.LINES.every((l) => l.length === 5 && l.every((r) => r >= 0 && r <= 2)));
-  check('3 thèmes de 5 rouleaux de 40 symboles', D.THEMES.length === 3 &&
+  check('6 machines de 5 rouleaux de 40 symboles', D.THEMES.length === 6 &&
     D.THEMES.every((t) => t.reels.length === 5 && t.reels.every((r) => r.length === 40)));
   check('chaque bande contient au moins un scatter et respecte sa composition',
     D.THEMES.every((t) => t.reels.every((r, i) => {
@@ -943,7 +943,7 @@ section('16. Machines à sous — RTP exact calculé sur les bandes');
     })));
   const rtps = D.THEMES.map((t) => D.rtp(t));
   const worst = Math.max.apply(null, rtps.map((r) => Math.abs(r.total - 0.965)));
-  check('RTP exact = 96,50 % pour les 3 thèmes (calcul analytique)', worst < 0.0005,
+  check('RTP exact = 96,50 % pour les 6 machines (calcul analytique)', worst < 0.0005,
     rtps.map((r) => r.id + ' ' + (r.total * 100).toFixed(4) + ' %').join(' · '));
   check('le détail du RTP additionne bien le total (lignes + scatters + tours gratuits)',
     rtps.every((r) => Math.abs(r.lines + r.scatters + r.free - r.total) < 1e-12));
@@ -952,6 +952,11 @@ section('16. Machines à sous — RTP exact calculé sur les bandes');
   check('les gains décroissent avec la rareté des symboles (F > T > J > K > C > P > A > W)',
     rtps.every((r) => r.perSymbol.F > r.perSymbol.J && r.perSymbol.J > r.perSymbol.K &&
       r.perSymbol.K > r.perSymbol.C && r.perSymbol.C > r.perSymbol.P));
+  check('chaque machine a bien 9 symboles dessinés (aucun repli sur une lettre)',
+    D.THEMES.every((t) => {
+      const A = win.JACKPOTLY.SlotArt;
+      return A && Object.keys(t.sym).every((k) => A.svg(t.id, k, 'v').length > 300 && A.k === undefined);
+    }), D.THEMES.map((t) => t.id + ':' + (win.JACKPOTLY.SlotArt.keys(t.id) || []).length).join(' · '));
   check('le multiplicateur des tours gratuits somme à 22 (1·1·1·2·2·2·3·3·3·4)',
     D.THEMES.every((t) => t.multSchedule.reduce((a, b) => a + b, 0) === 22 && t.freeSpins === 10));
 }

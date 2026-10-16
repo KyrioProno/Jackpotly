@@ -25,7 +25,19 @@
 
   /* ------------------------------------------------------------------ ÉTAT */
   function state(g) {
-    g.themeIdx = g.themeIdx || 0;
+    /* La machine se choisit dans la galerie du lobby (une façade = un univers) :
+       on retrouve le thème par son identifiant. Le catalogue générique ouvre la
+       dernière machine utilisée. */
+    const chosen = (g.opts && g.opts.machine) || J.Store.state.settings.lastMachine || 'egypte';
+    /* Deux identifiants distincts, et c'est voulu :
+       · `machineId` = la façade choisie dans la galerie du lobby (art, nom, son) ;
+       · `themeId`   = l'univers de calcul (bandes de rouleaux, table de gains). */
+    const m = (J.Lobby && J.Lobby.machine) ? J.Lobby.machine(chosen) : null;
+    g.machineId = (m && m.id) || chosen;
+    const thId = (m && m.theme) || g.machineId;
+    const byId = D.THEMES.findIndex((t) => t.id === thId);
+    g.themeId = byId >= 0 ? thId : D.THEMES[0].id;
+    g.themeIdx = byId >= 0 ? byId : 0;
     g.lines = 20;
     g.grid = null;                        // [rouleau][ligne] → clé de symbole
     g.display = null;                     // ce qui est à l'écran
@@ -105,19 +117,25 @@
   }
 
   /* ------------------------------------------------------------------ RENDU */
+  /* Un symbole = un SVG de l'univers de la machine (src/40b-slots-art.js) :
+     plus aucun emoji sur le plateau, rendu identique sur tous les appareils.
+     `data-k` est conservé (tests, tableau des gains). */
+  let cellSeq = 0;                        // identifiants de dégradés tous distincts
   function cellHTML(k, g, extra) {
-    const s = theme(g).sym[k];
     const cls = k === 'S' ? ' scatter' : k === 'W' ? ' wild' : (k === 'A' || k === 'P' ? ' high' : '');
-    return '<div class="sl-cell' + cls + (extra || '') + '" data-k="' + k + '">' +
-      '<span class="sl-e">' + (s ? s.e : '?') + '</span></div>';
+    const svg = J.SlotArt ? J.SlotArt.svg(g.themeId, k, 'r' + (cellSeq++)) : '';
+    return '<div class="sl-cell sym' + cls + (extra || '') + '" data-k="' + k + '" title="' +
+      U.esc(J.SlotArt ? J.SlotArt.label(g.themeId, k) : k) + '">' + (svg || '<span class="sl-e">' + k + '</span>') + '</div>';
   }
 
   function renderGrid(g, grid, spinFlags) {
     if (!g.reelEls) return;
     for (let i = 0; i < 5; i++) {
-      const el = g.reelEls[i];
-      el.classList.toggle('is-spinning', !!(spinFlags && spinFlags[i]));
-      el.innerHTML = (grid ? grid[i] : ['F', 'F', 'F']).map((k) => cellHTML(k, g)).join('');
+      const strip = g.reelEls[i];
+      if (!strip) continue;
+      const reel = strip.parentElement;
+      reel.classList.toggle('is-spinning', !!(spinFlags && spinFlags[i]));
+      strip.innerHTML = (grid ? grid[i] : ['F', 'F', 'F']).map((k) => cellHTML(k, g)).join('');
     }
   }
 
@@ -129,20 +147,20 @@
     // mise en avant des cases gagnantes
     if (!g.spinning && g.highlight.length) {
       g.highlight.forEach(([i, row]) => {
-        const el = g.reelEls[i].children[row];
+        const el = g.reelEls[i] && g.reelEls[i].children[row];
         if (el) el.classList.add('win');
       });
     }
     if (!g.spinning && g.scatterCells) {
       g.scatterCells.forEach(([i, row]) => {
-        const el = g.reelEls[i].children[row];
+        const el = g.reelEls[i] && g.reelEls[i].children[row];
         if (el) el.classList.add('scatter-win');
       });
     }
 
     // bandeau de tours gratuits
-    g.freeEl.classList.toggle('is-on', !!g.free);
-    if (g.free) {
+    if (g.freeEl) g.freeEl.classList.toggle('is-on', !!g.free);
+    if (g.free && g.freeEl) {
       g.freeEl.innerHTML = '<b>TOURS GRATUITS</b> ' + (g.free.done + 1) + ' / ' + g.free.total +
         ' · multiplicateur <b class="gold">x' + g.free.mult + '</b>' +
         '<span class="sub"> · déjà gagné ' + U.fmt(g.free.won) + ' J</span>';
@@ -150,21 +168,34 @@
 
     // tableau des gains du thème
     g.payEl.innerHTML = PAY_ORDER.map((k) =>
-      '<div class="sl-pay-row"><span class="sl-pay-sym">' + t.sym[k].e + '</span>' +
+      '<div class="sl-pay-row"><span class="sl-pay-sym">' + J.SlotArt.svg(g.themeId, k, 'pk' + k) + '</span>' +
+      '<span class="sl-pay-k">' + U.esc(J.SlotArt.label(g.themeId, k)) + '</span>' +
       '<span class="mono">' + t.pays[k][3] + ' · ' + t.pays[k][4] + ' · ' + t.pays[k][5] + '</span></div>').join('') +
-      '<div class="sl-pay-row scatter"><span class="sl-pay-sym">' + t.sym.S.e + '</span>' +
+      '<div class="sl-pay-row scatter"><span class="sl-pay-sym">' + J.SlotArt.svg(g.themeId, 'S', 'pS') + '</span>' +
+      '<span class="sl-pay-k">' + U.esc(J.SlotArt.label(g.themeId, 'S')) + '</span>' +
       '<span class="mono">' + t.scatterPays[3] + ' · ' + t.scatterPays[4] + ' · ' + t.scatterPays[5] + ' × mise totale</span></div>' +
       '<div class="note">Gains par ligne, en multiples de la mise de ligne (' + U.fmt(Math.round(g.bet / g.lines)) + ' J). ' +
       '<b>3 scatters</b> = ' + t.freeSpins + ' tours gratuits. RTP exact 96,50 %.</div>';
 
-    g.linesRow.querySelectorAll('[data-lines]').forEach((b) => {
+    /* Lignes jouées : la pastille active suit l'état du moteur. */
+    if (g.linesRow) g.linesRow.querySelectorAll('[data-lines]').forEach((b) => {
       b.classList.toggle('is-on', parseInt(b.dataset.lines, 10) === g.lines);
     });
-    g.themeRow.querySelectorAll('[data-theme]').forEach((b) => {
-      b.classList.toggle('is-on', parseInt(b.dataset.theme, 10) === g.themeIdx);
-    });
 
-    g.bannerEl.innerHTML = g.msg ? '<b>' + g.msg + '</b>' : '<span class="sub">Choisis ta machine et lance les rouleaux</span>';
+    /* Afficheur de la machine : gain du tour, lignes jouées, mise. */
+    const winTxt = U.fmt(g.lastWin || 0);
+    const big = (g.lastWin || 0) >= g.bet * 5;
+    [g.winEl, g.winDuoEl].forEach((el) => {
+      if (!el) return;
+      el.textContent = winTxt;
+      el.classList.toggle('big', big);
+    });
+    if (g.linesRoEl) g.linesRoEl.textContent = g.lines;
+    if (g.betRoEl) g.betRoEl.textContent = U.fmtK(g.bet) + ' J';
+    if (g.betDuoEl) g.betDuoEl.textContent = U.fmtK(g.bet);
+    /* Message de manche : il s'affiche au-dessus de la fenêtre des rouleaux
+       (bandeau du gabarit), jamais à la place du tableau des gains. */
+    if (g.msgEl) g.msgEl.innerHTML = g.msg ? '<b>' + g.msg + '</b>' : '';
     J.Games.renderActions(g);
   }
 
@@ -192,7 +223,7 @@
     const step = () => {
       if (!g.spinFlags[i]) return;
       const el = g.reelEls[i];
-      el.innerHTML = blurTriple(g).map((k) => cellHTML(k, g)).join('');
+      if (el) el.innerHTML = blurTriple(g).map((k) => cellHTML(k, g)).join('');
       g._blur[i] = setTimeout(step, 55);
     };
     step();
@@ -202,8 +233,10 @@
       g.display[i] = g.grid[i];
       J.Sfx.tick(i);
       J.haptic.tap();
-      g.reelEls[i].classList.remove('is-spinning');
-      g.reelEls[i].innerHTML = g.grid[i].map((k) => cellHTML(k, g)).join('');
+      if (g.reelEls[i]) {
+        g.reelEls[i].parentElement.classList.remove('is-spinning');
+        g.reelEls[i].innerHTML = g.grid[i].map((k) => cellHTML(k, g)).join('');
+      }
       if (i === 4) afterReels(g, g.ticket.bet);   // la mise vient du ticket, pas de la portée de start()
     }, delay);
   }
@@ -301,11 +334,12 @@
     color: '#ffc531',
     rtp: 96.5,
     category: 'classics',
-    tagline: '3 thèmes, 5 rouleaux, 20 lignes',
+    tagline: '6 machines illustrées, 5 rouleaux, 20 lignes',
     volatility: 'Volatilité élevée',
     hot: true,
     rules:
-      'Trois machines à sous de <b>5 rouleaux × 3 lignes</b> avec 5 à 20 lignes de paiement au choix. ' +
+      'Six machines à sous illustrées de <b>5 rouleaux × 3 lignes</b> avec 5 à 20 lignes de paiement au choix. ' +
+      'Chaque machine a son univers, ses symboles, sa musique et ses effets.<br><br>' +
       'Une ligne paie dès <b>3 symboles identiques</b> alignés à partir du rouleau de gauche ; ' +
       'le <b>joker</b> 💎 remplace n\'importe quel symbole.<br><br>' +
       '<b>Scatters</b> : 3 scatters ou plus n\'importe où rapportent 1× / 5× / 25× la mise totale et ' +
@@ -325,38 +359,83 @@
     },
 
     stage(g) {
-      const t = D.THEMES[0];
+      /* Une machine, c'est un MEUBLE : l'illustration de l'univers remplit la
+         scène, la fenêtre des rouleaux se pose sur son ouverture centrale
+         (cadrage en % du visuel, voir .cab .cab-window) et les commandes sont
+         vissées sur son bandeau bas, comme sur un vrai cabinet. Les compteurs
+         sont sur une réglette en haut, lisibles sans quitter les rouleaux. */
+      const m = (J.Lobby && J.Lobby.machine) ? J.Lobby.machine(g.machineId) : null;
+      const t = theme(g);
+      const art = m ? J.Art.get(m.art) : null;
       return '' +
-        '<div class="sl-stage" style="--sl-from:' + t.colors.from + ';--sl-to:' + t.colors.to + '">' +
-          '<div class="sl-freebar" id="slFree"></div>' +
-          '<div class="sl-machine">' +
-            '<div class="sl-banner" id="slBanner"></div>' +
-            '<div class="sl-reels" id="slReels">' +
-              [0, 1, 2, 3, 4].map((i) => '<div class="sl-reel" data-reel="' + i + '"></div>').join('') +
+        '<div class="sl-stage" style="--sl-accent:' + (m ? m.accent : t.colors.accent) +
+            ';--sl-accent2:' + (m ? m.accent2 : '#ff2e63') + '">' +
+          '<div class="sl-topbar">' +
+            '<button class="icon-btn" id="slBack" aria-label="Retour à la galerie">' +
+              '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' +
+            '</button>' +
+            '<div class="sl-title"><b>' + U.esc(m ? m.name : t.name) + '</b>' +
+              '<i>' + U.esc(m ? m.tagline : t.tagline) + '</i></div>' +
+            '<button class="icon-btn" id="slInfo" aria-label="Règles et table des gains">' +
+              '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.1"/></svg>' +
+            '</button>' +
+          '</div>' +
+          '<div class="sl-hud">' +
+            '<span><i>Gain</i> <b class="ro-win" id="slWin">0</b></span>' +
+            '<span><i>Mise</i> <b class="ro-v" id="slBetRo">—</b></span>' +
+            '<span><i>Lignes</i> <b class="ro-v" id="slLinesRo">20</b></span>' +
+            '<span><i>RTP</i> <b class="ro-v">96,5 %</b></span>' +
+          '</div>' +
+          '<div class="cab-wrap">' +
+            '<div class="cab' + (art ? '' : ' no-art') + '"' + (art ? ' style="background-image:url(\'' + art + '\')"' : '') + '>' +
+              '<div class="marquee"><b>' + U.esc(m ? m.name : t.name) + '</b><i>' + U.esc(m ? m.univers : t.name) + '</i></div>' +
+              '<div class="cab-window">' +
+                '<div class="reels" id="slReels">' +
+                  [0, 1, 2, 3, 4].map((i2) => '<div class="reel" data-reel="' + i2 + '">' +
+                    '<div class="strip"></div><span class="reel-glass"></span></div>').join('') +
+                '</div>' +
+              '</div>' +
+              '<div class="cab-readout">' +
+                '<span><i class="ro-k">Gain</i> <b class="ro-win" id="slWinDuo">0</b></span>' +
+                '<span><i class="ro-k">Mise</i> <b class="ro-v" id="slBetDuo">—</b></span>' +
+              '</div>' +
             '</div>' +
-            '<div class="sl-pays" id="slPays"></div>' +
+            '<div class="sl-freebar" id="slFree"></div>' +
+            '<div class="sl-msg" id="slMsg"></div>' +
+          '</div>' +
+          '<div class="spin-deck">' +
+            '<div class="spin-row">' +
+              '<button class="sb-btn" data-betfact="0.5" aria-label="Diviser la mise par deux">½</button>' +
+              '<button class="sb-btn" data-betfact="2" aria-label="Doubler la mise">×2</button>' +
+              '<button class="sb-btn" data-betfact="max" aria-label="Mise maximale">MAX</button>' +
+            '</div>' +
+            '<div class="act-slot" id="slSlot"></div>' +
           '</div>' +
         '</div>';
     },
 
     controls(g) {
+      /* La machine se choisit dans la galerie illustrée du lobby ; ici, les
+         options de la manche et la table des gains de l'univers en cours. */
       return '' +
-        '<div class="row between"><span class="bet-label">Machine</span>' +
+        '<div class="row between"><span class="bet-label">Lignes jouées</span>' +
           '<span class="sub" id="slLinesInfo"></span></div>' +
-        '<div class="chips mt-s" id="slThemes">' +
-          D.THEMES.map((t, i) => '<button class="chip' + (i === 0 ? ' is-on' : '') + '" data-theme="' + i + '">' +
-            t.sym.A.e + ' ' + t.name + '</button>').join('') +
-        '</div>' +
-        '<div class="row between mt"><span class="bet-label">Lignes jouées</span></div>' +
         '<div class="chips mt-s" id="slLines">' +
           LINE_CHOICES.map((n) => '<button class="chip' + (n === 20 ? ' is-on' : '') + '" data-lines="' + n + '">' + n + ' lignes</button>').join('') +
-        '</div>';
+        '</div>' +
+        '<details class="sl-paybox mt"><summary>Table des gains — ' + U.esc(theme(g).name) + '</summary>' +
+          '<div class="sl-pays" id="slPays"></div>' +
+        '</details>' +
+        '<button class="btn ghost block mt" data-lobby="1" id="slChange">' + J.icon.slots + ' Changer de machine</button>';
     },
 
     actions(g) {
+      /* Le bouton principal est LE bouton SPIN du meuble (la mise est rappelée
+         juste au-dessus, dans la réglette) : un seul bouton, un seul chemin de
+         code — donc aucun risque de double paiement. */
       return [{
-        label: g.spinning ? (g.free ? 'Tours gratuits…' : 'Rouleaux…') : 'Tourner · ' + U.fmtK(g.bet) + ' J 🎰',
-        cls: 'primary wide-lg grow', act: 'play', disabled: g.spinning
+        label: g.spinning ? (g.free ? '★' : '…') : 'SPIN',
+        cls: 'primary btn-spin', act: 'play', disabled: g.spinning || !!g.busy
       }];
     },
 
@@ -365,31 +444,45 @@
     },
 
     mount(g) {
-      g.reelEls = [0, 1, 2, 3, 4].map((i) => g.viewEl.querySelector('.sl-reel[data-reel="' + i + '"]'));
+      g.reelEls = [0, 1, 2, 3, 4].map((i) => g.viewEl.querySelector('.reel[data-reel="' + i + '"] .strip'));
       g.freeEl = g.viewEl.querySelector('#slFree');
-      g.bannerEl = g.viewEl.querySelector('#slBanner');
-      g.payEl = g.viewEl.querySelector('#slPays');
-      g.themeRow = g.panelEl.querySelector('#slThemes');
+      g.msgEl = g.viewEl.querySelector('#slMsg');
+      g.payEl = g.viewEl.querySelector('#slPays') || g.panelEl.querySelector('#slPays');
+      g.winEl = g.viewEl.querySelector('#slWin');
+      g.winDuoEl = g.viewEl.querySelector('#slWinDuo');
+      g.betDuoEl = g.viewEl.querySelector('#slBetDuo');
+      g.linesRoEl = g.viewEl.querySelector('#slLinesRo');
+      g.betRoEl = g.viewEl.querySelector('#slBetRo');
+      /* Le bouton principal du moteur vient prendre place sur le meuble. */
+      const slot = g.viewEl.querySelector('#slSlot');
+      const acts = g.actionsEl || g.panelEl.querySelector('#gActions');
+      if (slot && acts) { g.actionsEl = acts; slot.appendChild(acts); }
       g.linesRow = g.panelEl.querySelector('#slLines');
       g.linesInfo = g.panelEl.querySelector('#slLinesInfo');
       g._blur = [null, null, null, null, null];
       g.spinFlags = [false, false, false, false, false];
 
-      g.themeRow.querySelectorAll('[data-theme]').forEach((b) => {
+      /* ½, ×2, MAX : réglage de la mise, puis re-rendu des afficheurs. */
+      g.viewEl.querySelectorAll('[data-betfact]').forEach((b) => {
         b.onclick = () => {
           if (g.spinning) return;
-          g.themeIdx = parseInt(b.dataset.theme, 10);
-          const t = D.THEMES[g.themeIdx];
-          g.viewEl.querySelector('.sl-stage').style.setProperty('--sl-from', t.colors.from);
-          g.viewEl.querySelector('.sl-stage').style.setProperty('--sl-to', t.colors.to);
-          g.highlight = [];
-          g.grid = makeGrid(g);
-          g.display = g.grid;
-          J.Sfx.click();
-          J.toast(t.name + ' — ' + t.tagline, '');
+          const f = b.dataset.betfact;
+          J.Sfx.chip(); J.haptic.tap();
+          if (f === 'max') J.Games.setBet(g, J.Games.betMax(), true);
+          else if (f === '0.5') J.Games.setBet(g, Math.max(J.Games.betMin(), Math.floor(g.bet / 2)), true);
+          else J.Games.setBet(g, Math.min(J.Games.betMax(), g.bet * 2), true);
           paint(g);
         };
       });
+      /* Retour à la galerie des machines (lobby), sans perdre la machine. */
+      const outLobby = () => { J.Sfx.click(); J.Games.close(); J.UI.go('home'); if (J.Lobby) J.Lobby.go('machines'); };
+      g.viewEl.querySelectorAll('[data-lobby]').forEach((b) => { b.onclick = outLobby; });
+      g.panelEl.querySelectorAll('[data-lobby]').forEach((b) => { b.onclick = outLobby; });
+      const back = g.viewEl.querySelector('#slBack');
+      if (back) back.onclick = outLobby;
+      const info = g.viewEl.querySelector('#slInfo');
+      if (info) info.onclick = () => { J.Sfx.click(); J.UI.gameInfo(g.def); };
+
       g.linesRow.querySelectorAll('[data-lines]').forEach((b) => {
         b.onclick = () => {
           if (g.spinning) return;

@@ -1,5 +1,14 @@
 <div id="app">
 
+  <!-- ======================= DÉCOR DE SALLE (v0.4.0) ==================== -->
+  <!-- Image de la salle + néons + poussières : derrière tout, non cliquable. -->
+  <div id="scene" aria-hidden="true">
+    <i class="scene-neon"></i>
+    <i class="scene-neon b"></i>
+    <i class="scene-dust"></i>
+    <i class="scene-scan"></i>
+  </div>
+
   <!-- ============================ ÉCRAN D'ACCUEIL (splash animé) ========== -->
   <div id="splash">
     <div class="splash-inner">
@@ -46,37 +55,22 @@
   <!-- ============================ ÉCRANS ================================= -->
   <main id="screens">
 
-    <!-- ---- Casino (lobby) ---- -->
+    <!-- ---- Casino : le lobby (hall + salles) ---- -->
     <section class="screen is-on" id="screen-home">
-      <div class="row between" style="margin:2px 0 10px">
-        <div>
-          <div class="h1">Salut, <span id="homePseudo">Joueur</span></div>
-          <div class="sub" id="homeGreeting">Bonne chance !</div>
+      <div class="cascade">
+        <div class="row between" style="margin:2px 0 8px">
+          <div class="grow">
+            <div class="h1">Salut, <span id="homePseudo">Joueur</span></div>
+            <div class="sub" id="homeGreeting">Bonne chance !</div>
+          </div>
         </div>
       </div>
 
-      <div class="hscroll" id="homePromos"></div>
+      <!-- Onglets des salles : chaque salle a son décor et sa musique -->
+      <div class="rooms cascade" id="roomTabs"></div>
 
-      <div class="section">
-        <div class="section-head">
-          <div class="h2"><i class="ic" data-icon="bolt"></i> Jackpotly Originals</div>
-          <button class="link" data-goto="originals">Tout voir</button>
-        </div>
-        <div class="game-grid" id="homeOriginals"></div>
-      </div>
-
-      <div class="section">
-        <div class="section-head"><div class="h2"><i class="ic" data-icon="slots"></i> Casino</div></div>
-        <div class="game-grid" id="homeClassics"></div>
-      </div>
-
-      <div class="section">
-        <div class="section-head">
-          <div class="h2"><i class="ic" data-icon="chart"></i> Gros gains récents</div>
-          <span class="sub" id="feedCount">live</span>
-        </div>
-        <div class="card pad" id="homeFeed"></div>
-      </div>
+      <!-- Contenu de la salle courante (rendu par src/27b-lobby.js) -->
+      <div id="roomBody" class="cascade"></div>
 
       <div class="note mt-l">
         JACKPOTLY est un simulateur de divertissement. Les jetons sont virtuels, sans valeur monétaire :
@@ -85,17 +79,25 @@
       </div>
     </section>
 
-    <!-- ---- Originals (catalogue) ---- -->
+    <!-- ---- Catalogue illustré ---- -->
     <section class="screen" id="screen-originals">
-      <div class="h1">Originals</div>
-      <div class="sub mt-s">Nos jeux maison, RTP 97–99 %.</div>
-      <div class="seg mt" id="originalsSeg">
+      <div class="row between">
+        <div>
+          <div class="h1">Catalogue</div>
+          <div class="sub mt-s">Tous les jeux, par famille : RTP 96–99 %.</div>
+        </div>
+        <span class="badge gold" id="catCount">—</span>
+      </div>
+      <div class="seg scroll mt" id="originalsSeg">
         <button class="is-on" data-filter="all">Tous</button>
+        <button data-filter="slots">Machines</button>
+        <button data-filter="tables">Tables</button>
+        <button data-filter="poker">Poker</button>
         <button data-filter="originals">Originals</button>
         <button data-filter="classics">Classiques</button>
-        <button data-filter="soon">Bientôt</button>
+        <button data-filter="favoris">Favoris</button>
       </div>
-      <div class="game-grid mt" id="originalsGrid"></div>
+      <div class="grid2 mt" id="originalsGrid"></div>
     </section>
 
     <!-- ---- Classement ---- -->
@@ -134,29 +136,39 @@
   <!-- ============================ NAVIGATION BASSE ======================= -->
   <nav id="nav">
     <button class="nav-btn is-on" data-go="home">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>
-      </svg>Casino
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>
+        </svg>
+      </span><span class="nav-lbl">Casino</span>
     </button>
     <button class="nav-btn" data-go="originals">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/>
-      </svg>Originals
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 4v16M3 12h18"/>
+        </svg>
+      </span><span class="nav-lbl">Catalogue</span>
     </button>
     <button class="nav-btn" data-go="rank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7 21h10M12 17v4M5 4h14v4a7 7 0 0 1-14 0zM9 4V2h6v2"/><path d="M19 5h2v2a3 3 0 0 1-3 3M5 5H3v2a3 3 0 0 0 3 3"/>
-      </svg>Classement
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 21h10M12 17v4M5 4h14v4a7 7 0 0 1-14 0zM9 4V2h6v2"/><path d="M19 5h2v2a3 3 0 0 1-3 3M5 5H3v2a3 3 0 0 0 3 3"/>
+        </svg>
+      </span><span class="nav-lbl">Classement</span>
     </button>
     <button class="nav-btn" data-go="shop">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 7h16l-1.2 12.2a1 1 0 0 1-1 .8H6.2a1 1 0 0 1-1-.8z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/>
-      </svg>Boutique
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16l-1.2 12.2a1 1 0 0 1-1 .8H6.2a1 1 0 0 1-1-.8z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/>
+        </svg>
+      </span><span class="nav-lbl">Boutique</span>
     </button>
     <button class="nav-btn" data-go="profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>
-      </svg>Profil
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>
+        </svg>
+      </span><span class="nav-lbl">Profil</span>
     </button>
   </nav>
 

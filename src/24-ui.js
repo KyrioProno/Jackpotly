@@ -27,6 +27,18 @@
   /* ---------------------------------------------------------------- ÉCRANS */
   const SCREEN_NAV = { home: 'home', originals: 'originals', rank: 'rank', shop: 'shop', profile: 'profile', game: null };
 
+  /* Bande sonore : une ambiance par destination. Les salles du lobby (hall,
+     machines, tables, poker) ont la leur et la choisissent elles-mêmes ; les
+     jeux imposent la leur au montage (voir J.Games), l'écran de jeu n'écrase
+     donc rien. */
+  const SCREEN_MUSIC = { home: 'lobby', originals: 'originals', rank: 'room-tables', shop: 'room-slots', profile: 'room-poker', game: null };
+  UI.sceneMusic = () => J.Music;
+  /** Rejoue l'ambiance attendue par l'écran courant (après une partie, par ex.). */
+  UI.syncMusic = function () {
+    const id = SCREEN_MUSIC[current];
+    if (id && J.Music) J.Music.play(id);
+  };
+
   /** Affiche un écran (avec fondu) et met à jour la navigation basse. */
   /* Ordre des onglets de la barre basse : il donne le SENS du glissement
      (les écrans défilent de gauche à droite comme les onglets). */
@@ -72,6 +84,9 @@
       });
     }
     document.querySelectorAll('.nav-btn').forEach((b) => b.classList.toggle('is-on', b.dataset.go === id));
+    // Ambiance sonore de la destination (les jeux gèrent la leur au montage)
+    const track = SCREEN_MUSIC[id];
+    if (track && J.Music) J.Music.play(track);
     J.Bus.emit('screen:enter', id);
   };
 
@@ -328,6 +343,11 @@
       '<div class="kv"><span class="k">Animations & confettis</span><label class="switch"><input type="checkbox" data-set="motion"' + (s.motion ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
       '<div class="kv"><span class="k">Flux « gros gains »</span><label class="switch"><input type="checkbox" data-set="liveFeed"' + (s.liveFeed ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
       '<div class="kv"><span class="k">Rappel de pause (30 min)</span><label class="switch"><input type="checkbox" data-set="autoPause"' + (s.autoPause ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
+      '<div class="section-head mt-l"><div class="h2">' + J.icon.music + ' Ambiance sonore</div></div>' +
+      '<div class="kv"><span class="k">Musique</span><label class="switch"><input type="checkbox" data-set="music"' + (s.music !== false ? ' checked' : '') + '><span class="track"></span><span class="thumb"></span></label></div>' +
+      '<div class="vol-row"><span class="k">Volume général</span><input type="range" min="0" max="100" step="5" data-vol="volMaster" value="' + Math.round((s.volMaster === undefined ? 0.9 : s.volMaster) * 100) + '"><b>' + Math.round((s.volMaster === undefined ? 0.9 : s.volMaster) * 100) + '%</b></div>' +
+      '<div class="vol-row"><span class="k">Musique</span><input type="range" min="0" max="100" step="5" data-vol="volMusic" value="' + Math.round((s.volMusic === undefined ? 0.5 : s.volMusic) * 100) + '"><b>' + Math.round((s.volMusic === undefined ? 0.5 : s.volMusic) * 100) + '%</b></div>' +
+      '<div class="vol-row"><span class="k">Effets sonores</span><input type="range" min="0" max="100" step="5" data-vol="volSfx" value="' + Math.round((s.volSfx === undefined ? 0.9 : s.volSfx) * 100) + '"><b>' + Math.round((s.volSfx === undefined ? 0.9 : s.volSfx) * 100) + '%</b></div>' +
       '<div class="section-head mt-l"><div class="h2">Pseudo</div></div>' +
       '<div class="field"><input id="setPseudo" maxlength="14" value="' + U.esc(J.Store.state.pseudo) + '"><span class="suffix">14 car. max</span></div>' +
       '<button class="btn ghost block mt-l" data-keep-sheet id="btnReset">Réinitialiser ma progression</button>' +
@@ -340,9 +360,25 @@
               J.Store.patch({ settings: { [k]: inp.checked } });
               document.body.classList.toggle('no-motion', !J.Store.state.settings.motion);
               if (k === 'sound') { J.Sfx.setEnabled(inp.checked); if (inp.checked) J.Sfx.click(); }
+              if (k === 'music') {
+                if (inp.checked) { J.Sfx.applyLevels(); J.Music.play(J.Music.current() || (SCREEN_MUSIC[current] || 'lobby')); }
+                else J.Music.stop(0.6);
+                if (inp.checked) J.toast('Musique activée', 'ok'); else J.toast('Musique coupée');
+              }
               if (k === 'liveFeed' && J.Live) J.Live.setEnabled(inp.checked);
               if (k === 'vibration') J.haptic.tap();
             };
+          });
+          // Curseurs de volume : application immédiate (retour sonore à l'appui)
+          el.querySelectorAll('[data-vol]').forEach((inp) => {
+            const b = inp.parentElement.querySelector('b');
+            inp.oninput = () => {
+              const v = Number(inp.value) / 100;
+              J.Store.patch({ settings: { [inp.dataset.vol]: v } });
+              if (b) b.textContent = inp.value + '%';
+              J.Sfx.applyLevels();
+            };
+            inp.onchange = () => { if (inp.dataset.vol === 'volSfx' && inp.value !== '0') J.Sfx.coin(); };
           });
           el.querySelector('#setPseudo').onchange = (e) => {
             const v = U.esc(e.target.value.trim().slice(0, 14)) || 'Joueur';

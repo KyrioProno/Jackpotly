@@ -149,8 +149,13 @@
         vibration: true,
         motion: true,                        // animations / confettis
         liveFeed: true,                      // faux flux de gros gains
-        autoPause: true                      // rappel de pause toutes les 30 min
+        autoPause: true,                     // rappel de pause toutes les 30 min
+        music: true,                         // musiques d'ambiance (synthétisées)
+        volMaster: 0.9,                      // volume général  (0-1)
+        volMusic: 0.5,                       // volume musique   (0-1)
+        volSfx: 0.9                          // volume effets    (0-1)
       },
+      favorites: [],                         // identifiants de jeux mis en favori
       stats: {
         bets: 0, wins: 0, wagered: 0, returned: 0, netProfit: 0,
         bestMult: 0, bestWin: 0, bestWinGame: '',
@@ -273,6 +278,13 @@
     refill: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 6.5v11M8 11l4-4.5 4 4.5"/><rect x="3" y="3" width="18" height="18" rx="4" opacity=".35"/></svg>',
     bolt: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 5 13h5l-1 9 8-11h-5z"/></svg>',
     hourglass: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 3h10M7 21h10M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/></svg>',
+    /* --- Ambiance, favoris et ambiance de salle (v0.4.0) --- */
+    music: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="18" r="2.6"/><circle cx="18" cy="15.5" r="2.6"/><path d="M9.6 18V6.6l11-2v10.9"/></svg>',
+    heart: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.6-7-9.4A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7 3c0 4.8-7 9.4-7 9.4z"/></svg>',
+    heartFull: '<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20.4S4.4 15.5 4.4 10.4A4.7 4.7 0 0 1 12 6.9a4.7 4.7 0 0 1 7.6 3.5c0 5.1-7.6 10-7.6 10z"/></svg>',
+    crown: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 18h18l-1.4-9-4.3 3.4L12 6l-3.3 6.4L4.4 9z"/></svg>',
+    sparkle: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.4 13.8 9l5.6 1.8-5.6 1.8L12 18.2 10.2 12.6 4.6 10.8 10.2 9z"/><path d="M19 17.4l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg>',
+    cards: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="7.5" y="3" width="9" height="13" rx="1.6"/><path d="M13 10.5c0-2-2.6-3.2-2.6-1.3 0-1.9-2.6-.7-2.6 1.3 0 1.9 2.6 3.8 2.6 3.8s2.6-1.9 2.6-3.8z"/></svg>',
     info: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.2"/></svg>',
   };
 

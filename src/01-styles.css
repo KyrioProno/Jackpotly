@@ -574,7 +574,7 @@ input[type=range].thin::-webkit-slider-track{ height:6px; }
   background:radial-gradient(circle at 50% 42%, #10233c 0%, #070c15 62%, #05080f 100%);
   transition:opacity .55s var(--ease), visibility .55s;
 }
-#splash.is-off{ opacity:0; visibility:hidden; }
+#splash.is-off{ opacity:0; visibility:hidden; pointer-events:none; }   /* un écran qui s'efface ne capte plus les clics */
 .splash-inner{ display:flex; flex-direction:column; align-items:center; gap:16px; }
 .logo-badge{
   width:96px; height:96px; border-radius:28px; display:grid; place-items:center;
