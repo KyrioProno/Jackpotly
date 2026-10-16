@@ -66,6 +66,7 @@ win.console.warn = (...a) => { errors.push('warn: ' + a.join(' ')); origWarn.app
 
 await wait(120);
 const J = win.JACKPOTLY;
+const GAMES_IDS = J.GAMES.map((g) => g.id);
 
 /* ============================================================ 1. DÉMARRAGE */
 section('1. Démarrage et intégrité de la structure');
@@ -317,12 +318,15 @@ section('6. Partie réelle via l\'interface (Dice) puis Auto-bet');
   check('l\'arrêt automatique à la perte fonctionne (< 200 parties)', (J.Store.state.stats.perGame.dice || {}).bets < 200,
     (J.Store.state.stats.perGame.dice || {}).bets + ' parties');
 
-  // Jeu verrouillé : ouverture impossible mais message explicite
+  // Feuille de route vide : les 16 jeux se montent directement
   J.Games.open('blackjack');
-  check('un jeu de la vague suivante ne se monte pas', J.Games.instance() === null || J.Games.instance().def.id === 'dice');
-  check('une modale de feuille de route s\'affiche', J.UI.isModalOpen() === true);
-  J.UI.closeModal();
+  check('un jeu livré se monte directement (plus aucune feuille de route)',
+    !!J.Games.instance() && J.Games.instance().def.id === 'blackjack');
+  check('la modale « bientôt » n\'est plus déclenchée par aucun jeu',
+    J.Games.byId('blackjack').status === 'live' && GAMES_IDS.length === 16,
+    GAMES_IDS.length + ' jeux');
   J.Games.close(true);
+  check('la fermeture du jeu libère l\'écran', J.Games.instance() === null);
 }
 
 /* ========================================================= 7. LES 4 JEUX */
@@ -734,6 +738,509 @@ section('12. Boutique : structure de paiement et offres');
     J.Store.patch({ spend: { month: win.JACKPOTLY.util.monthKey(), total: 0, limit: 3 } });
     return J.Shop.canBuy(J.Shop.PACKS.find((p) => p.id === 'popular')) === false;
   })());
+}
+
+/* ============ 13. ÉVALUATEUR DE CARTES : FRÉQUENCES EXACTES DU POKER */
+section('13. Évaluateur de cartes — contrôle sur les 2 598 960 mains');
+{
+  const C = win.JACKPOTLY.Cards;
+  check('les cartes sont encodées 0..51 (4 couleurs × 13 hauteurs)',
+    C.deck().length === 52 && C.label(51) === 'A♣' && C.label(0) === '2♠' &&
+    C.red(13) === true && C.red(26) === true && C.red(0) === false && C.red(39) === false);
+
+  // Énumération exhaustive : les nombres de mains de chaque catégorie sont des
+  // valeurs théoriques connues du poker ; ils valident l'évaluateur au main près.
+  const CAT = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const h = [0, 0, 0, 0, 0];
+  const t0 = Date.now();
+  for (let a = 0; a < 48; a++) for (let b = a + 1; b < 49; b++) for (let c = b + 1; c < 50; c++)
+    for (let d = c + 1; d < 51; d++) for (let e = d + 1; e < 52; e++) {
+      h[0] = a; h[1] = b; h[2] = c; h[3] = d; h[4] = e;
+      CAT[Math.floor(C.eval5(h) / C.TOP)]++;
+    }
+  const THEORY = [
+    ['carte haute', 0, 1302540], ['paire', 1, 1098240], ['deux paires', 2, 123552],
+    ['brelan', 3, 54912], ['quinte', 4, 10200], ['couleur', 5, 5108],
+    ['full', 6, 3744], ['carré', 7, 624], ['quinte flush (hors royale)', 8, 36], ['royale', 9, 4]
+  ];
+  const total = CAT.reduce((a, b) => a + b, 0);
+  check('2 598 960 mains énumérées (C(52,5))', total === 2598960, String(total));
+  let wrong = 0, detail = [];
+  THEORY.forEach(([name, cat, n]) => {
+    if (CAT[cat] !== n) { wrong++; detail.push(name + ' ' + CAT[cat] + '≠' + n); }
+  });
+  check('fréquence exacte des 10 catégories de mains (aucun écart)', wrong === 0,
+    detail.join(', ') + ' · contrôlé en ' + (Date.now() - t0) + ' ms');
+
+  // La règle du Video Poker : seule une paire de valets ou mieux est payée.
+  const pairOf = (r) => C.eval5([r, r + 13, 0 + 26, 2, 4]);
+  check('« Jacks or Better » : une paire de 10 ne paie pas, une paire de valets si',
+    C.handName(pairOf(8)) === 'Paire de 10' && pairOf(8) > 0 && pairOf(9) > pairOf(8) &&
+    C.handName(pairOf(9)) === 'Paire de V');
+  const catOf = (h) => C.catName(Math.floor(C.eval5(h) / C.TOP));   // h = 5 codes de carte
+  check('quinte A-2-3-4-5 reconnue (As bas) et royale reconnue (As haut)',
+    catOf([12, 13, 27, 41, 3]) === 'Quinte' &&                    // A♠ 2♥ 3♦ 4♣ 5♠ : quinte à l'As bas
+    catOf([12, 0, 1, 2, 3]) === 'Quinte flush' &&                 // A-2-3-4-5 de ♠ : quinte flush
+    catOf([8, 9, 10, 11, 12]) === 'Quinte flush royale' &&
+    catOf([12, 24, 10, 48, 7]) === 'Carte haute');                 // A♠ R♥ D♦ V♣ 9♠ : rien
+}
+
+/* ================== 14. ROULETTE : RTP EXACT DE TOUTES LES MISES */
+section('14. Roulette — RTP exact de chaque type de mise et des annonces');
+{
+  const R = win.JACKPOTLY.__roulette;
+  const range2 = (a, b) => { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; };
+  check('constructeur de mises exposé', !!R && !!R.BETS && !!R.PRESETS);
+  check('cylindre européen : 37 cases distinctes de 0 à 36',
+    R.WHEEL_ORDER.length === 37 && new Set(R.WHEEL_ORDER).size === 37 &&
+    Math.max.apply(null, R.WHEEL_ORDER) === 36 && Math.min.apply(null, R.WHEEL_ORDER) === 0);
+  check('18 numéros rouges et 18 noirs (+ le zéro vert)', R.RED.length === 18 &&
+    R.RED.every((n) => n >= 1 && n <= 36));
+  // Les 3 annonces doivent couvrir exactement le cylindre : 17 + 8 + 12 = 37 cases.
+  const cover = (id) => {
+    const P = R.PRESETS.find((p) => p.id === id), set = {};
+    P.spots().forEach((sp) => sp.nums.forEach((n) => { set[n] = 1; }));
+    return Object.keys(set).map(Number).sort((a, b) => a - b);
+  };
+  const VOISINS = cover('voisins'), ORPHELINS = cover('orphelins'), TIERS = cover('tiers');
+  check('« Voisins du zéro » = les 17 numéros réellement voisins du 0 sur le cylindre',
+    VOISINS.join(',') === [0, 2, 3, 4, 7, 12, 15, 18, 19, 21, 22, 25, 26, 28, 29, 32, 35].join(','),
+    VOISINS.join(','));
+  check('« Orphelins » = les 8 numéros isolés, « Tiers du cylindre » = les 12 opposés au zéro',
+    ORPHELINS.join(',') === [1, 6, 9, 14, 17, 20, 31, 34].join(',') &&
+    TIERS.join(',') === [5, 8, 10, 11, 13, 16, 23, 24, 27, 30, 33, 36].join(','));
+  check('les 3 annonces couvrent ensemble les 37 numéros, sans doublon',
+    VOISINS.concat(ORPHELINS, TIERS).sort((a, b) => a - b).join(',') === range2(0, 36).join(','));
+
+  // RTP exact : chaque mise couvre n numéros et paie 36/n fois la mise.
+  const rtpOf = (spot) => {                     // RTP exact : moyenne sur les 37 cases
+    const spots = {}; spots[k0] = spot;
+    let sum = 0;
+    for (let n = 0; n <= 36; n++) sum += R.payoutMult(spots, spot.w, n).mult;
+    return sum / 37;
+  };
+  const K0 = {};                                  // clé unique réutilisée pour chaque test
+  const k0 = 'test';
+  void K0;
+  const TABLE = [
+    ['plein', R.makeSpot('plein', [17], 1)],
+    ['cheval', R.makeSpot('cheval', [17, 18], 1)],
+    ['carré', R.makeSpot('carre', [1, 2, 7, 8], 1)],
+    ['sixain', R.makeSpot('sixain', R.sixainOf(7), 1)],
+    ['colonne', R.makeSpot('colonne', R.COLUMN[1].nums, 1)],
+    ['douzaine', R.makeSpot('douzaine', range2(1, 12), 1)],
+    ['rouge', R.makeSpot('rouge', R.RED, 1)],
+    ['noir', R.makeSpot('noir', range2(1, 36).filter((n) => R.RED.indexOf(n) < 0), 1)],
+    ['pair', R.makeSpot('pair', range2(2, 36).filter((n) => n % 2 === 0), 1)],
+    ['impair', R.makeSpot('impair', range2(1, 35).filter((n) => n % 2 === 1), 1)],
+    ['manque', R.makeSpot('manque', range2(1, 18), 1)],
+    ['passe', R.makeSpot('passe', range2(19, 36), 1)],
+    ['trio', R.makeSpot('trio', [0, 2, 3], 1)],
+    ['premiers 4', R.makeSpot('premiers', [0, 1, 2, 3], 1)]
+  ];
+  let worst = 0, worstAt = '';
+  const rows = [];
+  TABLE.forEach(([name, spot]) => {
+    check('la mise « ' + name + ' » couvre exactement ' + spot.nums.length + ' numéro(s)',
+      spot.nums.length === 36 / spot.mult && spot.nums.every((n) => n >= 0 && n <= 36) &&
+      new Set(spot.nums).size === spot.nums.length);
+    const rtp = rtpOf(spot);
+    rows.push(name + ' ' + (rtp * 100).toFixed(3) + '%');
+    if (Math.abs(rtp - 36 / 37) > worst) { worst = Math.abs(rtp - 36 / 37); worstAt = name + ' → ' + (rtp * 100).toFixed(4) + '%'; }
+  });
+  check('RTP = 36/37 = 97,297 % pour les 14 types de mises (exact)', worst < 1e-12, worstAt);
+  check('mises extérieures : 18 numéros pour les chances simples, 12 pour douzaine/colonne',
+    TABLE.filter(([n]) => ['rouge', 'noir', 'pair', 'impair', 'manque', 'passe'].indexOf(n) >= 0)
+      .every(([, s2]) => s2.nums.length === 18) &&
+    TABLE.filter(([n]) => n === 'douzaine' || n === 'colonne').every(([, s2]) => s2.nums.length === 12),
+    rows.join(' '));
+
+  // 2) Mises annoncées : composition exacte des groupes du cylindre français
+  const presets = {};
+  R.PRESETS.forEach((p) => { presets[p.id] = p; });
+  const chips = (p) => p.spots().reduce((a, s) => a + s.w, 0);
+  check('Voisins du zéro : 9 jetons (2 sur 0+2+3, 2 sur 25+26+28+29, 5 chevaux)',
+    chips(presets.voisins) === 9 && presets.voisins.spots().filter((s) => s.type === 'cheval').length === 5);
+  check('Orphelins : 5 jetons (1 · 6/9 · 14/17 · 20 · 31/34)',
+    chips(presets.orphelins) === 5 && presets.orphelins.chips === 5);
+  check('Tiers du cylindre : 6 chevaux, Jeu zéro : 4 jetons',
+    chips(presets.tiers) === 6 && chips(presets.jeuzero) === 4);
+  check('aucune mise annoncée ne couvre un numéro inexistant',
+    R.PRESETS.every((p) => p.spots().every((s) => s.nums.every((n) => n >= 0 && n <= 36))));
+
+  // 3) Simulation : 60 000 lancers sur une mise Plein, RTP attendu 97,297 %
+  const spot = R.makeSpot('plein', [17], 1);
+  const spots = {}; spots.plein = spot;
+  let wagered = 0, returned = 0;
+  for (let i = 0; i < 60000; i++) {
+    const n = J.Fair.int(0, 36);
+    wagered += 100;
+    returned += 100 * R.payoutMult(spots, 1, n).mult;
+  }
+  check('Roulette : RTP simulé du Plein ≈ 97,3 % (60 000 lancers)',
+    Math.abs(returned / wagered - 36 / 37) < 0.06, ((returned / wagered) * 100).toFixed(2) + ' %');
+}
+
+/* ============== 15. BACCARAT : PROBABILITÉS ET RTP PAR MISE */
+section('15. Baccarat — probabilités exactes du Punto Banco et RTP');
+{
+  const B = win.JACKPOTLY.__baccarat;
+  check('moteur de donne exposé (8 jeux, règles officielles de la 3ᵉ carte)', !!B && B.DECKS === 8);
+  check('valeurs de cartes baccarat (A = 1, 10/V/D/R = 0, total modulo 10)',
+    B.cardValue(12) === 1 && B.cardValue(9) === 0 && B.cardValue(11) === 0 && B.cardValue(0) === 2 &&
+    B.spotTotal([12, 6]) === 9 && B.spotTotal([2, 2]) === 8 && B.spotTotal([9, 9]) === 0 &&
+    B.spotTotal([11, 10]) === 0);
+
+  // Simulation de 200 000 donnes avec un vrai sabot (l'aléa du jeu, pas le nôtre)
+  let res = { joueur: 0, banque: 0, egalite: 0 }, pairs = { p: 0, b: 0 }, n = 0;
+  let shoe = B.newShoe();
+  const t0 = Date.now();
+  for (let i = 0; i < 200000; i++) {
+    if (shoe.length < 30) shoe = B.newShoe();
+    const r = B.playOut(shoe);
+    res[r.outcome]++; n++;
+    if (B.isPair(r.player)) pairs.p++;
+    if (B.isPair(r.banker)) pairs.b++;
+  }
+  const ms = Date.now() - t0;
+  const pj = res.joueur / n, pb = res.banque / n, pe = res.egalite / n;
+  check('fréquences conformes au Punto Banco (Banque 45,86 % · Joueur 44,62 % · Égalité 9,52 %)',
+    Math.abs(pb - 0.4586) < 0.004 && Math.abs(pj - 0.4462) < 0.004 && Math.abs(pe - 0.0952) < 0.003,
+    'B ' + (pb * 100).toFixed(2) + ' % · J ' + (pj * 100).toFixed(2) + ' % · E ' + (pe * 100).toFixed(2) + ' %');
+  check('probabilité de paire ≈ 7,47 % par main', Math.abs(pairs.p / n - 0.0747) < 0.003,
+    (pairs.p / n * 100).toFixed(2) + ' %');
+  const rtp = {
+    banque: B.SPOTS.banque.mult * pb + pe,                 // 0,95:1 → 1,95× (l'égalité rembourse)
+    joueur: B.SPOTS.joueur.mult * pj + pe,
+    egalite: B.SPOTS.egalite.mult * pe,
+    paireJ: B.SPOTS.paireJ.mult * (pairs.p / n),
+    paireB: B.SPOTS.paireB.mult * (pairs.b / n)
+  };
+  check('RTP mesuré : Banque ≈ 98,94 % et Joueur ≈ 98,76 %',
+    Math.abs(rtp.banque - 0.9894) < 0.006 && Math.abs(rtp.joueur - 0.9876) < 0.006,
+    'banque ' + (rtp.banque * 100).toFixed(2) + ' % · joueur ' + (rtp.joueur * 100).toFixed(2) + ' %');
+  check('RTP mesuré : Égalité ≈ 85,6 % et Paire ≈ 89,6 %',
+    Math.abs(rtp.egalite - 0.8564) < 0.03 && Math.abs(rtp.paireJ - 0.8964) < 0.035,
+    'égalité ' + (rtp.egalite * 100).toFixed(2) + ' % · paire ' + (rtp.paireJ * 100).toFixed(2) + ' %');
+  check('la Banque est bien la mise la plus favorable', rtp.banque > rtp.joueur && rtp.joueur > rtp.egalite,
+    '200 000 donnes simulées en ' + ms + ' ms');
+}
+
+/* ================== 16. MACHINES À SOUS : RTP EXACT DES 3 THÈMES */
+section('16. Machines à sous — RTP exact calculé sur les bandes');
+{
+  const D = win.JACKPOTLY.SLOTS_DATA;
+  check('20 lignes de paiement distinctes et valides', D.LINES.length === 20 &&
+    new Set(D.LINES.map((l) => l.join(''))).size === 20 &&
+    D.LINES.every((l) => l.length === 5 && l.every((r) => r >= 0 && r <= 2)));
+  check('3 thèmes de 5 rouleaux de 40 symboles', D.THEMES.length === 3 &&
+    D.THEMES.every((t) => t.reels.length === 5 && t.reels.every((r) => r.length === 40)));
+  check('chaque bande contient au moins un scatter et respecte sa composition',
+    D.THEMES.every((t) => t.reels.every((r, i) => {
+      const c = {}; r.forEach((s) => { c[s] = (c[s] || 0) + 1; });
+      const ref = t.counts[i];
+      return r.filter((s) => s === 'S').length >= 1 && Object.keys(ref).every((k) => (c[k] || 0) === ref[k]);
+    })));
+  const rtps = D.THEMES.map((t) => D.rtp(t));
+  const worst = Math.max.apply(null, rtps.map((r) => Math.abs(r.total - 0.965)));
+  check('RTP exact = 96,50 % pour les 3 thèmes (calcul analytique)', worst < 0.0005,
+    rtps.map((r) => r.id + ' ' + (r.total * 100).toFixed(4) + ' %').join(' · '));
+  check('le détail du RTP additionne bien le total (lignes + scatters + tours gratuits)',
+    rtps.every((r) => Math.abs(r.lines + r.scatters + r.free - r.total) < 1e-12));
+  check('déclenchement des tours gratuits entre 1 % et 3 % des tours',
+    rtps.every((r) => r.q > 0.01 && r.q < 0.03), 'P(3+ scatters) = ' + (rtps[0].q * 100).toFixed(2) + ' %');
+  check('les gains décroissent avec la rareté des symboles (F > T > J > K > C > P > A > W)',
+    rtps.every((r) => r.perSymbol.F > r.perSymbol.J && r.perSymbol.J > r.perSymbol.K &&
+      r.perSymbol.K > r.perSymbol.C && r.perSymbol.C > r.perSymbol.P));
+  check('le multiplicateur des tours gratuits somme à 22 (1·1·1·2·2·2·3·3·3·4)',
+    D.THEMES.every((t) => t.multSchedule.reduce((a, b) => a + b, 0) === 22 && t.freeSpins === 10));
+}
+
+/* ============ 17. VIDEO POKER : TABLE 9/6 ET JEU OPTIMAL */
+section('17. Video Poker — table 9/6, espérances exactes et jeu optimal');
+{
+  const VP = win.JACKPOTLY.__vp;
+  const C = win.JACKPOTLY.Cards;
+  check('table de gains 9/6 « full pay » exacte',
+    VP.PAY[9] === 250 && VP.PAY[8] === 50 && VP.PAY[7] === 25 && VP.PAY[6] === 9 &&
+    VP.PAY[5] === 6 && VP.PAY[4] === 4 && VP.PAY[3] === 3 && VP.PAY[2] === 2);
+  check('paire payée seulement à partir des valets (Jacks or Better)',
+    VP.payOf(C.eval5([8, 8 + 13, 1, 3, 5])) === 0 && VP.payOf(C.eval5([9, 9 + 13, 1, 3, 5])) === 1);
+
+  // Espérance exacte de « tout défausser » = espérance d'une main au hasard :
+  // elle se déduit des fréquences exactes des catégories (aucun échantillonnage).
+  const CAT = [1302540, 1098240, 123552, 54912, 10200, 5108, 3744, 624, 36, 4];
+  const TOTAL = 2598960;   // CAT[8] = quintes flush hors royales, CAT[9] = les 4 royales
+  // parmi les paires simples, 4/13 sont des paires de V/D/R/A
+  let ev0 = 0;
+  for (let cat = 2; cat <= 9; cat++) ev0 += VP.PAY[cat] * CAT[cat] / TOTAL;
+  ev0 += 1 * (CAT[1] * 4 / 13) / TOTAL;
+  check('espérance « tout défausser » = 0,336021 (constante du jeu vérifiée)',
+    Math.abs(ev0 - VP.DISCARD_ALL) < 1e-6 && Math.abs(ev0 - 0.336021) < 1e-6, ev0.toFixed(6));
+
+  // Décisions canoniques du jeu optimal
+  const card = (r, s) => s * 13 + r;
+  const cases = [
+    ['4 cartes pour une royale : on garde les 4',
+      [card(12, 1), card(11, 1), card(10, 1), card(9, 1), card(1, 0)], [0, 1, 2, 3]],
+    ['couleur faite : on garde les 5', [card(12, 1), card(8, 1), card(6, 1), card(3, 1), card(1, 1)], [0, 1, 2, 3, 4]],
+    ['paire basse contre 4 hautes cartes : on garde la paire',
+      [card(0, 0), card(0, 1), card(12, 2), card(9, 3), card(5, 0)], [0, 1]],
+    ['4 pour une couleur bat une main vide', [card(12, 0), card(9, 0), card(7, 0), card(4, 0), card(2, 1)], [0, 1, 2, 3]],
+    ['4 pour une quinte flush bat deux paires', [card(5, 1), card(5, 2), card(6, 1), card(7, 1), card(8, 1)], [0, 2, 3, 4]],
+    ['rien du tout : on change tout', [card(0, 0), card(2, 1), card(4, 2), card(6, 3), card(8, 0)], []]
+  ];
+  let ok = 0, detail = [];
+  const t0 = Date.now();
+  cases.forEach(([name, hand, expect]) => {
+    const b = VP.optimalHold(hand);
+    const got = b.holds.slice().sort((x, y) => x - y).join(',');
+    const exp = expect.slice().sort((x, y) => x - y).join(',');
+    if (got === exp) ok++; else detail.push(name + ' → [' + b.holds.join(' ') + '] au lieu de [' + expect.join(' ') + ']');
+  });
+  check('jeu optimal : 6 décisions canoniques justes', ok === cases.length, detail.join(' · ') +
+    ' · coût ' + ((Date.now() - t0) / cases.length).toFixed(0) + ' ms/main');
+  const best = VP.optimalHold([card(12, 1), card(11, 1), card(10, 1), card(9, 1), card(1, 0)]);
+  check('l\'espérance annoncée dépasse largement la mise (4 pour une royale ≈ 6,85×)',
+    best.ev > 6.8 && best.ev < 6.9, best.ev.toFixed(5));
+
+  // RTP moyen mesuré : l'espérance moyenne du jeu optimal EST le RTP du jeu
+  let sum = 0, nb = 80, draws = [];
+  for (let i = 0; i < nb; i++) {
+    const d = C.freshDeck();
+    const hand = d.slice(0, 5);
+    draws = d.slice(5);
+    const b = VP.optimalHold(hand);
+    const final = b.holds.map((k) => hand[k]);
+    while (final.length < 5) final.push(draws.pop());
+    sum += VP.payOf(C.eval5(final));
+  }
+  check('RTP moyen du jeu optimal ≈ 99,54 % (80 mains, référence du 9/6 full pay)',
+    Math.abs(sum / nb - 0.9954) < 0.6, (sum / nb * 100).toFixed(1) + ' %');
+}
+
+/* ============ 18. BLACKJACK : STRATÉGIE DE BASE ET RTP SIMULÉ */
+section('18. Blackjack — stratégie de base et RTP sur 200 000 mains');
+{
+  const BJ = win.JACKPOTLY.__blackjack;
+  const C = win.JACKPOTLY.Cards;
+  check('stratégie de base exposée (fonction pure)', !!BJ && typeof BJ.decide === 'function');
+  const card = (r, s) => s * 13 + r;
+  const D = [
+    ['16 contre 10 → tirer', [card(9, 0), card(4, 1)], 10, 'hit'],
+    ['16 contre 6 → rester', [card(9, 0), card(4, 1)], 6, 'stand'],
+    ['11 contre 10 → doubler', [card(3, 0), card(4, 1)], 10, 'double'],
+    ['11 contre As → tirer sans droit de doubler', [card(3, 0), card(4, 1)], 11, 'hit', false],
+    ['A,7 contre 9 → tirer (18 souple)', [card(12, 0), card(5, 1)], 9, 'hit'],
+    ['A,7 contre 6 → doubler', [card(12, 0), card(5, 1)], 6, 'double'],
+    ['8,8 contre As → séparer', [card(6, 0), card(6, 1)], 11, 'split'],
+    ['10,10 contre 6 → rester (jamais séparer)', [card(8, 0), card(8, 1)], 6, 'stand'],
+    ['5,5 contre 6 → doubler (jamais séparer)', [card(3, 0), card(3, 1)], 6, 'double'],
+    ['9,9 contre 7 → rester (la paire ne se sépare pas face à 7)', [card(7, 0), card(7, 1)], 7, 'stand'],
+    ['A,7 contre 2 sans droit de doubler → rester', [card(12, 0), card(5, 1)], 2, 'stand', false]
+  ];
+  let ok = 0; const bad = [];
+  D.forEach(([name, cards, up, expect, canDouble]) => {
+    const got = BJ.decide(cards, up, true, canDouble !== false);
+    if (got === expect) ok++; else bad.push(name + ' → ' + got);
+  });
+  check('stratégie de base : ' + D.length + ' décisions de référence justes', ok === D.length, bad.join(' · '));
+
+  // Simulation complète des règles du jeu (6 jeux, S17, double libre,
+  // séparation jusqu'à 4 mains, blackjack 3:2) jouée avec la stratégie de base.
+  const DECKS = BJ.DECKS;
+  let shoe = [];
+  const newShoe = () => { const s = []; for (let i = 0; i < DECKS; i++) s.push.apply(s, C.deck()); return C.shuffle(s); };
+  shoe = newShoe();
+  const draw = () => { if (shoe.length < BJ.RESHUFFLE_AT) shoe = newShoe(); return shoe.pop(); };
+  const val = (c) => C.blackjackValue(c);
+  let wagered = 0, returned = 0;
+  const N = 200000;
+  for (let round = 0; round < N; round++) {
+    const dealer = [draw(), draw()];
+    let hands = [{ cards: [draw(), draw()], stake: 1 }];
+    wagered += 1;
+    const up = val([dealer[0]]).total;
+    const nat = hands[0].cards.length === 2 && val(hands[0].cards).total === 21;
+    let splitCount = 1;
+    for (let hi = 0; hi < hands.length; hi++) {
+      const h = hands[hi];
+      if (nat) break;
+      for (;;) {
+        const v = val(h.cards);
+        if (v.total > 21) break;
+        const canSplit = h.cards.length === 2 && splitCount < 4 && val([h.cards[0]]).total === val([h.cards[1]]).total;
+        const canDouble = h.cards.length === 2;
+        const d = BJ.decide(h.cards, up, canSplit, canDouble);
+        if (d === 'stand') break;
+        if (d === 'split') {
+          wagered += 1; splitCount++;
+          const h2 = { cards: [h.cards.pop()], stake: 1 };
+          h.cards.push(draw()); h2.cards.push(draw());
+          hands.splice(hi + 1, 0, h2);
+          continue;
+        }
+        if (d === 'double' && canDouble) { wagered += 1; h.stake = 2; h.cards.push(draw()); break; }
+        h.cards.push(draw());
+        if (val(h.cards).total >= 21) break;
+      }
+    }
+    const dv = val(dealer).total;
+    const dealerBJ = dealer.length === 2 && dv === 21;
+    const alive = hands.some((h) => val(h.cards).total <= 21);
+    if (alive && !(nat && dealer.length === 2)) {
+      while (val(dealer).total < 17) dealer.push(draw());
+    }
+    const dFinal = val(dealer).total;
+    hands.forEach((h) => {
+      const pv = val(h.cards).total;
+      const isNat = h.cards.length === 2 && pv === 21 && !h.stake2;
+      if (pv > 21) return;
+      if (isNat && !dealerBJ) { returned += h.stake * 2.5; return; }
+      if (isNat && dealerBJ) { returned += h.stake; return; }
+      if (dealerBJ) return;
+      if (dFinal > 21 || pv > dFinal) returned += h.stake * 2;
+      else if (pv === dFinal) returned += h.stake;
+    });
+  }
+  const rtp = returned / wagered;
+  check('RTP simulé de 200 000 mains à la stratégie de base ≈ 99,5 %',
+    Math.abs(rtp - 0.995) < 0.008, (rtp * 100).toFixed(2) + ' % · ' + wagered + ' mises simulées');
+}
+
+/* ============ 19. TEXAS HOLD'EM : ÉQUITÉS ET COMPARAISON DE MAINS */
+section('19. Texas Hold\'em — équité Monte-Carlo et abattage');
+{
+  const P = win.JACKPOTLY.__poker;
+  const C = win.JACKPOTLY.Cards;
+  check('moteur d\'équité exposé + commission de table 2 % (plafond 500 J)',
+    !!P && P.RAKE === 0.02 && P.RAKE_CAP === 500);
+  const card = (r, s) => s * 13 + r;
+  const aa = [card(12, 0), card(12, 1)];                 // paire d'As
+  const eqAA = P.equityOf(aa, []);
+  check('paire d\'As contre une main au hasard ≈ 85 % (62 % au minimum garanti)',
+    eqAA > 0.78 && eqAA < 0.92, (eqAA * 100).toFixed(1) + ' %');
+  const trash = [card(0, 0), card(2, 1)];
+  const eqTrash = P.equityOf(trash, []);
+  check('main médiocre : équité nettement plus faible que la paire d\'As',
+    eqTrash < eqAA - 0.2 && eqTrash > 0.2, (eqTrash * 100).toFixed(1) + ' %');
+  const board = [card(12, 2), card(11, 3), card(10, 0), card(3, 1), card(1, 2)];
+  const nut = P.equityOf([card(9, 0), card(8, 0)], board);   // quinte
+  check('avec la quinte complète sur le tapis, l\'équité est très élevée',
+    nut > 0.85, (nut * 100).toFixed(1) + ' %');
+  check('l\'abattage compare bien 7 cartes (meilleure main de 5)',
+    C.evalBest([card(12, 0), card(12, 1)].concat(board)).cat ===
+    C.evalBest([card(12, 2), card(12, 3)].concat(board)).cat);
+}
+
+
+/* ========== 20. LES 6 CLASSIQUES : UNE MANCHE COMPLÈTE AU DOIGT ========== */
+section('20. Les 6 classiques : une manche complète au doigt');
+{
+  const C = win.JACKPOTLY.Cards;
+  const q = (sel) => win.document.querySelector(sel);
+  const qa = (sel) => Array.prototype.slice.call(win.document.querySelectorAll(sel));
+  const tap = (el) => { if (el && !el.disabled) { el.click(); return true; } return false; };
+  const btn = (re, sel) => qa(sel || '#gActions button').find((b) => re.test(b.textContent) && !b.disabled);
+  const openGame = async (id, bet) => {
+    J.Games.close(true);
+    J.Store.reset(); J.Store.patch({ balance: 100000 });
+    J.Games.open(id); await wait(140);
+    const g = J.Games.instance();
+    J.Games.setBet(g, bet || 100, true);
+    return g;
+  };
+  const bets = () => J.Store.state.stats.bets;
+
+  // --- Roulette : deux mises posées, rotation, règlement ---
+  let g = await openGame('roulette');
+  tap(q('#gStage [data-num="17"]'));                     // plein par défaut
+  tap(q('#gStage [data-num="17"]'));                     // deuxième jeton sur le 17
+  tap(q('#gStage [data-out="rouge"]'));                  // chance simple
+  check('Roulette : la grille pose des jetons et la mise de manche suit le tapis',
+    Object.keys(g.spots).length === 2 && g.bet === 300 && bets() === 0, g.bet + ' J');
+  tap(q('#gActions [data-act="play"]'));
+  check('Roulette : la rotation démarre et débite la mise', g.spinning === true && bets() === 1);
+  await wait(4300);
+  check('Roulette : la bille s\'arrête sur un numéro et la manche est réglée',
+    g.spinning === false && g.busy === false && g.history.length === 1 &&
+    Number.isInteger(g.result.num) && g.result.num >= 0 && g.result.num <= 36,
+    'numéro ' + g.result.num + ' · gain ' + g.result.gain + ' J · mult ' + g.history[0]);
+
+  // --- Blackjack : Tirer / Rester au doigt ---
+  g = await openGame('blackjack');
+  tap(q('#gActions [data-act="play"]'));
+  check('Blackjack : la mise est débitée au lancement de la donne', bets() === 1);
+  await wait(950);                                     // la donne est animée carte par carte
+  check('Blackjack : les actions Tirer / Rester apparaissent après la donne', !!btn(/Tirer/));
+  let guard = 0;
+  while (g.phase !== 'done' && guard++ < 40) {
+    // On joue au doigt : assurance refusée, on tire tant que c'est possible,
+    // sinon on reste (le croupier joue alors sa main tout seul).
+    if (g.phase === 'insurance') tap(btn(/Non merci/));
+    else if (g.phase === 'player') { if (!tap(btn(/Tirer/))) tap(btn(/Rester/)); }
+    await wait(300);
+  }
+  check('Blackjack : la main se termine en cliquant Tirer/Rester (phase done)',
+    g.phase === 'done' && g.busy === false && g.history.length === 1 && guard < 40,
+    guard + ' clics · total ' + (g.hands[0] ? C.blackjackValue(g.hands[0].cards).total : '?') +
+    ' · croupier ' + C.blackjackValue(g.dealer).total);
+
+  // --- Baccarat : mise au tapis puis distribution ---
+  g = await openGame('baccarat');
+  tap(q('#gStage [data-zone="joueur"]'));
+  tap(q('#gStage [data-zone="egalite"]'));
+  check('Baccarat : les zones du tapis posent des jetons', Object.keys(g.spots).length === 2 && g.bet === 200, g.bet + ' J');
+  tap(q('#gActions [data-act="play"]'));
+  check('Baccarat : la distribution débitée', bets() === 1);
+  await wait(2600);
+  check('Baccarat : la donne se révèle et la manche est payée',
+    g.busy === false && g.phase === 'done' && g.history.length === 1 && ['joueur', 'banque', 'egalite'].indexOf(g.outcome) >= 0,
+    'résultat ' + g.outcome + ' · mult ' + g.history[0]);
+
+  // --- Machines à sous : rouleaux puis arrêt ---
+  g = await openGame('slots');
+  tap(q('#gActions [data-act="play"]'));
+  check('Slots : les rouleaux tournent', g.spinning === true && bets() === 1);
+  await wait(2200);
+  check('Slots : les 5 rouleaux s\'arrêtent sur une grille de 15 symboles',
+    g.spinning === false && g.display.length === 5 && g.display.every((r) => r.length === 3) &&
+    qa('#gStage .sl-cell').length >= 15);
+  await wait(1400);
+  check('Slots : la manche est réglée (ou des tours gratuits enchaînent)',
+    g.busy === false && (g.history.length === 1 || !!g.free), 'historique ' + g.history.length);
+
+  // --- Video Poker : garder deux cartes puis tirer ---
+  g = await openGame('videopoker');
+  tap(q('#gActions [data-act="play"]'));
+  check('Video Poker : cinq cartes distribuées après la mise', bets() === 1 && qa('#gStage .vp-card').length === 5);
+  tap(qa('#gStage .vp-card')[0]);
+  tap(qa('#gStage .vp-card')[2]);
+  check('Video Poker : deux cartes marquées « gardées » + bouton de tirage actif',
+    qa('#gStage .vp-card.is-hold').length === 2 && !!btn(/Tirer/),
+    qa('#gStage .vp-card.is-hold').length + ' gardée(s)');
+  tap(btn(/Tirer/));
+  await wait(900);
+  check('Video Poker : le tirage remplace les 3 autres cartes et règle la main',
+    g.phase === 'done' && g.busy === false && g.history.length === 1 && g.hand.length === 5 && g.held.length === 5,
+    'mult ' + g.history[0]);
+
+  // --- Texas Hold'em : suivre jusqu'à l'abattage ---
+  g = await openGame('poker');
+  tap(q('#gActions [data-act="play"]'));
+  check('Hold\'em : nouvelle main, blinds postées, 2 cartes en main', bets() === 1 && g.myHole.length === 2);
+  guard = 0;
+  while (g.phase !== 'done' && g.phase !== 'showdown' && guard++ < 40) {
+    if (!tap(btn(/Suivre|Checker/)) && !tap(btn(/Se passer/))) break;
+    await wait(420);
+  }
+  check('Hold\'em : les tours d\'enchères avancent en cliquant Suivre (flop, turn, river)',
+    guard < 40 && (g.board.length >= 3 || g.phase === 'done'), 'tapis ' + g.board.length + ' cartes · ' + guard + ' clics');
+  await wait(2200);
+  check('Hold\'em : la main se termine, le pot est payé et l\'historique écrit',
+    g.phase === 'done' && g.busy === false && g.history.length === 1 && (g.myComm + g.botComm) > 0,
+    'pot ' + (g.myComm + g.botComm) + ' · mult ' + g.history[0]);
+  J.Games.close(true);
 }
 
 /* ================================================================ SYNTHÈSE */

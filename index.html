@@ -13,7 +13,7 @@
 <title>JACKPOTLY — Casino Social (jetons virtuels, 18+)</title>
 <style>
 
-/* JACKPOTLY v0.2.0 — build 3d6f162ee10b — fichier généré, ne pas éditer (voir src/) */
+/* JACKPOTLY v0.3.0 — build a8ec3a49c0a0 — fichier généré, ne pas éditer (voir src/) */
 
 /* =========================================================================
    JACKPOTLY — DESIGN SYSTEM (dark premium, ambiance Stake)
@@ -787,6 +787,290 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 }
 .wheel-target button.is-on{ background:rgba(0,227,122,.14); border-color:rgba(0,227,122,.5); color:var(--green); }
 .wheel-target button small{ display:block; font-size:8.5px; opacity:.75; font-weight:600; }
+
+/* =========================================================================
+   VAGUE 3 — STYLES DES JEUX CLASSIQUES
+   Cartes communes · Roulette · Blackjack · Baccarat · Machines à sous ·
+   Video Poker · Texas Hold'em
+   ========================================================================= */
+
+/* ------------------------------------------------------- CARTES COMMUNES */
+.pcard{
+  position:relative; display:inline-grid; place-items:center; grid-auto-flow:row;
+  width:44px; height:62px; border-radius:8px; flex:0 0 auto;
+  background:linear-gradient(158deg,#ffffff,#e6ecfa); color:#0f1a2c;
+  box-shadow:0 3px 10px rgba(0,0,0,.45); font-weight:900;
+  transition:transform .18s var(--ease-back), opacity .2s;
+}
+.pcard.red{ color:#d2263b; }
+.pcard .pr{ font-size:17px; line-height:1.05; }
+.pcard .ps{ font-size:15px; line-height:1; }
+.pcard.back{
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 5px, transparent 5px 10px),
+    linear-gradient(150deg,#22304f,#0d1526);
+  border:1px solid rgba(255,255,255,.14);
+}
+.pcard.back::after{
+  content:'J'; font:900 18px/1 var(--font); color:rgba(255,197,49,.55);
+  text-shadow:0 0 12px rgba(255,197,49,.35);
+}
+.pcard.sm{ width:34px; height:48px; border-radius:6px; }
+.pcard.sm .pr{ font-size:13px; } .pcard.sm .ps{ font-size:11px; }
+.pcard.lg{ width:54px; height:76px; border-radius:10px; }
+.pcard.dim{ opacity:.34; filter:grayscale(.5); }
+.pcard.sel{ box-shadow:0 0 0 2px var(--green), 0 6px 18px rgba(0,227,122,.35); }
+.pcard.hold{ transform:translateY(-9px); }
+.pcard.deal{ animation:cardIn .28s var(--ease-back) both; }
+@keyframes cardIn{ from{ transform:translateY(-18px) scale(.9); opacity:0; } to{ transform:none; opacity:1; } }
+.pcard.flip{ animation:flipIn .32s ease both; }
+@keyframes flipIn{ from{ transform:rotateY(90deg) scale(.94); } to{ transform:none; } }
+.cards-row{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; align-items:flex-end; }
+.hand-badge{
+  display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--r-pill);
+  background:rgba(255,255,255,.06); border:1px solid var(--line); font:800 12px var(--mono);
+}
+.hand-badge.bust{ background:rgba(255,77,94,.16); border-color:rgba(255,77,94,.5); color:#ffb0b8; }
+.hand-badge.bj{ background:rgba(255,197,49,.16); border-color:rgba(255,197,49,.5); color:var(--gold); }
+.hand-badge.win{ background:rgba(0,227,122,.16); border-color:rgba(0,227,122,.5); color:#8dffc4; }
+.tbl-label{ font:800 10.5px var(--mono); letter-spacing:.10em; color:var(--muted); text-transform:uppercase; }
+.table-felt{
+  border-radius:var(--r); border:1px solid rgba(0,227,122,.20);
+  background:radial-gradient(120% 80% at 50% 0%, #123a2c 0%, #0a1a1c 72%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* ------------------------------------------------------------- ROULETTE */
+.rui-stage{ flex:1; display:flex; flex-direction:column; min-height:0; gap:8px; padding:8px 0 10px; }
+.rui-top{ display:flex; align-items:center; gap:10px; padding:0 12px; }
+.rui-canvas{ width:118px; height:118px; flex:0 0 auto; }
+.rui-read{ flex:1; min-width:0; }
+.rui-num{
+  font:900 40px/1 var(--mono); letter-spacing:-.02em;
+  width:60px; height:60px; border-radius:14px; display:grid; place-items:center;
+  background:linear-gradient(180deg,#26324c,#161f33); color:#fff; border:1px solid rgba(255,255,255,.14);
+}
+.rui-num.red{ background:linear-gradient(180deg,#e0344a,#a81b2c); }
+.rui-num.black{ background:linear-gradient(180deg,#26324c,#111a2c); }
+.rui-num.zero{ background:linear-gradient(180deg,#16b463,#0b6b3a); }
+.rui-read .sub{ margin-top:6px; }
+.rui-win{ margin-top:6px; font:900 16px var(--mono); color:var(--green); }
+.rui-win .mono{ font-size:12px; opacity:.8; }
+.rui-lose{ margin-top:6px; font:700 12.5px var(--mono); color:var(--muted); }
+.rui-hist{ padding:2px 0; }
+.rui-hist .rui-hist{ width:22px; height:22px; border-radius:6px; display:grid; place-items:center; font:800 10.5px var(--mono); }
+.rui-hist .rui-hist.red{ background:#c9273a; color:#fff; }
+.rui-hist .rui-hist.black{ background:#222c42; color:#dfe7f7; }
+.rui-hist .rui-hist.zero{ background:#0e8a4a; color:#eafff3; }
+.rui-types{ display:flex; gap:6px; overflow-x:auto; padding:0 12px; }
+.rui-types::-webkit-scrollbar{ display:none; }
+.rui-types .chip{ flex:0 0 auto; }
+.rui-types .chip b{ color:var(--gold); }
+.rui-dirbox{ padding:0 12px; }
+.rui-dirs{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
+.rui-dirs::-webkit-scrollbar{ display:none; }
+.rui-dirs .chip{ flex:0 0 auto; font-family:var(--mono); }
+.rui-dirs .chip b{ color:var(--green); }
+.rui-grid{
+  display:grid; grid-template-columns:repeat(6,1fr); gap:3px;
+  padding:0 12px; overflow-y:auto; flex:1 1 auto; min-height:0;
+}
+.rui-zero{
+  grid-column:span 6; height:32px; border-radius:8px; font-weight:900; font-size:13px;
+  background:linear-gradient(180deg,#16b463,#0b6b3a); color:#eafff3; border:1px solid rgba(255,255,255,.16);
+}
+.rui-cell{
+  position:relative; aspect-ratio:1/.92; border-radius:8px; font-weight:800; font-size:13px;
+  display:grid; place-items:center; border:1px solid rgba(255,255,255,.09); color:#fff;
+}
+.rui-cell.red{ background:linear-gradient(180deg,#e0344a,#a81b2c); }
+.rui-cell.black{ background:linear-gradient(180deg,#2a3653,#161f33); }
+.rui-cell:active{ transform:scale(.94); }
+.rui-cell.is-anchor{ box-shadow:inset 0 0 0 2px var(--gold); }
+.rui-cell.is-last{ box-shadow:inset 0 0 0 2px #fff, 0 0 16px rgba(255,255,255,.45); }
+.rui-cell[data-w]::after{
+  content:attr(data-w); position:absolute; top:1px; right:1px;
+  background:var(--gold); color:#3a2a00; font:800 9px/1 var(--mono); padding:2px 4px; border-radius:999px;
+}
+.rui-out{ display:grid; grid-template-columns:repeat(6,1fr); gap:3px; padding:8px 12px 0; }
+.rui-o{
+  height:34px; border-radius:8px; background:rgba(255,255,255,.055); border:1px solid var(--line);
+  font:800 10.5px var(--mono); color:var(--txt-2);
+}
+.rui-o b{ color:var(--gold); }
+.rui-o.wide2{ grid-column:span 2; }
+.rui-o.red{ background:linear-gradient(180deg,#e0344a,#a81b2c); color:#fff; }
+.rui-o.black{ background:linear-gradient(180deg,#2a3653,#161f33); color:#fff; }
+.rui-o:active{ transform:scale(.96); }
+.rui-betlist{ display:flex; flex-wrap:wrap; gap:5px; padding:8px 12px 0; }
+.rui-bet{
+  display:inline-flex; align-items:center; gap:6px; padding:5px 8px 5px 10px; border-radius:var(--r-pill);
+  background:rgba(255,197,49,.10); border:1px solid rgba(255,197,49,.35); font-size:11px;
+}
+.rui-bet b{ color:var(--gold); font-weight:800; }
+.rui-bet .mono{ color:var(--txt-2); font-size:10px; }
+.rui-bet i{ font-style:normal; color:var(--red); font-weight:900; }
+.rui-ctl .bet-label{ font-size:11.5px; }
+.rui-presets{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px; }
+.rui-preset{
+  text-align:left; padding:7px 10px; border-radius:10px; background:rgba(255,255,255,.05);
+  border:1px solid var(--line); display:flex; flex-direction:column; gap:1px;
+}
+.rui-preset b{ font-size:11.5px; }
+.rui-preset span{ font:700 9.5px var(--mono); color:var(--gold); }
+.rui-preset:active{ transform:scale(.97); }
+
+/* --------------------------------------------------------------- BLACKJACK */
+.bj-stage{ flex:1; display:flex; flex-direction:column; gap:7px; margin:10px; padding:9px; min-height:0; }
+.bj-block{
+  border-radius:var(--r-sm); background:rgba(0,0,0,.24); border:1px solid var(--line-soft);
+  padding:7px 9px; display:flex; flex-direction:column; gap:5px;
+}
+.bj-block .tbl-label{ font-size:10px; }
+.bj-block-player{ flex:1 1 auto; min-height:0; overflow-y:auto; }
+.bj-cards{ min-height:64px; align-items:center; }
+.bj-cards .pcard{ width:40px; height:56px; }
+.bj-status{
+  text-align:center; font-size:13px; padding:6px 9px; border-radius:10px;
+  background:rgba(255,255,255,.05); border:1px solid var(--line-soft); color:var(--txt);
+}
+.bj-hands{ display:flex; gap:7px; }
+.bj-hand{
+  flex:1 1 0; min-width:0; padding:7px 6px; border-radius:12px; display:flex; flex-direction:column; gap:5px;
+  background:rgba(255,255,255,.03); border:1px solid transparent; transition:border-color .18s, box-shadow .18s;
+}
+.bj-hand.is-active{ border-color:rgba(0,227,122,.55); box-shadow:0 0 0 1px rgba(0,227,122,.2), 0 8px 22px rgba(0,227,122,.12); }
+.bj-hand .cards-row{ gap:3px; }
+.bj-hand .pcard{ width:30px; height:42px; border-radius:6px; }
+.bj-hand .pcard .pr{ font-size:12px; } .bj-hand .pcard .ps{ font-size:10px; }
+.bj-hand .tbl-label{ font-size:9px; text-align:center; }
+
+/* ---------------------------------------------------------------- BACCARAT */
+.bac-stage{ flex:1; display:flex; flex-direction:column; gap:7px; margin:10px; padding:9px; min-height:0; overflow-y:auto; }
+.bac-hands{ display:flex; flex-direction:column; gap:7px; }
+.bac-side{
+  border-radius:var(--r-sm); background:rgba(0,0,0,.22); border:1px solid var(--line-soft);
+  padding:6px 9px; display:flex; flex-direction:column; gap:4px;
+}
+.bac-cards{ min-height:60px; justify-content:flex-start; gap:5px; }
+.bac-cards .pcard{ width:38px; height:54px; }
+.bac-score{
+  min-width:34px; height:34px; border-radius:10px; display:grid; place-items:center;
+  font:900 17px var(--mono); color:#fff; background:linear-gradient(180deg,#2a3653,#161f33);
+  border:1px solid rgba(255,255,255,.12);
+}
+.bac-score.bank{ background:linear-gradient(180deg,#8b5cf6,#5b32c9); }
+.bac-score.player{ background:linear-gradient(180deg,#1d8cf0,#1552a8); }
+.bac-info{
+  font-size:12px; text-align:center; padding:6px 9px; border-radius:10px;
+  background:rgba(255,255,255,.05); border:1px solid var(--line-soft);
+}
+.bac-marquee{ justify-content:center; gap:4px; }
+.bac-h{
+  width:22px; height:22px; border-radius:6px; display:grid; place-items:center;
+  font:800 10.5px var(--mono); background:rgba(255,255,255,.08); color:var(--txt-2);
+}
+.bac-h.joueur{ background:linear-gradient(180deg,#1d8cf0,#1552a8); color:#fff; }
+.bac-h.banque{ background:linear-gradient(180deg,#8b5cf6,#5b32c9); color:#fff; }
+.bac-h.egalite{ background:linear-gradient(180deg,#16b463,#0b6b3a); color:#fff; }
+.bac-zones{ display:grid; grid-template-columns:repeat(2,1fr); gap:5px; }
+.bac-zone{
+  position:relative; height:46px; border-radius:10px; border:1px solid var(--line);
+  background:rgba(255,255,255,.05); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+}
+.bac-zone b{ font-size:11.5px; letter-spacing:.04em; }
+.bac-zone span{ font:700 9.5px var(--mono); color:var(--gold); }
+.bac-zone.bank{ border-color:rgba(139,92,246,.4); } .bac-zone.bank b{ color:#c4b1ff; }
+.bac-zone.player{ border-color:rgba(59,130,246,.4); } .bac-zone.player b{ color:#9dc6ff; }
+.bac-zone.tie{ border-color:rgba(0,227,122,.4); grid-column:span 2; } .bac-zone.tie b{ color:#8dffc4; }
+.bac-zone.pair{ height:38px; }
+.bac-zone.is-on{ background:rgba(255,197,49,.12); border-color:rgba(255,197,49,.5); }
+.bac-w{
+  position:absolute; top:-6px; right:-4px; background:var(--gold); color:#3a2a00;
+  font:800 9.5px var(--mono); padding:2px 5px; border-radius:999px; white-space:nowrap;
+}
+
+/* ------------------------------------------------------------------- SLOTS */
+.sl-stage{
+  flex:1; display:flex; flex-direction:column; gap:6px; margin:10px; padding:8px; min-height:0;
+  border-radius:var(--r); border:1px solid var(--line);
+  background:linear-gradient(160deg, var(--sl-from,#3a2a08) 0%, var(--sl-to,#0e1526) 78%);
+}
+.sl-freebar{
+  display:none; text-align:center; font-size:12px; padding:5px 9px; border-radius:9px;
+  background:rgba(255,197,49,.14); border:1px solid rgba(255,197,49,.45); color:#ffe6a8;
+}
+.sl-freebar.is-on{ display:block; animation:freePulse 1.6s ease-in-out infinite; }
+@keyframes freePulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,197,49,.25); } 50%{ box-shadow:0 0 24px 2px rgba(255,197,49,.35); } }
+.sl-machine{ flex:1; display:flex; flex-direction:column; min-height:0; gap:6px; }
+.sl-banner{ text-align:center; font-size:12.5px; min-height:18px; color:var(--txt); }
+.sl-reels{
+  flex:1 1 auto; min-height:0; display:grid; grid-template-columns:repeat(5,1fr); gap:4px;
+  padding:6px; border-radius:var(--r-sm); background:rgba(0,0,0,.38); border:1px solid var(--line);
+}
+.sl-reel{ display:grid; grid-template-rows:repeat(3,1fr); gap:4px; min-height:0; }
+.sl-cell{
+  display:grid; place-items:center; border-radius:9px; min-height:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.03));
+  border:1px solid var(--line-soft); transition:transform .15s var(--ease-back), box-shadow .2s, background .2s;
+}
+.sl-e{ font-size:clamp(17px,6.4vw,30px); line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.45)); }
+.sl-cell.high{ background:linear-gradient(180deg,rgba(255,197,49,.16),rgba(255,197,49,.04)); border-color:rgba(255,197,49,.3); }
+.sl-cell.wild{ background:linear-gradient(180deg,rgba(59,130,246,.2),rgba(59,130,246,.05)); border-color:rgba(59,130,246,.4); }
+.sl-cell.scatter{ background:linear-gradient(180deg,rgba(0,227,122,.18),rgba(0,227,122,.04)); border-color:rgba(0,227,122,.4); }
+.sl-cell.win{ box-shadow:0 0 0 2px var(--gold), 0 0 18px rgba(255,197,49,.55); transform:scale(1.04); }
+.sl-cell.scatter-win{ box-shadow:0 0 0 2px var(--green), 0 0 18px rgba(0,227,122,.5); transform:scale(1.04); }
+.sl-reel.is-spinning .sl-cell{ filter:blur(.4px); opacity:.92; }
+.sl-pays{ max-height:96px; overflow-y:auto; }
+.sl-pay-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:2px 0; font-size:11.5px; }
+.sl-pay-row .sl-pay-sym{ font-size:15px; }
+.sl-pay-row.scatter .mono{ color:var(--green); }
+.sl-pay-row .mono{ color:var(--txt-2); }
+
+/* -------------------------------------------------------------- VIDEO POKER */
+.vp-stage{ flex:1; display:flex; flex-direction:column; gap:9px; margin:10px; padding:10px; min-height:0; justify-content:center; }
+.vp-status{ text-align:center; font-size:12.5px; padding:6px 9px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid var(--line-soft); }
+.vp-hand{ display:flex; gap:5px; justify-content:center; align-items:flex-end; }
+.vp-card{
+  display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:0; padding:0;
+  transition:transform .16s var(--ease-back);
+}
+.vp-card .pcard{ width:52px; height:74px; }
+.vp-card.is-hold{ transform:translateY(-10px); }
+.vp-card.is-hint{ transform:translateY(-5px); }
+.vp-card.is-hint .pcard{ box-shadow:0 0 0 2px var(--gold), 0 6px 18px rgba(255,197,49,.35); }
+.vp-hold{
+  font:800 8.5px var(--mono); letter-spacing:.06em; color:var(--gold); min-height:11px; text-transform:uppercase;
+}
+.vp-card.is-hold .vp-hold{ color:var(--green); }
+.vp-pays{ display:flex; flex-direction:column; gap:1px; margin-top:6px; }
+.vp-pay{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:3px 8px; border-radius:7px; font-size:11.5px; color:var(--txt-2);
+}
+.vp-pay.is-win{ background:rgba(0,227,122,.16); color:#8dffc4; font-weight:800; }
+.vp-pay b{ color:var(--gold); }
+.vp-pay.is-win b{ color:#8dffc4; }
+
+/* ---------------------------------------------------------- TEXAS HOLD'EM */
+.pk-stage{ flex:1; display:flex; flex-direction:column; gap:6px; margin:10px; padding:9px; min-height:0; overflow-y:auto; }
+.pk-seat{ border-radius:var(--r-sm); background:rgba(0,0,0,.22); border:1px solid var(--line-soft); padding:6px 8px; display:flex; flex-direction:column; gap:4px; }
+.pk-seat.me{ background:rgba(0,227,122,.05); border-color:rgba(0,227,122,.22); }
+.pk-cards{ justify-content:flex-start; gap:5px; min-height:58px; }
+.pk-cards .pcard{ width:40px; height:56px; }
+.pk-mid{ display:flex; flex-direction:column; gap:5px; align-items:center; }
+.pk-pot{ font-size:12px; color:var(--txt-2); }
+.pk-pot b{ color:var(--gold); }
+.pk-board{ justify-content:center; gap:5px; }
+.pk-board .pcard{ width:38px; height:54px; }
+.pk-stack{ display:inline-flex; align-items:baseline; gap:5px; font-size:11px; color:var(--muted); }
+.pk-stack i{ font-style:normal; font-size:10px; letter-spacing:.06em; text-transform:uppercase; }
+.pk-stack b{ color:var(--txt); }
+.pk-stack + .pk-stack{ margin-left:10px; }
+.pk-state{ text-align:center; font-size:12.5px; padding:6px 9px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid var(--line-soft); }
+.pk-log{ display:flex; flex-direction:column; gap:2px; min-height:46px; }
+.pk-log-line{ font-size:11px; color:var(--txt-2); }
+.pk-log-line.old{ color:var(--muted); opacity:.75; }
 </style>
 </head>
 <body>
@@ -972,7 +1256,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
   /** Espace de noms unique du jeu. Tous les modules s'y rattachent. */
   const J = (window.JACKPOTLY = window.JACKPOTLY || {});
-  J.VERSION = '0.2.0';           // vague 2 : 10 jeux jouables + boutique complète
+  J.VERSION = '0.3.0';           // vague 3 : 16 jeux jouables (10 Originals + 6 classiques)
   J.SAVE_KEY = 'jackpotly.state.v1';
 
   /* ------------------------------------------------------------------ UTIL */
@@ -992,6 +1276,12 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       if (a >= 1e6) return (n / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace('.', ',') + ' M';
       if (a >= 1e4) return (n / 1e3).toFixed(a >= 1e5 ? 0 : 1).replace('.', ',') + ' k';
       return U.fmt(n);
+    },
+
+    /** Montant signé : 1200 → "+1 200 J", -340 → "−340 J" */
+    fmtSigned(n) {
+      n = Math.round(Number(n) || 0);
+      return (n >= 0 ? '+' : '−') + U.fmt(Math.abs(n)) + ' J';
     },
 
     /** Multiplicateur : 2 → "2,00x" ; 123.4 → "123,40x" */
@@ -1812,6 +2102,30 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       return ticket;
     },
 
+    /**
+     * Ajoute un enjeu à un ticket DÉJÀ ouvert : doubler, séparer, assurance…
+     * Le montant est débité et rattaché au ticket, donc remboursé à l'identique
+     * par refund() si la manche est interrompue, et le gain final reste calculé
+     * sur l'enjeu total (ticket.bet) — un seul mouvement de solde à la fin.
+     */
+    extendStake(ticket, amount) {
+      amount = U.tokens(amount);
+      if (!ticket || !ticket._open || amount <= 0) return false;
+      const st = J.Store.state;
+      if (amount > st.balance) return false;
+      st.balance -= amount;
+      st.stats.wagered += amount;
+      st.vip.wagered += amount;
+      const g = st.stats.perGame[ticket.game];
+      if (g) g.wagered += amount;
+      ticket.bet += amount;
+      J.Store.save();
+      W.renderBalance();
+      J.Bus.emit('stats:changed');
+      W.checkVip();
+      return true;
+    },
+
     /** Résout un ticket : multiplier renvoyé (0 = perte sèche). */
     settle(ticket, multiplier, extra) {
       if (!ticket || !ticket._open) return null;
@@ -2453,6 +2767,208 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
   // Toute interaction compte comme activité (rappels de pause)
   ['pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, () => UI.touchActivity(), { passive: true }));
+})();
+
+/* ===== 24b-cards.js ==================================================== */
+/* =========================================================================
+   JACKPOTLY — MOTEUR DE CARTES (partagé par les jeux classiques)
+   Représentation compacte d'une carte : un entier de 0 à 51
+     · couleur = ⌊c / 13⌋  →  0 ♠ Noir · 1 ♥ Rouge · 2 ♦ Rouge · 3 ♣ Noir
+     · hauteur = c % 13    →  0 = 2 … 8 = 10, 9 = V, 10 = D, 11 = R, 12 = A
+   Fournit : tirage provably fair, évaluation EXACTE d'une main de 5 cartes
+   (base des tables du Video Poker, des comparaisons du Poker et du Blackjack)
+   et le rendu HTML commun des cartes.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+
+  const RANK = new Int8Array(52);        // hauteur 0..12 de chaque carte
+  const SUIT = new Int8Array(52);        // couleur 0..3 de chaque carte
+  for (let c = 0; c < 52; c++) { RANK[c] = c % 13; SUIT[c] = (c / 13) | 0; }
+
+  const LABELS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'V', 'D', 'R', 'A'];
+  const SUITS = ['♠', '♥', '♦', '♣'];
+  const CATS = [
+    'Carte haute', 'Paire', 'Deux paires', 'Brelan', 'Quinte',
+    'Couleur', 'Full', 'Carré', 'Quinte flush', 'Quinte flush royale'
+  ];
+
+  /* ------------------------------------------------------------ ÉVALUATION */
+  const TOP = 0x100000;                  // un score = catégorie × TOP + départage
+  const CNT = new Int8Array(13);         // compteurs de hauteurs (réutilisés)
+  const DESC = new Int8Array(5);         // hauteurs présentes, décroissantes
+
+  function popcount(x) {
+    x = x - ((x >> 1) & 0x55555555);
+    x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
+    x = (x + (x >> 4)) & 0x0f0f0f0f;
+    return (x * 0x01010101) >> 24;
+  }
+
+  /**
+   * Score d'une main de 5 cartes : entier comparable (plus grand = meilleur).
+   * Encodage : catégorie × 2²⁰ + hauteurs de départage (4 bits chacune).
+   *   catégorie 0 carte haute · 1 paire · 2 deux paires · 3 brelan · 4 quinte
+   *             5 couleur · 6 full · 7 carré · 8 quinte flush · 9 royale
+   */
+  function eval5(h) {
+    const c0 = h[0], c1 = h[1], c2 = h[2], c3 = h[3], c4 = h[4];
+    const a = RANK[c0], b = RANK[c1], c = RANK[c2], d = RANK[c3], e = RANK[c4];
+    const s = SUIT[c0];
+    const flush = (s === SUIT[c1] && s === SUIT[c2] && s === SUIT[c3] && s === SUIT[c4]);
+
+    const m = (1 << a) | (1 << b) | (1 << c) | (1 << d) | (1 << e);
+    let straight = 0;
+    if (popcount(m) === 5) {
+      const hi = 31 - Math.clz32(m), lo = 31 - Math.clz32(m & -m);
+      if (hi - lo === 4) straight = hi + 1;               // 5 … 13 (13 = As haut)
+      else if (m === 0x100f) straight = 4;                // A-2-3-4-5 : hauteur 5
+    }
+    if (straight && flush) return (straight === 13 ? 9 : 8) * TOP + (straight << 16);
+
+    CNT[a]++; CNT[b]++; CNT[c]++; CNT[d]++; CNT[e]++;
+    let quad = -1, trip = -1, p1 = -1, p2 = -1, k = 0;
+    for (let r = 12; r >= 0; r--) {
+      const n = CNT[r];
+      if (n) {
+        if (k < 5) DESC[k++] = r;
+        if (n >= 4) quad = r;
+        else if (n === 3) trip = r;
+        else if (n === 2) { if (p1 < 0) p1 = r; else if (p2 < 0) p2 = r; }
+      }
+      CNT[r] = 0;                                          // remise à zéro pour l'appel suivant
+    }
+
+    if (quad >= 0) {                                        // carré + kicker
+      const kick = quad === DESC[0] ? DESC[1] : DESC[0];
+      return 7 * TOP + (quad << 16) + (kick << 12);
+    }
+    if (trip >= 0 && p1 >= 0) return 6 * TOP + (trip << 16) + (p1 << 12);   // full
+    if (flush) return 5 * TOP + (DESC[0] << 16) + (DESC[1] << 12) + (DESC[2] << 8) + (DESC[3] << 4) + DESC[4];
+    if (straight) return 4 * TOP + (straight << 16);
+    if (trip >= 0) {                                        // brelan + 2 kickers
+      const o = [];
+      for (let i = 0; i < 5; i++) if (DESC[i] !== trip) o.push(DESC[i]);
+      return 3 * TOP + (trip << 16) + (o[0] << 12) + (o[1] << 8);
+    }
+    if (p2 >= 0) {                                          // deux paires + kicker
+      const kick = DESC[0] !== p1 && DESC[0] !== p2 ? DESC[0] : DESC[2];
+      return 2 * TOP + (p1 << 16) + (p2 << 12) + (kick << 8);
+    }
+    if (p1 >= 0) {                                          // paire + 3 kickers
+      const o = [];
+      for (let i = 0; i < 5 && o.length < 3; i++) if (DESC[i] !== p1) o.push(DESC[i]);
+      return 1 * TOP + (p1 << 16) + (o[0] << 12) + (o[1] << 8) + (o[2] << 4);
+    }
+    return (DESC[0] << 16) + (DESC[1] << 12) + (DESC[2] << 8) + (DESC[3] << 4) + DESC[4];
+  }
+
+  /** Combinaisons d'indices pour choisir 5 cartes parmi n (n = 5, 6 ou 7). */
+  const COMBOS = {};
+  (function build() {
+    for (let n = 5; n <= 7; n++) {
+      const list = [];
+      const idx = [0, 1, 2, 3, 4];
+      const rec = (start, depth) => {
+        if (depth === 5) { list.push(idx.slice()); return; }
+        for (let i = start; i < n; i++) { idx[depth] = i; rec(i + 1, depth + 1); }
+      };
+      rec(0, 0);
+      COMBOS[n] = list;
+    }
+  })();
+
+  const BEST = [];                       // tampon de 5 cartes pour l'évaluation
+  /**
+   * Meilleure main de 5 cartes parmi `cards` (5 à 7 cartes).
+   * Renvoie { score, cat, hand } où hand est la combinaison gagnante.
+   */
+  function evalBest(cards) {
+    const n = cards.length;
+    if (n < 5) return { score: -1, cat: -1, hand: null };
+    if (n === 5) {
+      const sc = eval5(cards);
+      return { score: sc, cat: Math.floor(sc / TOP), hand: cards.slice(0, 5) };
+    }
+    const combos = COMBOS[n] || COMBOS[7];
+    let best = -1, bestIdx = null;
+    for (let i = 0; i < combos.length; i++) {
+      const cb = combos[i];
+      for (let k = 0; k < 5; k++) BEST[k] = cards[cb[k]];
+      const sc = eval5(BEST);
+      if (sc > best) { best = sc; bestIdx = cb; }
+    }
+    return { score: best, cat: Math.floor(best / TOP), hand: bestIdx.map((i) => cards[i]) };
+  }
+
+  /* ---------------------------------------------------------------- TIRAGES */
+  /** Jeu de 52 cartes en entiers 0..51. */
+  function deck() {
+    const d = new Array(52);
+    for (let i = 0; i < 52; i++) d[i] = i;
+    return d;
+  }
+
+  /**
+   * Mélange de Fisher-Yates alimenté par le provably fair : chaque tirage est
+   * reproductible à partir des graines révélées.
+   */
+  function shuffle(d) {
+    for (let i = d.length - 1; i > 0; i--) {
+      const j = J.Fair.int(0, i);
+      const t = d[i]; d[i] = d[j]; d[j] = t;
+    }
+    return d;
+  }
+
+  const freshDeck = () => shuffle(deck());
+
+  /* ----------------------------------------------------------------- RENDU */
+  /** HTML d'une carte (dos si `c` est null). */
+  function html(c, cls) {
+    const extra = cls ? ' ' + cls : '';
+    if (c == null) return '<span class="pcard back' + extra + '"></span>';
+    const r = c % 13, s = (c / 13) | 0;
+    return '<span class="pcard' + (s === 1 || s === 2 ? ' red' : '') + extra + '">' +
+      '<span class="pr">' + LABELS[r] + '</span><span class="ps">' + SUITS[s] + '</span></span>';
+  }
+
+  /** Texte court d'une carte, ex. « A♠ ». */
+  const label = (c) => (c == null ? '—' : LABELS[c % 13] + SUITS[(c / 13) | 0]);
+
+  /** Nom français d'une combinaison, ex. « Paire de valets ». */
+  function handName(score) {
+    const cat = Math.floor(score / TOP);
+    if (cat === 1) return 'Paire de ' + LABELS[((score >> 16) & 15)];
+    if (cat === 2) return 'Deux paires';
+    if (cat === 0) return 'Carte haute (' + LABELS[((score >> 16) & 15)] + ')';
+    return CATS[cat] || '';
+  }
+
+  /* -------------------------------------------------------------- BLACKJACK */
+  /** Valeur d'une main au Blackjack : l'As vaut 11 tant qu'on ne dépasse pas 21. */
+  function blackjackValue(cards) {
+    let total = 0, aces = 0;
+    for (let i = 0; i < cards.length; i++) {
+      const r = RANK[cards[i]];
+      if (r === 12) { aces++; total += 11; }
+      else total += r >= 9 ? 10 : r + 2;         // 9=V,10=D,11=R valent 10
+    }
+    while (total > 21 && aces > 0) { total -= 10; aces--; }
+    return { total, soft: aces > 0 };
+  }
+
+  J.Cards = {
+    RANK, SUIT, LABELS, SUITS, CATS, TOP,
+    rank: (c) => RANK[c],
+    suit: (c) => SUIT[c],
+    red: (c) => SUIT[c] === 1 || SUIT[c] === 2,
+    label, html, handName, catName: (cat) => CATS[cat] || '',
+    eval5, evalBest, deck, shuffle, freshDeck, blackjackValue,
+    /** Hauteur jouable 1..13 (As = 14) pour les comparaisons de hauteur. */
+    high: (c) => RANK[c] + 2
+  };
 })();
 
 /* ===== 25-social.js ==================================================== */
@@ -3309,7 +3825,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
         'Aucun retrait, aucune conversion en argent ou en cadeaux, aucun échange entre joueurs. ' +
         'Les jetons ne peuvent pas être gagnés en argent réel et ne servent qu\'à jouer dans l\'application.' +
       '</div>' +
-      '<div class="sub center mt">Version ' + J.VERSION + ' · 10 jeux jouables</div>';
+      '<div class="sub center mt">Version ' + J.VERSION + ' · 16 jeux jouables</div>';
 
     /* --- Liaisons --- */
     $('shopBody').querySelectorAll('[data-shop]').forEach((b) => {
@@ -3597,15 +4113,14 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       J.Sfx.error();
       J.UI.modal({
         title: def.name + ' — bientôt',
-        sub: 'Prévu dans la vague 3 du développement (jeux classiques)',
-        body: '<div class="note">Ce jeu fait partie de la feuille de route : les classiques ' +
-          '(Roulette européenne, Blackjack, Baccarat, Machines à sous, Video Poker, Texas Hold\'em). ' +
-          'Les 10 Originals sont déjà jouables dès maintenant.</div>' +
+        sub: 'Prévu dans une prochaine vague de développement',
+        body: '<div class="note">Ce jeu fait partie de la feuille de route de JACKPOTLY : ' +
+          'il rejoindra les 16 jeux déjà jouables (10 Originals et 6 classiques) dans une prochaine mise à jour.</div>' +
           '<div class="kv mt"><span class="k">RTP prévu</span><span class="v up">' + def.rtp + ' %</span></div>' +
           '<div class="kv"><span class="k">Catégorie</span><span class="v">' + (def.category === 'classics' ? 'Classique' : 'Original') + '</span></div>' +
           (def.hint ? '<div class="note mt-l">' + def.hint + '</div>' : ''),
         actions: [
-          { label: 'Voir les 10 jeux jouables', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
+          { label: 'Voir les 16 jeux jouables', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
           { label: 'Fermer', cls: 'ghost' }
         ]
       });
@@ -3732,7 +4247,7 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
         '<button data-bet="max">Max</button>' +
         '<button data-bet="custom">Perso</button>' +
       '</div>' +
-      '<div class="btn-row mt' + (def.actions && def.actions(g).length === 2 ? ' two' : def.actions && def.actions(g).length === 3 ? ' three' : '') + '" id="gActions"></div>' +
+      '<div class="btn-row mt' + ({ 2: ' two', 3: ' three', 4: ' four' }[(def.actions ? def.actions(g).length : 1)] || '') + '" id="gActions"></div>' +
       '<div class="row between mt-s" style="font-size:10.5px;color:var(--muted)">' +
         '<span>Session : <b class="mono" id="gStatRounds">0</b> parties · net ' +
           '<b class="mono" id="gStatNet">0</b> J</span>' +
@@ -4013,6 +4528,13 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
     updateSessionLine(g);
     renderActions(g);
 
+    // Le solde a pu fondre pendant la manche : on remet la mise en phase pour
+    // la suivante (sinon le bouton principal refuserait de rejouer). L'auto-bet
+    // gère la sienne tout seul plus bas.
+    if (!g.auto.on && g.bet > J.Wallet.balance) {
+      setBet(g, Math.max(J.CONST.MIN_BET, Math.min(J.CONST.MAX_BET, Math.floor(J.Wallet.balance))), true);
+    }
+
     // Auto-bet : partie suivante
     if (g.auto.on) {
       g.auto.left--;
@@ -4071,21 +4593,21 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
 /* ===== 29-catalogue-soon.js ============================================ */
 /* =========================================================================
-   JACKPOTLY — CATALOGUE (feuille de route)
-   Déclaration des jeux non encore développés : ils apparaissent dans le
-   catalogue avec leur RTP prévu, leur règle et leur vague de livraison,
-   ce qui garde une seule source de vérité pour tout le lobby.
+   JACKPOTLY — FEUILLE DE ROUTE (catalogue des jeux à venir)
+   Mécanisme du registre : un jeu déclaré avec `status: 'soon'` apparaît dans
+   le lobby avec son RTP prévu, sa règle et sa vague, sans être jouable — le
+   catalogue reste ainsi la seule source de vérité du lobby.
 
-   Vague 1 (livrée)  : Crash, Dice, Mines, Plinko
-   Vague 2 (livrée)  : Limbo, Coin Flip, Hi-Lo, Keno, Tower, Wheel
-   Vague 3 (ici)     : Roulette, Blackjack, Baccarat, Machines à sous,
-                       Video Poker, Texas Hold'em
+   Les 16 jeux prévus sont désormais TOUS jouables (vagues 1, 2 et 3) : la
+   liste ci-dessous est donc vide. Pour ajouter un jeu futur, il suffit de le
+   déclarer ici ; il s'affichera automatiquement dans le catalogue avec son
+   badge « bientôt » et sa fiche descriptive.
    ========================================================================= */
 (function () {
   'use strict';
   const J = window.JACKPOTLY;
 
-  /** Déclaration compacte d'un jeu à venir. */
+  /** Déclaration compacte d'un jeu à venir (aucun jeu en attente pour l'instant). */
   function soon(id, name, icon, color, rtp, tagline, hint, wave, category, volatility) {
     J.Games.register({
       id: id, name: name, icon: icon, color: color, rtp: rtp, tagline: tagline,
@@ -4094,37 +4616,9 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
       rules: 'Ce jeu arrive bientôt dans JACKPOTLY.'
     });
   }
+  void soon;
 
-  /* -------------------------------------------------- VAGUE 3 : CLASSIQUES */
-  soon('roulette', 'Roulette', 'roulette', '#c9273a', 97.3, 'Européenne, un seul zéro',
-    'Roulette européenne (un seul zéro) : plein, cheval, carré, ligne, colonne, douzaine, rouge/noir, pair/impair, manque/passe. ' +
-    'Voisinage du cylindre et mises annoncées incluses. Historique chaud/froid et relance de la dernière mise.',
-    3, 'classics', 'Volatilité moyenne');
-
-  soon('blackjack', 'Blackjack', 'blackjack', '#00b862', 99.5, 'Battez le croupier',
-    'Blackjack 6 jeux, croupier qui tire jusqu\'à 17. Actions : tirer, rester, doubler, séparer (jusqu\'à 4 mains), ' +
-    'assurance, et abandon quand il est autorisé. Paiement 3:2, blackjack naturel.',
-    3, 'classics', 'Volatilité faible');
-
-  soon('baccarat', 'Baccarat', 'baccarat', '#8b5cf6', 98.94, 'Joueur, banquier ou égalité',
-    'Baccarat Punto Banco (8 jeux) : mise sur Joueur (1:1), Banque (0,95:1, commission) ou Égalité (8:1), ' +
-    'avec paire parfaite en option et tirage automatique selon les règles officielles.',
-    3, 'classics', 'Volatilité faible');
-
-  soon('slots', 'Machines à sous', 'slots', '#ffc531', 96.5, '3 thèmes, 5 rouleaux',
-    'Trois machines à sous (Égypte dorée, Fruits Neon, Aventure Jackpotly) : 5 rouleaux, 20 lignes réglables, ' +
-    'symboles wild et scatter, tours gratuits avec multiplicateur progressif et jackpot local.',
-    3, 'classics', 'Volatilité élevée');
-
-  soon('videopoker', 'Video Poker', 'videopoker', '#3b82f6', 99.5, 'Jacks or Better',
-    'Video Poker Jacks or Better en 9/6 : tu conserves les cartes de ton choix puis le tirage complète la main. ' +
-    'Table de gains complète (paire de valets → quinte flush royale), avec stratégie automatique optionnelle.',
-    3, 'classics', 'Volatilité moyenne');
-
-  soon('poker', 'Texas Hold\'em', 'poker', '#34d399', 98, 'Contre des bots',
-    'Poker Texas Hold\'em en tête-à-tête ou à 4 joueurs contre des bots (logique Monte-Carlo simple). ' +
-    'Blinds, relances, tapis et une seule mise à la fois — mode loisir sans argent réel ni échange entre joueurs.',
-    3, 'classics', 'Volatilité élevée');
+  /* Aucun jeu en feuille de route : 10 Originals + 6 classiques sont livrés. */
 })();
 
 /* ===== 30-game-crash.js ================================================ */
@@ -6621,6 +7115,247 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
   }
 })();
 
+/* ===== 40-slots-tables.js ============================================== */
+/* =========================================================================
+   JACKPOTLY — MACHINES À SOUS : DONNÉES ET MATHÉMATIQUES EXACTES
+   Trois machines (5 rouleaux × 3 lignes visibles, 20 lignes de paiement).
+
+   Modèle « bandes de rouleaux » : chaque rouleau est une bande de 40 symboles
+   tirée au hasard à chaque tour. Les bandes sont construites ici de façon
+   déterministe (compteurs fixés + mélange à graine fixe) : la fréquence de
+   chaque symbole est donc maîtrisée au symbole près, exactement comme sur une
+   vraie machine.
+
+   Le RTP est calculé de façon EXACTE, sans simulation :
+
+   1) Lignes de paiement — pour un symbole `s` de probabilité p_i(s) sur le
+      rouleau i (le joker 💎 compte pour tout symbole sauf le scatter) :
+        P(3 à suivre) = p₁p₂p₃ × (1 − p₄)
+        P(4 à suivre) = p₁p₂p₃p₄ × (1 − p₅)
+        P(5 à suivre) = p₁p₂p₃p₄p₅
+      La somme pondérée par les gains donne l'espérance d'une ligne, et
+      l'additivité de l'espérance rend le total exact quel que soit le nombre
+      de lignes : RTP_lignes = Σ_s [g₃·P₃ + g₄·P₄ + g₅·P₅].
+
+   2) Scatters — le nombre de scatters visibles sur un rouleau est la somme de
+      3 positions d'une fenêtre glissante : sa loi est calculée exactement en
+      faisant glisser la fenêtre sur la bande, puis les 5 lois sont convoluées.
+      Les scatters ne paient que sur les tours payants.
+
+   3) Tours gratuits — déclenchés par 3 scatters et plus : 10 tours offerts
+      avec le multiplicateur progressif 1·1·1·2·2·2·3·3·3·4 (somme = 22). Ils
+      ne se redéclenchent pas, ce qui permet de calculer leur espérance
+      exactement :  22 × RTP_lignes  +  10 × RTP_scatters.
+      (Chaque tour gratuit est une mise gratuite : son espérance est celle
+      d'un tour payant, d'où la multiplication par la somme des multiplicateurs.)
+
+   Usage : `node tools/design-slots.mjs` recalcule ces valeurs et peut ajuster
+   automatiquement les tables de gains pour viser 96,5 %.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = (window.JACKPOTLY = window.JACKPOTLY || {});
+
+  const REEL_LEN = 40;
+
+  /* ------------------------------------------------------- LIGNES DE PAIEMENT */
+  /* 20 lignes classiques : chaque ligne donne la rangée visée (0 haut, 1 milieu,
+     2 bas) sur les 5 rouleaux. */
+  const LINES = [
+    [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2],
+    [0, 1, 2, 1, 0], [2, 1, 0, 1, 2], [0, 0, 1, 2, 2],
+    [2, 2, 1, 0, 0], [1, 2, 2, 2, 1], [1, 0, 0, 0, 1],
+    [0, 1, 1, 1, 0], [2, 1, 1, 1, 2], [1, 2, 1, 2, 1],
+    [1, 0, 1, 0, 1], [0, 2, 0, 2, 0], [2, 0, 2, 0, 2],
+    [0, 1, 2, 2, 2], [2, 1, 0, 0, 0], [1, 1, 0, 1, 1],
+    [1, 1, 2, 1, 1], [0, 2, 2, 2, 0]
+  ];
+
+  /* ------------------------------------------------------------ BANDES */
+  /** Mélange déterministe : la même bande est reconstruite à chaque chargement. */
+  function buildReel(counts, seed) {
+    const pool = [];
+    for (const k in counts) for (let i = 0; i < counts[k]; i++) pool.push(k);
+    let s = (seed * 2654435761) % 2147483647;
+    const rnd = () => { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      const t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+    }
+    return pool;
+  }
+
+  /* Composition d'un rouleau : F/T/J/K/C/P/A = symboles, W = joker, S = scatter. */
+  const C1 = { F: 10, T: 8, J: 7, K: 5, C: 4, P: 3, A: 2, W: 0, S: 1 };
+  const C2 = { F: 8, T: 8, J: 7, K: 6, C: 4, P: 3, A: 1, W: 1, S: 2 };
+  const C3 = { F: 7, T: 8, J: 7, K: 6, C: 4, P: 3, A: 2, W: 1, S: 2 };
+  const C4 = { F: 8, T: 7, J: 7, K: 6, C: 4, P: 3, A: 2, W: 1, S: 2 };
+  const C5 = { F: 10, T: 8, J: 7, K: 6, C: 4, P: 2, A: 1, W: 1, S: 1 };
+
+  /* --------------------------------------------------------------- THÈMES */
+  /* `pays` = gain d'une ligne, en multiples de la mise de ligne. */
+  const THEMES = [
+    {
+      id: 'egypte',
+      name: 'Égypte dorée',
+      tagline: 'Le trésor des pharaons',
+      colors: { from: '#3a2a08', to: '#0e1526', accent: '#ffc531' },
+      sym: {
+        A: { e: '🐺', n: 'Anubis' },
+        P: { e: '👑', n: 'Pharaon' },
+        C: { e: '🏺', n: 'Amphore' },
+        K: { e: '🐍', n: 'Cobra' },
+        J: { e: '🪲', n: 'Scarabée' },
+        T: { e: '🔥', n: 'Flamme' },
+        F: { e: '🪙', n: 'Pièce d\'or' },
+        W: { e: '💎', n: 'Joker' },
+        S: { e: '🔱', n: 'Scatter' }
+      },
+      pays: { W: { 3: 75.19, 4: 375.94, 5: 2506.26 }, A: { 3: 62.66, 4: 250.63, 5: 1253.13 }, P: { 3: 37.59, 4: 150.38, 5: 626.57 }, C: { 3: 25.06, 4: 100.25, 5: 375.94 }, K: { 3: 15.04, 4: 50.13, 5: 200.5 }, J: { 3: 12.53, 4: 37.59, 5: 150.38 }, T: { 3: 10.03, 4: 30.08, 5: 112.78 }, F: { 3: 7.52, 4: 25.06, 5: 100.18 } }
+    },
+    {
+      id: 'neon',
+      name: 'Fruits Néon',
+      tagline: 'Les classiques en néon',
+      colors: { from: '#2b0b34', to: '#0d1526', accent: '#ff4fa3' },
+      sym: {
+        A: { e: '7️⃣', n: 'Sept' },
+        P: { e: '🍉', n: 'Pastèque' },
+        C: { e: '🔔', n: 'Cloche' },
+        K: { e: '🍇', n: 'Raisin' },
+        J: { e: '🍋', n: 'Citron' },
+        T: { e: '🍒', n: 'Cerise' },
+        F: { e: '🍊', n: 'Orange' },
+        W: { e: '⭐', n: 'Joker' },
+        S: { e: '🎰', n: 'Scatter' }
+      },
+      pays: { W: { 3: 75.19, 4: 375.94, 5: 2506.26 }, A: { 3: 62.66, 4: 250.63, 5: 1253.13 }, P: { 3: 37.59, 4: 150.38, 5: 626.57 }, C: { 3: 25.06, 4: 100.25, 5: 375.94 }, K: { 3: 15.04, 4: 50.13, 5: 200.5 }, J: { 3: 12.53, 4: 37.59, 5: 150.38 }, T: { 3: 10.03, 4: 30.08, 5: 112.78 }, F: { 3: 7.52, 4: 25.06, 5: 100.18 } }
+    },
+    {
+      id: 'jackpotly',
+      name: 'Aventure Jackpotly',
+      tagline: 'Cap sur le trésor',
+      colors: { from: '#062b2a', to: '#0b1526', accent: '#00e37a' },
+      sym: {
+        A: { e: '🐉', n: 'Dragon' },
+        P: { e: '🏆', n: 'Trophée' },
+        C: { e: '🎲', n: 'Dé' },
+        K: { e: '⚓', n: 'Ancre' },
+        J: { e: '🧭', n: 'Boussole' },
+        T: { e: '🪙', n: 'Pièce' },
+        F: { e: '📜', n: 'Parchemin' },
+        W: { e: '💎', n: 'Joker' },
+        S: { e: '💰', n: 'Scatter' }
+      },
+      pays: { W: { 3: 75.19, 4: 375.94, 5: 2506.26 }, A: { 3: 62.66, 4: 250.63, 5: 1253.13 }, P: { 3: 37.59, 4: 150.38, 5: 626.57 }, C: { 3: 25.06, 4: 100.25, 5: 375.94 }, K: { 3: 15.04, 4: 50.13, 5: 200.5 }, J: { 3: 12.53, 4: 37.59, 5: 150.38 }, T: { 3: 10.03, 4: 30.08, 5: 112.78 }, F: { 3: 7.52, 4: 25.06, 5: 100.18 } }
+    }
+  ];
+
+  /* Graines distinctes par thème : les bandes diffèrent d'une machine à l'autre. */
+  const SEEDS = {
+    egypte: [11, 101, 202, 307, 401],
+    neon: [17, 131, 233, 331, 433],
+    jackpotly: [23, 149, 257, 353, 457]
+  };
+
+  THEMES.forEach((t) => {
+    t.counts = [C1, C2, C3, C4, C5];
+    t.reels = SEEDS[t.id].map((seed, i) => buildReel(t.counts[i], seed));
+    t.freeSpins = 10;
+    t.multSchedule = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4];
+    t.scatterPays = { 3: 1, 4: 5, 5: 25 };     // en multiples de la mise TOTALE
+  });
+
+  /* ---------------------------------------------------- MATHÉMATIQUES EXACTES */
+  /** Probabilité que le rouleau i « réponde » au symbole s (joker compris). */
+  function matchProb(reel, s) {
+    let n = 0;
+    for (let i = 0; i < reel.length; i++) {
+      if (reel[i] === s) n++;
+      else if (s !== 'W' && s !== 'S' && reel[i] === 'W') n++;   // le joker remplace tout sauf le scatter
+    }
+    return n / reel.length;
+  }
+
+  /** Loi exacte du nombre de scatters visibles sur un rouleau (fenêtre de 3). */
+  function scatterDist(reel) {
+    const L = reel.length;
+    const d = [0, 0, 0, 0];
+    for (let i = 0; i < L; i++) {
+      let c = 0;
+      for (let k = 0; k < 3; k++) if (reel[(i + k) % L] === 'S') c++;
+      d[c]++;
+    }
+    return d.map((n) => n / L);
+  }
+
+  /** Convolution des 5 lois : loi exacte du nombre total de scatters visibles. */
+  function scatterTotal(reels) {
+    let acc = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    reels.forEach((r) => {
+      const d = scatterDist(r);
+      const next = new Array(acc.length).fill(0);
+      for (let i = 0; i < acc.length; i++) {
+        if (!acc[i]) continue;
+        for (let k = 0; k < 4 && i + k < next.length; k++) next[i + k] += acc[i] * d[k];
+      }
+      acc = next;
+    });
+    return acc;
+  }
+
+  /**
+   * RTP exact d'un thème, détaillé. Renvoie des fractions (0,965 = 96,5 %).
+   * `pays` peut être remplacé pour tester une autre table de gains.
+   */
+  function rtp(theme, paysOverride) {
+    const pays = paysOverride || theme.pays;
+    const reels = theme.reels;
+
+    // 1) lignes : espérance par ligne, en multiples de la mise de ligne
+    let lines = 0;
+    const perSymbol = {};
+    Object.keys(pays).forEach((s) => {
+      const p = reels.map((r) => matchProb(r, s));
+      const p3 = p[0] * p[1] * p[2], p4 = p3 * p[3], p5 = p4 * p[4];
+      const e3 = pays[s][3] * p3 * (1 - p[3]);
+      const e4 = pays[s][4] * p4 * (1 - p[4]);
+      const e5 = pays[s][5] * p5;
+      perSymbol[s] = e3 + e4 + e5;
+      lines += e3 + e4 + e5;
+    });
+
+    // 2) scatters : gain moyen par tour, en multiples de la mise totale
+    const dist = scatterTotal(reels);
+    let scatters = 0, q = 0;
+    for (let k = 3; k <= 15; k++) {
+      scatters += dist[k] * theme.scatterPays[Math.min(5, k)];
+      q += dist[k];
+    }
+    const dist5 = dist[5];                                   // les 5 scatters payent le maximum
+
+    // 3) tours gratuits : 22 × RTP_lignes + 10 × RTP_scatters par déclenchement
+    const multSum = theme.multSchedule.reduce((a, b) => a + b, 0);
+    const free = q * (multSum * lines + theme.freeSpins * scatters);
+
+    return {
+      id: theme.id, name: theme.name,
+      lines, scatters, free, total: lines + scatters + free,
+      q, multSum, dist, perSymbol, dist5,
+      // fréquence de chaque symbole par rouleau (contrôle des bandes)
+      perReel: reels.map((r) => {
+        const o = {};
+        r.forEach((s) => { o[s] = (o[s] || 0) + 1; });
+        return o;
+      })
+    };
+  }
+
+  J.SLOTS_DATA = {
+    REEL_LEN, LINES, THEMES, SEEDS, buildReel, matchProb, scatterDist, scatterTotal, rtp
+  };
+})();
+
 /* ===== 41-game-wheel.js ================================================ */
 /* =========================================================================
    JEU 10 — WHEEL
@@ -6917,6 +7652,2721 @@ body.no-motion *, body.no-motion *::before, body.no-motion *::after{
 
   /* Exposé pour les tests (vérification du RTP par cible) */
   J.__wheelTable = buildTable;
+})();
+
+/* ===== 42-game-roulette.js ============================================= */
+/* =========================================================================
+   JEU 11 — ROULETTE EUROPÉENNE
+   Un seul zéro (37 cases). Toutes les mises classiques sont disponibles :
+   Plein, Cheval, Carré, Sixain, Colonne, Douzaine, Rouge/Noir, Pair/Impair,
+   Manque/Passe — plus les quatre mises annoncées françaises (Voisins du zéro,
+   Orphelins, Tiers du cylindre, Jeu zéro).
+
+   Mathématiques : chaque mise couvre `n` numéros et rapporte `36 / n` fois la
+   mise (capital compris). L'espérance est donc identique partout :
+        (36 / n) × n/37 = 36/37 = 97,297 %
+   Le zéro appartient à la maison : il ne paie aucune chance simple, comme au
+   casino. Une combinaison de plusieurs mises garde exactement ce même RTP.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+
+  /* Ordre physique des cases sur le cylindre européen (sens horaire depuis 0). */
+  const WHEEL_ORDER = [
+    0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5,
+    24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
+  ];
+  const RED = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+  const isRed = (n) => RED.indexOf(n) >= 0;
+
+  /* -------------------------------------------------------- TYPES DE MISE */
+  /** mult = montant total récupéré (mise comprise) pour 1 jeton placé. */
+  const BETS = {
+    plein:    { label: 'Plein',    mult: 36, need: 'num', hint: '1 numéro' },
+    cheval:   { label: 'Cheval',   mult: 18, need: 'dir', hint: '2 numéros' },
+    carre:    { label: 'Carré',    mult: 9,  need: 'dir', hint: '4 numéros' },
+    sixain:   { label: 'Sixain',   mult: 6,  need: 'num', hint: '6 numéros' },
+    colonne:  { label: 'Colonne',  mult: 3,  need: 'arg', hint: '12 numéros' },
+    douzaine: { label: 'Douzaine', mult: 3,  need: 'arg', hint: '12 numéros' },
+    rouge:    { label: 'Rouge',    mult: 2,  hint: '18 numéros' },
+    noir:     { label: 'Noir',     mult: 2,  hint: '18 numéros' },
+    pair:     { label: 'Pair',     mult: 2,  hint: '18 numéros' },
+    impair:   { label: 'Impair',   mult: 2,  hint: '18 numéros' },
+    manque:   { label: 'Manque',   mult: 2,  hint: '1 à 18' },
+    passe:    { label: 'Passe',    mult: 2,  hint: '19 à 36' },
+    trio:     { label: 'Trio',     mult: 12, hint: '0 + 2 numéros' },
+    premiers: { label: 'Premiers 4', mult: 9, hint: '0-1-2-3' }
+  };
+
+  const COLUMN = [                       // « colonne » : les 12 numéros d'une finale
+    { i: 0, nums: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34] },
+    { i: 1, nums: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35] },
+    { i: 2, nums: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36] }
+  ];
+  const range = (a, b) => { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; };
+
+  /* Une mise : { type, nums, mult, w (jetons posés), label } */
+  function makeSpot(type, nums, w, label) {
+    const def = BETS[type];
+    return { type, nums, mult: def.mult, w: w || 1, label: label || keyOf(type, nums) };
+  }
+  function keyOf(type, nums) { return type + ':' + nums.join('-'); }
+  function numLabel(nums) { return nums.join(' + '); }
+
+  /* ------------------------------------------------- Mises annoncées (cylindre) */
+  const PRESETS = [
+    {
+      id: 'voisins', name: 'Voisins du zéro', chips: 9,
+      desc: '17 numéros autour du zéro : 0·2·3 · 4/7 · 12/15 · 18/21 · 19/22 · 25·26·28·29 · 32/35',
+      spots: () => [
+        makeSpot('trio', [0, 2, 3], 2, '0+2+3 ×2'),
+        makeSpot('carre', [25, 26, 28, 29], 2, '25+26+28+29 ×2'),
+        makeSpot('cheval', [4, 7], 1), makeSpot('cheval', [12, 15], 1),
+        makeSpot('cheval', [18, 21], 1), makeSpot('cheval', [19, 22], 1),
+        makeSpot('cheval', [32, 35], 1)
+      ]
+    },
+    {
+      id: 'orphelins', name: 'Orphelins', chips: 5,
+      desc: '8 numéros isolés : 1 · 6/9 · 14/17 · 20 · 31/34',
+      spots: () => [
+        makeSpot('plein', [1], 1), makeSpot('cheval', [6, 9], 1),
+        makeSpot('cheval', [14, 17], 1), makeSpot('plein', [20], 1),
+        makeSpot('cheval', [31, 34], 1)
+      ]
+    },
+    {
+      id: 'tiers', name: 'Tiers du cylindre', chips: 6,
+      desc: '12 numéros opposés au zéro, en 6 chevaux : 5/8 · 10/11 · 13/16 · 23/24 · 27/30 · 33/36',
+      spots: () => [
+        makeSpot('cheval', [5, 8], 1), makeSpot('cheval', [10, 11], 1),
+        makeSpot('cheval', [13, 16], 1), makeSpot('cheval', [23, 24], 1),
+        makeSpot('cheval', [27, 30], 1), makeSpot('cheval', [33, 36], 1)
+      ]
+    },
+    {
+      id: 'jeuzero', name: 'Jeu zéro', chips: 4,
+      desc: '7 numéros proches du zéro : 26 · 0/3 · 12/15 · 32/35',
+      spots: () => [
+        makeSpot('plein', [26], 1), makeSpot('cheval', [0, 3], 1),
+        makeSpot('cheval', [12, 15], 1), makeSpot('cheval', [32, 35], 1)
+      ]
+    }
+  ];
+
+  /* --------------------------------------------------------- Géométrie grille */
+  /* Grille 6 × 6 en ordre de lecture : la ligne r contient 6r+1 … 6r+6, ce qui
+     correspond exactement aux sixains du tapis réel. */
+  const cell = (n) => ({ r: Math.floor((n - 1) / 6), c: (n - 1) % 6 });
+
+  /** Voisins directs d'un numéro (cheval) et blocs 2×2 (carré) dans la grille. */
+  function neighbours(n) {
+    const { r, c } = cell(n);
+    const out = [];
+    if (c < 5) out.push({ k: 'droite', tag: '→', nums: [n, n + 1] });
+    if (c > 0) out.push({ k: 'gauche', tag: '←', nums: [n - 1, n] });
+    if (r < 5) out.push({ k: 'bas', tag: '↓', nums: [n, n + 6] });
+    if (r > 0) out.push({ k: 'haut', tag: '↑', nums: [n - 6, n] });
+    return out;
+  }
+  function squares(n) {
+    const { r, c } = cell(n);
+    const out = [];
+    if (r < 5 && c < 5) out.push({ k: 'bas-droite', tag: '↘', nums: [n, n + 1, n + 6, n + 7] });
+    if (r < 5 && c > 0) out.push({ k: 'bas-gauche', tag: '↙', nums: [n - 1, n, n + 5, n + 6] });
+    if (r > 0 && c < 5) out.push({ k: 'haut-droite', tag: '↗', nums: [n - 6, n - 5, n, n + 1] });
+    if (r > 0 && c > 0) out.push({ k: 'haut-gauche', tag: '↖', nums: [n - 7, n - 6, n - 1, n] });
+    return out;
+  }
+  /** Sixain contenant n (la ligne de la grille = 6 numéros consécutifs). */
+  function sixainOf(n) { const { r } = cell(n); return range(r * 6 + 1, r * 6 + 6); }
+
+  /* ------------------------------------------------------------------ ÉTAT */
+  function state(g) {
+    g.spots = {};              // clé → mise posée
+    g.chip = 100;              // valeur d'un jeton
+    g.sel = 'plein';           // type de mise « intérieure » sélectionné
+    g.anchor = null;           // numéro d'ancrage (cheval / carré)
+    g.last = null;             // dernier numéro sorti
+    g.angle = -Math.PI / 2;    // rotation de la roue
+    g.spinning = false;
+    g.result = null;           // { num, mult, gain, detail }
+    g.recent = [];             // derniers numéros
+    g.lastSpots = null;        // mémorisé pour « Relancer »
+    g.stats = g.stats || { rounds: 0, wagered: 0, net: 0, best: 0 };
+  }
+
+  /* ------------------------------------------------------- CALCUL DE LA MISE */
+  function totals(g) {
+    let w = 0, spots = 0, best = 0;
+    for (const k in g.spots) {
+      const s = g.spots[k];
+      w += s.w; spots++;
+      best = Math.max(best, s.mult);
+    }
+    return { w, spots, stake: w * g.chip, best };
+  }
+
+  /** Met à jour la mise de la manche (ce que le moteur débitera). */
+  function syncStake(g) {
+    const t = totals(g);
+    if (t.stake > 0) J.Games.setBet(g, t.stake, true);
+    J.Games.updateHints(g);
+  }
+
+  /** Place (ou retire) un jeton sur une mise. */
+  function place(g, type, nums, w, silent) {
+    if (g.busy) return false;                       // mises figées pendant la rotation
+    const key = keyOf(type, nums);
+    const t = totals(g);
+    const cost = (w || 1) * g.chip;
+    if (t.stake + cost > J.CONST.MAX_BET) { J.toast('Plafond de table atteint (' + U.fmtK(J.CONST.MAX_BET) + ' J)', 'ko'); return false; }
+    if (t.stake + cost > J.Wallet.balance) { J.toast('Solde insuffisant', 'ko'); return false; }
+    const cur = g.spots[key];
+    if (cur) cur.w += (w || 1);
+    else g.spots[key] = makeSpot(type, nums, w || 1);
+    if (!silent) { J.Sfx.coin(); J.haptic.tap(); }
+    paint(g);
+    return true;
+  }
+
+  /** Retire une mise entière (ou un jeton si elle en porte plusieurs). */
+  function unplace(g, key) {
+    if (g.busy) return;
+    const s = g.spots[key];
+    if (!s) return;
+    if (s.w > 1) s.w--; else delete g.spots[key];
+    J.Sfx.click(); J.haptic.tap();
+    paint(g);
+  }
+
+  function placePreset(g, preset) {
+    if (g.busy) return;
+    const spots = preset.spots();
+    const t = totals(g);
+    const cost = spots.reduce((a, s) => a + s.w, 0) * g.chip;
+    if (t.stake + cost > J.CONST.MAX_BET) { J.toast('Plafond de table atteint', 'ko'); return; }
+    if (t.stake + cost > J.Wallet.balance) { J.toast('Solde insuffisant pour cette annonce', 'ko'); return; }
+    spots.forEach((s) => {
+      const key = keyOf(s.type, s.nums);
+      const cur = g.spots[key];
+      if (cur) cur.w += s.w; else g.spots[key] = makeSpot(s.type, s.nums, s.w, s.label);
+    });
+    J.Sfx.chip();
+    J.toast(preset.name + ' : ' + preset.chips + ' jetons posés', 'ok');
+    paint(g);
+  }
+
+  function clearSpots(g, silent) {
+    if (g.busy || !Object.keys(g.spots).length) return;
+    g.lastSpots = JSON.parse(JSON.stringify(g.spots));
+    g.spots = {};
+    if (!silent) { J.Sfx.click(); J.toast('Mises retirées', ''); }
+    paint(g);
+  }
+
+  function rebet(g) {
+    if (g.busy) return;
+    if (!g.lastSpots) { J.toast('Aucune mise à relancer', 'ko'); return; }
+    const cost = Object.keys(g.lastSpots).reduce((a, k) => a + g.lastSpots[k].w, 0) * g.chip;
+    if (cost > J.Wallet.balance) { J.toast('Solde insuffisant', 'ko'); return; }
+    if (cost > J.CONST.MAX_BET) { J.toast('Plafond de table atteint', 'ko'); return; }
+    g.spots = JSON.parse(JSON.stringify(g.lastSpots));
+    J.Sfx.chip && J.Sfx.chip();
+    J.toast('Mises relancées', 'ok');
+    paint(g);
+  }
+
+  /* ------------------------------------------------------------ RÉSOLUTION */
+  /**
+   * Règlement pur (aucune dépendance à l'état) : part de chaque mise posée ×
+   * son rapport. Le RTP d'une mise seule vaut donc exactement 36/37.
+   */
+  function payoutMult(spots, w, num) {
+    let mult = 0;
+    const won = [];
+    for (const k in spots) {
+      const s = spots[k];
+      if (s.nums.indexOf(num) >= 0) {
+        mult += (s.w / w) * s.mult;
+        won.push({ label: s.label, mult: s.mult, share: s.w / w });
+      }
+    }
+    return { mult, won };
+  }
+
+  function evaluate(g, num) {
+    const t = totals(g);
+    return payoutMult(g.spots, t.w, num);
+  }
+
+  /* -------------------------------------------------------------- ANIMATION */
+  function drawWheel(g, angle, ballA, ballR) {
+    const cv = g.cv;
+    if (!cv) return;
+    const S = g.size;
+    const ctx = J.util.fitCanvas(cv, S, S);
+    const cx = S / 2, cy = S / 2, R = S / 2 - 3;
+    const step = (Math.PI * 2) / 37;
+    ctx.clearRect(0, 0, S, S);
+
+    // jante extérieure dorée
+    const rim = ctx.createLinearGradient(0, 0, 0, S);
+    rim.addColorStop(0, '#f3d38b'); rim.addColorStop(.5, '#a9782a'); rim.addColorStop(1, '#f3d38b');
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = rim; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, R - 3, 0, Math.PI * 2); ctx.fillStyle = '#0d1526'; ctx.fill();
+
+    // cases
+    const rP = R - 6;
+    for (let i = 0; i < 37; i++) {
+      const n = WHEEL_ORDER[i];
+      const a0 = -Math.PI / 2 + angle + i * step;
+      const a1 = a0 + step;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, rP, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = n === 0 ? '#0e8a4a' : (isRed(n) ? '#c9273a' : '#1b2436');
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 1; ctx.stroke();
+
+      // numéro (lu depuis le centre)
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(a0 + step / 2);
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = n === 0 ? '#eafff3' : '#f3f6ff';
+      ctx.font = '700 ' + Math.max(7, S * 0.038).toFixed(0) + 'px -apple-system, Arial, sans-serif';
+      ctx.fillText(String(n), rP - 3, 0);
+      ctx.restore();
+    }
+    // moyeu
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.30, 0, Math.PI * 2);
+    const hub = ctx.createRadialGradient(cx, cy - R * .12, 2, cx, cy, R * .34);
+    hub.addColorStop(0, '#233251'); hub.addColorStop(1, '#0b1220');
+    ctx.fillStyle = hub; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,197,49,.45)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // bille
+    if (ballA != null) {
+      const br = R * ballR;
+      const bx = cx + Math.cos(ballA) * br, by = cy + Math.sin(ballA) * br;
+      ctx.beginPath(); ctx.arc(bx, by, Math.max(2.5, S * 0.016), 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+  }
+
+  function spin(g) {
+    const num = J.Fair.int(0, 36);
+    const idx = WHEEL_ORDER.indexOf(num);
+    const step = (Math.PI * 2) / 37;
+    const from = g.angle;
+    // rotation finale : le centre de la case tirée doit finir sous le pointeur (en haut).
+    // La case i est centrée à (-π/2 + angle + (i+0,5)×pas) : on veut donc angle = -(i+0,5)×pas.
+    const want = -(idx + 0.5) * step;
+    let target = want;
+    const laps = 5;
+    while (target < from + laps * Math.PI * 2) target += Math.PI * 2;
+    const dur = 3600;
+    const t0 = performance.now();
+    g.spinning = true;
+    let lastTick = 0;
+
+    function frame(now) {
+      if (!g.spinning) return;
+      const p = U.clamp((now - t0) / dur, 0, 1);
+      const e = 1 - Math.pow(1 - p, 3.2);                       // décélération
+      g.angle = from + (target - from) * e;
+      // la bille tourne à contre-sens puis se pose dans la case
+      const ballA = -Math.PI / 2 + (1 - e) * -22 + g.angle;
+      const ballR = 0.32 + (1 - e) * 0.62;
+      drawWheel(g, g.angle, ballA, ballR);
+      if (!lastTick || now - lastTick > 90 - 60 * e) {          // tic-tac de la bille
+        J.Sfx.wheelTick(); lastTick = now;
+      }
+      if (p < 1) g._raf = requestAnimationFrame(frame);
+      else { g.spinning = false; g.angle = target; drawWheel(g, g.angle, null); }
+    }
+    g._raf = requestAnimationFrame(frame);
+
+    J.Games.schedule(g, () => settle(g, num), dur + 60);
+  }
+
+  function startSpin(g) {
+    J.Sfx.bet();
+    J.Games.renderActions(g);
+    spin(g);
+  }
+
+  function settle(g, num) {
+    const t = totals(g);
+    const stake = g.ticket ? g.ticket.bet : t.stake;      // montant réellement débité
+    const r = evaluate(g, num);
+    g.last = num;
+    g.result = { num, mult: r.mult, gain: Math.round(stake * r.mult), won: r.won };
+    g.recent.unshift(num);
+    if (g.recent.length > 14) g.recent.pop();
+    paintReadout(g);
+    paintRecent(g);
+    if (r.mult > 2) { J.Sfx.bigwin(); J.haptic.big(); }
+    else if (r.mult > 0) { J.Sfx.cashout(); J.haptic.win(r.mult * 4); }
+    else { J.Sfx.lose(); J.haptic.lose(); }
+    J.Games.finish(g, r.mult, { detail: 'Numéro ' + num + ' · ' + t.spots + ' mise(s)' });
+
+    // Tapis insuffisant après une perte : on réduit la valeur du jeton pour que
+    // les mises restées en place restent jouables (le joueur peut aussi « Effacer »).
+    const units = Object.keys(g.spots).reduce((a, k) => a + g.spots[k].w, 0);
+    if (units && totals(g).stake > J.Wallet.balance) {
+      g.chip = Math.max(1, Math.floor(J.Wallet.balance / units));
+      J.toast('Jeton ajusté à ' + U.fmt(g.chip) + ' J', '');
+    }
+    paint(g);
+  }
+
+  /* ------------------------------------------------------------------ RENDU */
+  function paint(g) {
+    if (!g.gridEl) return;
+    const t = totals(g);
+
+    // grille
+    g.gridEl.querySelectorAll('[data-num]').forEach((el) => {
+      const n = parseInt(el.dataset.num, 10);
+      el.classList.toggle('is-anchor', g.anchor === n);
+      el.classList.toggle('is-last', g.last === n);
+    });
+    // pastilles de jetons : le nombre de jetons posés s'affiche sur la case
+    g.gridEl.querySelectorAll('[data-num]').forEach((el) => { delete el.dataset.w; });
+    for (const k in g.spots) {
+      const sp = g.spots[k];
+      if (sp.nums.length === 1) {
+        const host = g.gridEl.querySelector('[data-num="' + sp.nums[0] + '"]');
+        if (host) host.dataset.w = String(sp.w);
+      }
+    }
+    // liste des mises posées
+    const keys = Object.keys(g.spots);
+    g.betList.innerHTML = keys.length
+      ? keys.map((k) => {
+        const s = g.spots[k];
+        return '<button class="rui-bet" data-bet-key="' + k + '">' +
+          '<b>' + s.label + '</b><span class="mono">' + (s.w * g.chip) + ' J · ' + s.mult + 'x</span>' +
+          '<i>✕</i></button>';
+      }).join('')
+      : '<div class="note center">Touche un numéro ou une mise extérieure pour poser un jeton.</div>';
+    g.betList.querySelectorAll('[data-bet-key]').forEach((b) => {
+      b.onclick = () => unplace(g, b.dataset.betKey);
+    });
+
+    // total
+    g.totalLine.innerHTML = t.spots
+      ? '<b>' + t.spots + '</b> mise(s) · <b class="mono">' + U.fmt(t.stake) + ' J</b> sur le tapis' +
+        ' · meilleur gain <b class="mono up">' + U.fmt(Math.round(t.stake * t.best)) + ' J</b>'
+      : '<span class="muted">Aucune mise — mise de la manche : 0 J</span>';
+
+    // sélecteur de type intérieur
+    g.typeRow.querySelectorAll('[data-type]').forEach((b) => {
+      b.classList.toggle('is-on', b.dataset.type === g.sel);
+    });
+    // valeurs de jeton
+    g.chipRow.querySelectorAll('[data-chip-val]').forEach((b) => {
+      b.classList.toggle('is-on', parseInt(b.dataset.chipVal, 10) === g.chip);
+    });
+    // directions proposées (cheval / carré)
+    renderDirs(g);
+
+    // La mise de la manche suit le tapis, et le bouton principal reflète l'état
+    syncStake(g);
+    J.Games.renderActions(g);
+    paintRecent(g);
+  }
+
+  function renderDirs(g) {
+    const box = g.dirBox;
+    const def = BETS[g.sel];
+    if (def.need !== 'dir' || g.anchor == null) {
+      box.innerHTML = def.need === 'dir'
+        ? '<div class="note">Touche le numéro de ton choix, puis la direction à jouer.</div>'
+        : '<div class="note">Touche un numéro de la grille pour poser <b>' + def.label + '</b>.</div>';
+      return;
+    }
+    const n = g.anchor;
+    const cands = g.sel === 'cheval' ? neighbours(n) : squares(n);
+    box.innerHTML = '<div class="rui-dirs">' + cands.map((c, i) =>
+      '<button class="chip" data-dir="' + i + '"><b>' + c.tag + '</b> ' + numLabel(c.nums) + '</button>').join('') + '</div>';
+    box.querySelectorAll('[data-dir]').forEach((b) => {
+      b.onclick = () => {
+        const c = cands[parseInt(b.dataset.dir, 10)];
+        place(g, g.sel, c.nums);
+      };
+    });
+  }
+
+  function paintReadout(g) {
+    if (!g.readEl) return;
+    const r = g.result;
+    if (!g.last && r == null) {
+      g.readEl.innerHTML = '<div class="rui-num">—</div><div class="sub">Prêt pour le premier lancer</div>';
+      return;
+    }
+    const n = g.last;
+    g.readEl.innerHTML =
+      '<div class="rui-num' + (n === 0 ? ' zero' : (isRed(n) ? ' red' : ' black')) + '">' + n + '</div>' +
+      '<div class="sub">' + (n === 0 ? 'Zéro vert' : (isRed(n) ? 'Rouge' : 'Noir') + ' · ' + (n % 2 ? 'impair' : 'pair') +
+        ' · ' + (n <= 18 ? 'manque' : 'passe')) + '</div>' +
+      (r && r.mult > 0
+        ? '<div class="rui-win">+' + U.fmt(r.gain) + ' J <span class="mono">' + U.fmtMult(r.mult) + '</span></div>'
+        : '<div class="rui-lose">' + (r && r.won.length ? 'gain partiel' : 'perdu') + '</div>');
+  }
+
+  function paintRecent(g) {
+    if (!g.recentEl) return;
+    g.recentEl.innerHTML = g.recent.map((n) =>
+      '<span class="rui-hist ' + (n === 0 ? 'zero' : (isRed(n) ? 'red' : 'black')) + '">' + n + '</span>').join('');
+  }
+
+  /* ------------------------------------------------------------------- JEU */
+  J.Games.register({
+    id: 'roulette',
+    name: 'Roulette',
+    icon: 'roulette',
+    color: '#c9273a',
+    rtp: 97.3,
+    category: 'classics',
+    tagline: 'Européenne, un seul zéro',
+    volatility: 'Volatilité moyenne',
+    hot: true,
+    rules:
+      'Roulette <b>européenne</b> : 37 cases, un seul zéro. Chaque mise rapporte ' +
+      '<b>36 ÷ nombre de numéros couverts</b>, capital compris — l\'espérance est donc identique partout : ' +
+      '<b>36/37 = 97,297 %</b>. Le zéro ne paie aucune chance simple.<br><br>' +
+      '<b>Mises intérieures</b> : Plein (1 numéro, 36x), Cheval (2, 18x), Carré (4, 9x), Sixain (6, 6x). ' +
+      'Choisis le type, touche un numéro, puis la direction proposée.<br>' +
+      '<b>Mises extérieures</b> : Colonne, Douzaine (3x), Rouge/Noir, Pair/Impair, Manque/Passe (2x).<br>' +
+      '<b>Mises annoncées</b> : Voisins du zéro (9 jetons), Orphelins (5), Tiers du cylindre (6), Jeu zéro (4) — ' +
+      'les groupes du cylindre réel.<br><br>' +
+      'Tu peux cumuler autant de mises que tu veux dans la limite du plafond de table. ' +
+      'La valeur du jeton se choisit dans le panneau du bas ; la mise de la manche est la somme du tapis.',
+    playLabel: 'Lancer la roue 🎡',
+
+    state,
+
+    stage(g) {
+      return '' +
+        '<div class="rui-stage">' +
+          '<div class="rui-top">' +
+            '<canvas class="rui-canvas" id="ruWheel"></canvas>' +
+            '<div class="rui-read" id="ruRead"></div>' +
+          '</div>' +
+          '<div class="history-strip rui-hist" id="ruRecent"></div>' +
+          '<div class="rui-types" id="ruTypes">' +
+            ['plein', 'cheval', 'carre', 'sixain'].map((t) =>
+              '<button class="chip' + (t === 'plein' ? ' is-on' : '') + '" data-type="' + t + '">' +
+              BETS[t].label + ' <b>' + BETS[t].mult + 'x</b></button>').join('') +
+          '</div>' +
+          '<div class="rui-dirbox" id="ruDirs"></div>' +
+          '<div class="rui-grid" id="ruGrid">' +
+            '<button class="rui-zero" data-num="0">0</button>' +
+            range(1, 36).map((n) => '<button class="rui-cell ' + (isRed(n) ? 'red' : 'black') + '" data-num="' + n + '">' + n + '</button>').join('') +
+          '</div>' +
+          '<div class="rui-out" id="ruOut">' +
+            '<button class="rui-o wide2" data-out="manque">1 – 18</button>' +
+            '<button class="rui-o" data-out="pair">Pair</button>' +
+            '<button class="rui-o red" data-out="rouge">Rouge</button>' +
+            '<button class="rui-o black" data-out="noir">Noir</button>' +
+            '<button class="rui-o" data-out="impair">Impair</button>' +
+            '<button class="rui-o wide2" data-out="passe">19 – 36</button>' +
+            ['douzaine:1', 'douzaine:2', 'douzaine:3'].map((d) => {
+              const i = parseInt(d.split(':')[1], 10);
+              return '<button class="rui-o wide2" data-out="douzaine:' + i + '">D' + i + ' (' + ((i - 1) * 12 + 1) + '–' + (i * 12) + ')</button>';
+            }).join('') +
+            ['colonne:0', 'colonne:1', 'colonne:2'].map((c) => {
+              const i = parseInt(c.split(':')[1], 10);
+              return '<button class="rui-o wide2" data-out="colonne:' + i + '">Colonne ' + (i + 1) + ' <b>3x</b></button>';
+            }).join('') +
+          '</div>' +
+          '<div class="rui-betlist" id="ruBets"></div>' +
+        '</div>';
+    },
+
+    controls(g) {
+      return '' +
+        '<div class="rui-ctl">' +
+          '<div class="row between"><span class="bet-label">Jeton</span>' +
+            '<span class="sub" id="ruTotal"></span></div>' +
+          '<div class="chips mt-s" id="ruChips">' +
+            [10, 50, 100, 500, 1000, 5000].map((v) =>
+              '<button class="chip' + (v === 100 ? ' is-on' : '') + '" data-chip-val="' + v + '">' + U.fmtK(v) + '</button>').join('') +
+          '</div>' +
+          '<div class="rui-presets mt-s" id="ruPresets">' +
+            PRESETS.map((p) => '<button class="rui-preset" data-preset="' + p.id + '">' +
+              '<b>' + p.name + '</b><span>' + p.chips + ' jetons</span></button>').join('') +
+          '</div>' +
+          '<div class="btn-row three mt-s">' +
+            '<button class="btn ghost" id="ruRebet">↻ Relancer</button>' +
+            '<button class="btn ghost" id="ruDouble">x2 tapis</button>' +
+            '<button class="btn ghost" id="ruClear">Effacer</button>' +
+          '</div>' +
+          '<div class="sub mt-s" id="ruHint"></div>' +
+        '</div>';
+    },
+
+    actions(g) {
+      const t = totals(g);
+      return [{
+        label: g.spinning ? 'La bille tourne…'
+          : (t.stake > 0 ? 'Lancer la roue · ' + U.fmtK(t.stake) + ' J 🎡' : 'Poser une mise d\'abord'),
+        cls: 'primary wide-lg grow', act: 'play', disabled: g.spinning || t.stake <= 0
+      }];
+    },
+
+    payoutHint(g) {
+      const t = totals(g);
+      return t.spots ? t.spots + ' mise(s) · ' + U.fmt(t.stake) + ' J' : 'RTP 97,30 %';
+    },
+
+    mount(g) {
+      g.cv = g.viewEl.querySelector('#ruWheel');
+      g.readEl = g.viewEl.querySelector('#ruRead');
+      g.recentEl = g.viewEl.querySelector('#ruRecent');
+      g.gridEl = g.viewEl.querySelector('#ruGrid');
+      g.betList = g.viewEl.querySelector('#ruBets');
+      g.typeRow = g.viewEl.querySelector('#ruTypes');
+      g.dirBox = g.viewEl.querySelector('#ruDirs');
+      g.outBox = g.viewEl.querySelector('#ruOut');
+      g.totalLine = g.panelEl.querySelector('#ruTotal');
+      g.chipRow = g.panelEl.querySelector('#ruChips');
+
+      // La roue occupe environ 40 % de la hauteur de scène, bornée pour rester lisible
+
+      const box = g.stageEl.getBoundingClientRect();
+      g.size = Math.round(Math.min(box.width - 40, Math.max(120, box.height * 0.42)));
+      g.size = Math.max(140, Math.min(g.size, 230));
+      drawWheel(g, g.angle, null);
+      paintReadout(g);
+      paintRecent(g);
+
+      // Types de mises intérieures
+      g.typeRow.querySelectorAll('[data-type]').forEach((b) => {
+        b.onclick = () => {
+          J.Sfx.click(); J.haptic.tap();
+          g.sel = b.dataset.type; g.anchor = null;
+          paint(g);
+        };
+      });
+
+      // Grille : un tap pose le jeton selon le type sélectionné
+      g.gridEl.querySelectorAll('[data-num]').forEach((el) => {
+        el.onclick = () => {
+          const n = parseInt(el.dataset.num, 10);
+          const def = BETS[g.sel];
+          if (def.need === 'dir') {
+            g.anchor = n; g.lastAnchor = n;
+            J.Sfx.click(); J.haptic.tap();
+            paint(g);
+            return;
+          }
+          if (def.need === 'num' && g.sel === 'sixain') { place(g, 'sixain', sixainOf(n)); return; }
+          place(g, 'plein', [n]);
+        };
+      });
+
+      // Mises extérieures
+      g.outBox.querySelectorAll('[data-out]').forEach((b) => {
+        b.onclick = () => {
+          const spec = b.dataset.out;
+          if (spec.indexOf(':') > 0) {
+            const [type, i] = spec.split(':');
+            const idx = parseInt(i, 10);
+            if (type === 'douzaine') place(g, 'douzaine', range(idx * 12 + 1, idx * 12 + 12));
+            else place(g, 'colonne', COLUMN[idx].nums);
+            return;
+          }
+          if (spec === 'rouge') place(g, 'rouge', RED);
+          else if (spec === 'noir') place(g, 'noir', range(1, 36).filter((n) => !isRed(n)));
+          else if (spec === 'pair') place(g, 'pair', range(1, 36).filter((n) => n % 2 === 0));
+          else if (spec === 'impair') place(g, 'impair', range(1, 36).filter((n) => n % 2 === 1));
+          else if (spec === 'manque') place(g, 'manque', range(1, 18));
+          else if (spec === 'passe') place(g, 'passe', range(19, 36));
+        };
+      });
+
+      // Jeton
+      g.chipRow.querySelectorAll('[data-chip-val]').forEach((b) => {
+        b.onclick = () => {
+          g.chip = parseInt(b.dataset.chipVal, 10);
+          J.Sfx.click(); J.haptic.tap();
+          paint(g);
+        };
+      });
+      // Mises annoncées
+      g.panelEl.querySelector('#ruPresets').querySelectorAll('[data-preset]').forEach((b) => {
+        b.onclick = () => placePreset(g, PRESETS.find((p) => p.id === b.dataset.preset));
+      });
+      // Relancer / doubler / effacer
+      g.panelEl.querySelector('#ruRebet').onclick = () => rebet(g);
+      g.panelEl.querySelector('#ruClear').onclick = () => clearSpots(g);
+      g.panelEl.querySelector('#ruDouble').onclick = () => {
+        const keys = Object.keys(g.spots);
+        if (!keys.length) { J.toast('Aucune mise à doubler', 'ko'); return; }
+        const nw = keys.reduce((a, k) => a + g.spots[k].w, 0);
+        if (nw * g.chip > J.CONST.MAX_BET) { J.toast('Plafond de table atteint', 'ko'); return; }
+        if (nw * g.chip > J.Wallet.balance) { J.toast('Solde insuffisant', 'ko'); return; }
+        keys.forEach((k) => { g.spots[k].w *= 2; });
+        J.Sfx.coin(); J.toast('Tapis doublé', 'ok');
+        paint(g);
+      };
+
+      // Info-bulle des règles des annonces
+      g.panelEl.querySelector('#ruHint').innerHTML =
+        '<b>Voisins</b> ' + PRESETS[0].chips + ' j · <b>Orphelins</b> ' + PRESETS[1].chips +
+        ' j · <b>Tiers</b> ' + PRESETS[2].chips + ' j · <b>Jeu zéro</b> ' + PRESETS[3].chips + ' j — ' +
+        'groupes du cylindre réel. Chaque mise rapporte 36 ÷ numéros couverts : RTP 97,30 % partout.';
+
+      paint(g);
+    },
+
+    start(g) {
+      const t = totals(g);
+      if (t.stake <= 0) { J.Games.abort(g, 'Pose au moins une mise'); return; }
+      if (t.stake !== g.bet) J.Games.setBet(g, t.stake, true);
+      g.result = null;
+      paintReadout(g);
+      J.Games.setAutoStatus(g, 'Lancer ' + U.fmtK(t.stake) + ' J · ' + t.spots + ' mise(s)');
+      startSpin(g);
+    },
+
+    stop(g) {
+      g.spinning = false;
+      if (g._raf) cancelAnimationFrame(g._raf);
+      g._raf = null;
+    }
+  });
+
+  /* Exposé pour les tests : types de mises, groupes du cylindre et règlement pur. */
+  J.__roulette = { BETS, PRESETS, WHEEL_ORDER, RED, COLUMN, payoutMult, sixainOf, neighbours, squares, makeSpot, keyOf };
+})();
+
+/* ===== 43-game-blackjack.js ============================================ */
+/* =========================================================================
+   JEU 12 — BLACKJACK
+   Sabot de 6 jeux (312 cartes). Le croupier tire jusqu'à 17 et s'arrête
+   (S17). Actions : Tirer, Rester, Doubler, Séparer (jusqu'à 4 mains) et
+   Assurance quand la carte visible du croupier est un As.
+
+   Paiements : blackjack naturel 3:2 · gain 1:1 · égalité remboursée ·
+   assurance 2:1. Avec la stratégie de base, l'espérance du joueur atteint
+   ≈ 99,5 % : chaque décision (tirer/rester/doubler/séparer) est donc la
+   seule chose qui sépare le joueur du meilleur retour possible.
+   Le mode Auto-bet joue la main selon la stratégie de base.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+  const C = J.Cards;
+
+  const DECKS = 6;
+  const RESHUFFLE_AT = 60;              // on rebat le sabot sous 60 cartes
+
+  /* ------------------------------------------------------------------ ÉTAT */
+  function state(g) {
+    g.shoe = [];
+    g.dealer = [];
+    g.hands = [];
+    g.active = 0;
+    g.phase = 'idle';                   // idle | player | insurance | dealer | done
+    g.hidden = true;                    // carte cachée du croupier
+    g.insurance = 0;
+    g.msg = '';
+    g.detail = '';
+    g.stats = g.stats || { rounds: 0, wagered: 0, net: 0, best: 0 };
+  }
+
+  /* Mélange : 6 jeux battus par le provably fair. */
+  function newShoe() {
+    const s = [];
+    for (let d = 0; d < DECKS; d++) s.push.apply(s, C.deck());
+    return C.shuffle(s);
+  }
+  function draw(g) {
+    if (!g.shoe.length) g.shoe = newShoe();
+    return g.shoe.pop();
+  }
+
+  const hand = (cards, stake) => ({
+    cards, stake, done: false, doubled: false, split: false,
+    fromAces: false, result: '', payout: 0, natural: false
+  });
+
+  /* --------------------------------------------------------------- DÉROULÉ */
+  function start(g) {
+    if (g.shoe.length < RESHUFFLE_AT) g.shoe = newShoe();
+    g.dealer = [];
+    g.hands = [hand([], g.ticket.bet)];
+    g.active = 0;
+    g.insurance = 0;
+    g.hidden = true;
+    g.phase = 'player';
+    g.msg = 'Distribution…';
+    g.detail = '';
+
+    const seq = [
+      () => { g.hands[0].cards.push(draw(g)); },
+      () => { g.dealer.push(draw(g)); },
+      () => { g.hands[0].cards.push(draw(g)); },
+      () => { g.dealer.push(draw(g)); }
+    ];
+    seq.forEach((fn, i) => J.Games.schedule(g, () => {
+      fn(); J.Sfx.tick(i); paint(g);
+      if (i === seq.length - 1) afterDeal(g);
+    }, 90 + i * 230));
+  }
+
+  function afterDeal(g) {
+    const p = g.hands[0];
+    p.natural = isNatural(p.cards);
+    const up = g.dealer[0];
+    // Assurance proposée uniquement si le croupier montre un As et qu'aucun
+    // blackjack naturel n'est déjà en jeu côté joueur.
+    // En Auto-bet, la stratégie de base refuse toujours l'assurance
+    if (!g.auto.on && !p.natural && C.rank(up) === 12 && J.Wallet.balance >= Math.ceil(g.bet / 2)) {
+      g.phase = 'insurance';
+      g.msg = 'Assurance ? Le croupier montre un As.';
+    } else {
+      g.phase = 'player';
+      g.msg = p.natural ? 'Blackjack naturel !' : 'À toi de jouer';
+    }
+    paint(g);
+    J.Games.renderActions(g);
+    if (p.natural) { J.Games.schedule(g, () => dealerPlay(g), 700); return; }
+    if (g.auto.on) J.Games.schedule(g, () => autoStep(g), 340);
+  }
+
+  const isNatural = (cards) => cards.length === 2 && C.blackjackValue(cards).total === 21;
+
+  function handOf(g) { return g.hands[g.active]; }
+
+  /* ------------------------------------------------------------- DÉCISIONS */
+  function hit(g, auto) {
+    const h = handOf(g);
+    if (!h || h.done) return;
+    h.cards.push(draw(g));
+    J.Sfx.tick(h.cards.length);
+    const v = C.blackjackValue(h.cards).total;
+    paint(g);
+    if (v > 21) {
+      h.done = true; h.result = 'bust'; g.msg = 'Au-dessus de 21 — perdu';
+      J.Sfx.bust(); J.haptic.lose();
+      J.Games.schedule(g, () => nextHand(g), 520);
+    } else if (v === 21) {
+      h.done = true; g.msg = '21 !';
+      J.Games.schedule(g, () => nextHand(g), 420);
+    } else if (auto) {
+      J.Games.schedule(g, () => autoStep(g), 260);
+    } else {
+      J.Games.renderActions(g);
+    }
+  }
+
+  function stand(g) {
+    const h = handOf(g);
+    if (!h || h.done) return;
+    h.done = true;
+    h.result = 'stand';
+    J.Sfx.tap();
+    paint(g);
+    J.Games.schedule(g, () => nextHand(g), 220);
+  }
+
+  function canDouble(g) {
+    const h = handOf(g);
+    return !!h && !h.done && h.cards.length === 2 && J.Wallet.balance >= h.stake && g.hands.length <= 4;
+  }
+
+  function doDouble(g) {
+    const h = handOf(g);
+    if (!canDouble(g)) return false;
+    if (!J.Wallet.extendStake(g.ticket, h.stake)) { J.toast('Solde insuffisant pour doubler', 'ko'); return false; }
+    h.stake *= 2;
+    h.doubled = true;
+    h.cards.push(draw(g));
+    const v = C.blackjackValue(h.cards).total;
+    h.done = true;
+    h.result = v > 21 ? 'bust' : 'double';
+    if (v > 21) { J.Sfx.bust(); J.haptic.lose(); } else J.Sfx.cashout();
+    paint(g);
+    J.Games.schedule(g, () => nextHand(g), 520);
+    return true;
+  }
+
+  function canSplit(g) {
+    const h = handOf(g);
+    if (!h || h.done || h.cards.length !== 2) return false;
+    if (g.hands.length >= 4) return false;
+    const a = h.cards[0], b = h.cards[1];
+    const same = C.rank(a) === C.rank(b) || (C.blackjackValue([a]).total === 10 && C.blackjackValue([b]).total === 10);
+    if (!same) return false;
+    return J.Wallet.balance >= h.stake;
+  }
+
+  function doSplit(g) {
+    const h = handOf(g);
+    if (!canSplit(g)) return false;
+    if (!J.Wallet.extendStake(g.ticket, h.stake)) { J.toast('Solde insuffisant pour séparer', 'ko'); return false; }
+    const aces = C.rank(h.cards[0]) === 12;
+    const h2 = hand([h.cards.pop()], h.stake);
+    h.split = true; h2.split = true;
+    h.fromAces = aces; h2.fromAces = aces;
+    g.hands.splice(g.active + 1, 0, h2);
+    // une carte pour chaque nouvelle main
+    h.cards.push(draw(g));
+    h2.cards.push(draw(g));
+    if (aces) { h.done = true; h2.done = true; h.result = 'stand'; h2.result = 'stand'; }
+    J.Sfx.reveal(true);
+    g.msg = 'Main séparée — ' + g.hands.length + ' mains';
+    paint(g);
+    if (aces) J.Games.schedule(g, () => nextHand(g), 420);
+    else if (g.auto.on) J.Games.schedule(g, () => autoStep(g), 320);
+    return true;
+  }
+
+  function takeInsurance(g) {
+    const h = g.hands[0];
+    const amount = Math.min(Math.ceil(g.bet / 2), Math.floor(J.Wallet.balance));
+    if (amount < 1) { declineInsurance(g); return; }
+    if (!J.Wallet.extendStake(g.ticket, amount)) { J.toast('Solde insuffisant', 'ko'); return; }
+    g.insurance = amount;
+    J.Sfx.chip();
+    J.toast('Assurance prise : ' + U.fmt(amount) + ' J', 'ok');
+    g.phase = 'player';
+    g.msg = 'Assurance prise — à toi de jouer';
+    paint(g);
+    J.Games.renderActions(g);
+    if (g.auto.on) J.Games.schedule(g, () => autoStep(g), 320);
+  }
+
+  function declineInsurance(g) {
+    g.phase = 'player';
+    g.msg = 'Sans assurance — à toi de jouer';
+    J.Sfx.tap();
+    paint(g);
+    J.Games.renderActions(g);
+    if (g.auto.on) J.Games.schedule(g, () => autoStep(g), 300);
+  }
+
+  /* --------------------------------------------------------- ENCHAÎNEMENT */
+  function nextHand(g) {
+    for (let i = 0; i < g.hands.length; i++) {
+      if (!g.hands[i].done) { g.active = i; paint(g); J.Games.renderActions(g); if (g.auto.on) J.Games.schedule(g, () => autoStep(g), 320); return; }
+    }
+    dealerPlay(g);
+  }
+
+  function dealerPlay(g) {
+    g.phase = 'dealer';
+    g.hidden = false;
+    const alive = g.hands.some((h) => C.blackjackValue(h.cards).total <= 21);
+    const playerBJ = g.hands.some((h) => h.natural);
+    g.msg = 'Le croupier joue…';
+    paint(g);
+    J.Sfx.reveal(true);
+
+    const step = () => {
+      const total = C.blackjackValue(g.dealer).total;
+      // Le croupier ne tire pas si aucune main du joueur ne peut gagner
+      const needPlay = alive && !(playerBJ && g.dealer.length === 2);
+      if (needPlay && total < 17) {
+        g.dealer.push(draw(g));
+        J.Sfx.tick(g.dealer.length);
+        paint(g);
+        J.Games.schedule(g, step, 420);
+        return;
+      }
+      J.Games.schedule(g, () => settle(g), 380);
+    };
+    J.Games.schedule(g, step, 420);
+  }
+
+  /* --------------------------------------------------------- RÈGLEMENT */
+  function settle(g) {
+    const dv = C.blackjackValue(g.dealer).total;
+    const dealerBJ = g.dealer.length === 2 && dv === 21;
+    const dealerBust = dv > 21;
+    let returned = 0, stake = 0;
+
+    g.hands.forEach((h) => {
+      stake += h.stake;
+      const pv = C.blackjackValue(h.cards).total;
+      if (pv > 21) { h.payout = 0; h.result = 'bust'; }
+      else if (h.natural && !dealerBJ) { h.payout = h.stake * 2.5; h.result = 'blackjack'; }
+      else if (dealerBJ && !h.natural) { h.payout = 0; h.result = 'perdu'; }
+      else if (dealerBJ && h.natural) { h.payout = h.stake; h.result = 'égalité'; }
+      else if (dealerBust) { h.payout = h.stake * 2; h.result = 'gagné'; }
+      else if (pv > dv) { h.payout = h.stake * 2; h.result = 'gagné'; }
+      else if (pv === dv) { h.payout = h.stake; h.result = 'égalité'; }
+      else { h.payout = 0; h.result = 'perdu'; }
+      returned += h.payout;
+    });
+
+    // Assurance : payée 2:1 si le croupier a un blackjack naturel
+    if (g.insurance > 0) {
+      stake += g.insurance;
+      returned += dealerBJ ? g.insurance * 3 : 0;
+      g.msg = dealerBJ ? 'Blackjack du croupier — assurance payée 2:1' : 'Assurance perdue';
+    }
+
+    const net = returned - stake;
+    const mult = stake > 0 ? returned / stake : 0;
+    g.phase = 'done';
+    g.hidden = false;
+    g.detail = g.hands.map((h, i) => (i + 1) + ':' + C.blackjackValue(h.cards).total + ' ' + h.result).join(' · ') +
+      ' · croupier ' + dv;
+    if (!g.insurance) g.msg = (net > 0 ? 'Gagné ' : net < 0 ? 'Perdu ' : 'Égalité · ') + (net !== 0 ? U.fmtSigned(net) + ' J' : '');
+    paint(g);
+    if (net > 0) { J.Sfx.win(mult); J.haptic.win(mult); }
+    else if (net < 0) { J.Sfx.lose(); J.haptic.lose(); }
+    else J.Sfx.tap();
+    J.Games.finish(g, mult, { detail: g.detail });
+  }
+
+  /* ------------------------------------------------- STRATÉGIE DE BASE (auto) */
+  /**
+   * Stratégie de base complète, sous forme PURE (cartes, carte visible du
+   * croupier, droits de séparation et de doublement) : 'split' | 'double' |
+   * 'hit' | 'stand'. C'est aussi la fonction utilisée par l'Auto-bet.
+   */
+  function decide(cards, up, canSplit, canDouble) {
+    const v = C.blackjackValue(cards);
+    const pairRank = cards.length === 2 && C.rank(cards[0]) === C.rank(cards[1]) ? C.rank(cards[0]) : -1;
+    const v10 = (c) => C.blackjackValue([c]).total;
+
+    // Paires (hauteur : 0 = 2 … 5 = 7, 6 = 8, 7 = 9, 8-11 = 10/V/D/R, 12 = As)
+    if (canSplit) {
+      if (pairRank === 12 || pairRank === 6) return 'split';                       // A,A et 8,8 : toujours
+      if ((pairRank === 0 || pairRank === 1 || pairRank === 5) && up <= 7) return 'split';   // 2,2 · 3,3 · 7,7
+      if (pairRank === 2 && (up === 5 || up === 6)) return 'split';                // 4,4 contre 5-6
+      if (pairRank === 4 && up <= 6) return 'split';                               // 6,6 contre 2-6
+      if (pairRank === 7 && up !== 7 && up !== 10 && up !== 11) return 'split';     // 9,9 sauf 7/10/As
+      if (v10(cards[0]) === 10 && v10(cards[1]) === 10) return 'stand';            // 10,10 : on garde
+    }
+    // Main souple : un As compte 11, `other` = total sans cet As
+    if (v.soft) {
+      const other = v.total - 11;
+      if (other >= 9) return 'stand';                                              // A,9 et mieux
+      if (other === 8) return up >= 3 && up <= 6 && canDouble ? 'double' : 'stand';
+      if (other === 7) return up <= 6 && canDouble ? 'double' : (up <= 8 ? 'stand' : 'hit');
+      if (other >= 4) return up >= 4 && up <= 6 && canDouble ? 'double' : 'hit';
+      return 'hit';
+    }
+    // main dure
+    if (v.total >= 17) return 'stand';
+    if (v.total >= 13) return up <= 6 ? 'stand' : 'hit';
+    if (v.total === 12) return up >= 4 && up <= 6 ? 'stand' : 'hit';
+    if (v.total === 11) return canDouble ? 'double' : 'hit';
+    if (v.total === 10) return up <= 9 && canDouble ? 'double' : 'hit';
+    if (v.total === 9) return up >= 3 && up <= 6 && canDouble ? 'double' : 'hit';
+    return 'hit';
+  }
+
+  /** Applique la stratégie au jeu en cours (Auto-bet). */
+  function basicStrategy(g) {
+    return decide(handOf(g).cards, C.blackjackValue([g.dealer[0]]).total, canSplit(g), canDouble(g));
+  }
+
+  // Exposé pour les tests (stratégie de base vérifiable sans interface)
+  J.__blackjack = { decide, DECKS, RESHUFFLE_AT };
+
+  function autoStep(g) {
+    if (!g.auto.on || g.phase !== 'player') return;
+    const h = handOf(g);
+    if (!h || h.done) { nextHand(g); return; }
+    const v = C.blackjackValue(h.cards).total;
+    switch (basicStrategy(g)) {
+      case 'split': doSplit(g); break;
+      case 'double': if (!doDouble(g)) stand(g); break;
+      case 'stand': stand(g); break;
+      default: if (v >= 21) stand(g); else hit(g, true);
+    }
+  }
+
+  /* ------------------------------------------------------------------ RENDU */
+  function cardsHTML(cards, hideLast) {
+    return cards.map((c, i) => C.html(hideLast && i === cards.length - 1 ? null : c, i >= 2 ? 'deal' : '')).join('');
+  }
+
+  function paint(g) {
+    if (!g.dealerEl) return;
+    const dv = C.blackjackValue(g.dealer).total;
+    const shown = g.hidden ? C.blackjackValue(g.dealer.slice(0, 1)).total : dv;
+
+    g.dealerEl.innerHTML = cardsHTML(g.dealer, g.hidden);
+    g.dealerScore.className = 'hand-badge' + (!g.hidden && dv > 21 ? ' bust' : !g.hidden ? '' : '');
+    g.dealerScore.textContent = g.dealer.length
+      ? (g.hidden ? shown + ' + ?' : dv + (dv > 21 ? ' · sauté' : dv === 21 && g.dealer.length === 2 ? ' · BLACKJACK' : ''))
+      : '—';
+
+    g.playerEl.innerHTML = g.hands.map((h, i) => {
+      const v = C.blackjackValue(h.cards).total;
+      const active = i === g.active && g.phase === 'player';
+      return '<div class="bj-hand' + (active ? ' is-active' : '') + '">' +
+        '<div class="cards-row">' + cardsHTML(h.cards) + '</div>' +
+        '<div class="row between" style="gap:8px">' +
+          '<span class="hand-badge' + (v > 21 ? ' bust' : (h.natural ? ' bj' : (h.payout > h.stake ? ' win' : ''))) + '">' +
+            v + (h.natural ? ' · BJ' : '') + (h.doubled ? ' · x2' : '') + '</span>' +
+          (h.result ? '<span class="sub">' + h.result + (h.payout ? ' +' + U.fmt(h.payout - h.stake) : '') + '</span>'
+            : '<span class="sub">' + U.fmt(h.stake) + ' J</span>') +
+        '</div>' +
+        '<div class="tbl-label">' + (g.hands.length > 1 ? 'Main ' + (i + 1) : 'Ta main') + '</div>' +
+      '</div>';
+    }).join('');
+
+    const v = g.hands[g.active] ? C.blackjackValue(g.hands[g.active].cards).total : 0;
+    g.statusEl.innerHTML = '<b>' + (g.msg || 'Prêt') + '</b>' +
+      (g.phase === 'player' ? '<span class="sub"> · total ' + v + '</span>' : '') +
+      (g.insurance ? '<span class="sub"> · assurance ' + U.fmt(g.insurance) + ' J</span>' : '');
+    g.shoeEl.textContent = 'Sabot ' + DECKS + ' jeux · ' + g.shoe.length + ' cartes';
+    J.Games.renderActions(g);
+  }
+
+  /* ------------------------------------------------------------------- JEU */
+  J.Games.register({
+    id: 'blackjack',
+    name: 'Blackjack',
+    icon: 'blackjack',
+    color: '#00b862',
+    rtp: 99.5,
+    category: 'classics',
+    tagline: 'Battez le croupier',
+    volatility: 'Volatilité faible',
+    hot: true,
+    rules:
+      'Sabot de <b>6 jeux</b> rebattu automatiquement. But : approcher 21 sans dépasser, en battant le croupier. ' +
+      'Le croupier tire jusqu\'à 17 et s\'arrête (S17).<br><br>' +
+      '<b>Paiements</b> : blackjack naturel <b>3:2</b> · gain <b>1:1</b> · égalité remboursée · ' +
+      'assurance <b>2:1</b> (proposée quand le croupier montre un As).<br>' +
+      '<b>Actions</b> : Tirer, Rester, Doubler (une carte payée double), Séparer une paire jusqu\'à ' +
+      '<b>4 mains</b> (les As séparés ne reçoivent qu\'une carte).<br><br>' +
+      'Avec la stratégie de base, l\'espérance atteint <b>≈ 99,5 %</b>. ' +
+      'En mode <b>Auto-bet</b>, le jeu applique cette stratégie de base à chaque main.',
+    playLabel: 'Distribuer 🎴',
+
+    state, start,
+    stop(g) { g.phase = 'idle'; },
+
+    stage(g) {
+      return '' +
+        '<div class="bj-stage table-felt">' +
+          '<div class="bj-block">' +
+            '<div class="row between"><span class="tbl-label">Croupier</span>' +
+              '<span class="sub" id="bjShoe"></span></div>' +
+            '<div class="cards-row bj-cards" id="bjDealer"></div>' +
+            '<div class="row" style="justify-content:center"><span class="hand-badge" id="bjDealerScore">—</span></div>' +
+          '</div>' +
+          '<div class="bj-status" id="bjStatus"><b>Prêt</b></div>' +
+          '<div class="bj-block bj-block-player">' +
+            '<div class="bj-hands" id="bjPlayer"></div>' +
+          '</div>' +
+        '</div>';
+    },
+
+    controls(g) {
+      return '<div class="sub" id="bjHint"></div>';
+    },
+
+    actions(g) {
+      if (g.phase === 'insurance') {
+        return [
+          { label: 'Assurance ' + U.fmtK(Math.ceil(g.bet / 2)), cls: 'primary', alsoWhenBusy: true, onClick: (gg) => takeInsurance(gg) },
+          { label: 'Non merci', cls: 'ghost', alsoWhenBusy: true, onClick: (gg) => declineInsurance(gg) }
+        ];
+      }
+      if (g.phase !== 'player') {
+        // Au montage (idle) comme après une main (done), le bouton principal doit
+        // être cliquable : sinon la toute première main ne peut jamais démarrer.
+        const ready = g.phase === 'done' || g.phase === 'idle';
+        return [{
+          label: ready ? 'Nouvelle main 🎴' : 'Le croupier joue…',
+          cls: 'primary wide-lg grow', act: 'play', disabled: !ready
+        }];
+      }
+      return [
+        { label: 'Tirer', cls: 'primary', alsoWhenBusy: true, onClick: (gg) => hit(gg) },
+        { label: 'Rester', cls: 'ghost', alsoWhenBusy: true, onClick: (gg) => stand(gg) },
+        { label: g.hands[g.active] && g.hands[g.active].doubled ? 'Doublé' : 'Doubler', cls: 'ghost', alsoWhenBusy: true, disabled: !canDouble(g), onClick: (gg) => doDouble(gg) },
+        { label: 'Séparer', cls: 'ghost', alsoWhenBusy: true, disabled: !canSplit(g), onClick: (gg) => doSplit(g) }
+      ];
+    },
+
+    payoutHint(g) {
+      if (g.phase === 'player' || g.phase === 'insurance') {
+        const h = g.hands[g.active];
+        return h ? U.fmt(h.stake) + ' J en jeu' + (g.hands.length > 1 ? ' · ' + g.hands.length + ' mains' : '') : '';
+      }
+      return 'RTP 99,5 % · BJ 3:2';
+    },
+
+    mount(g) {
+      g.dealerEl = g.viewEl.querySelector('#bjDealer');
+      g.dealerScore = g.viewEl.querySelector('#bjDealerScore');
+      g.playerEl = g.viewEl.querySelector('#bjPlayer');
+      g.statusEl = g.viewEl.querySelector('#bjStatus');
+      g.shoeEl = g.viewEl.querySelector('#bjShoe');
+      g.panelEl.querySelector('#bjHint').innerHTML =
+        'Blackjack naturel 3:2 · gain 1:1 · assurance 2:1 · séparation jusqu\'à 4 mains. ' +
+        'L\'Auto-bet joue la <b>stratégie de base</b> (RTP ≈ 99,5 %).';
+      paint(g);
+    }
+  });
+})();
+
+/* ===== 44-game-baccarat.js ============================================= */
+/* =========================================================================
+   JEU 13 — BACCARAT (Punto Banco)
+   Sabot de 8 jeux. Tu mises sur la main du <b>Joueur</b>, celle de la
+   <b>Banque</b>, l'<b>Égalité</b>, ou une <b>Paire</b>. Les deux mains sont
+   distribuées selon les règles officielles du Punto Banco (tableau de la
+   3ᵉ carte) : aucune décision à prendre, tout est automatique.
+
+   Paiements et RTP (sabot de 8 jeux, probabilités exactes du jeu) :
+     Banque   → 1,95 × mise (0,95:1)  … RTP 98,94 %
+     Joueur   → 2 × mise (1:1)        … RTP 98,76 %
+     Égalité  → 9 × mise (8:1)        … RTP 85,64 %
+     Paire    → 12 × mise (11:1)      … RTP 89,64 %
+   Le meilleur choix est donc la Banque (la commission de 5 % paie sa
+   fréquence de gain supérieure).
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+  const C = J.Cards;
+
+  const DECKS = 8;
+  const RESHUFFLE_AT = 26;
+
+  const SPOTS = {
+    banque: { label: 'Banque', mult: 1.95, cls: 'bank', hint: '0,95:1 · RTP 98,94 %' },
+    joueur: { label: 'Joueur', mult: 2, cls: 'player', hint: '1:1 · RTP 98,76 %' },
+    egalite: { label: 'Égalité', mult: 9, cls: 'tie', hint: '8:1 · RTP 85,64 %' },
+    paireJ: { label: 'Paire Joueur', mult: 12, cls: 'pair', hint: '11:1 · RTP 89,64 %' },
+    paireB: { label: 'Paire Banque', mult: 12, cls: 'pair', hint: '11:1 · RTP 89,64 %' }
+  };
+  const KEYS = ['joueur', 'banque', 'egalite', 'paireJ', 'paireB'];
+
+  /** Valeur baccarat d'une carte : A = 1, 10/V/D/R = 0, le reste en face. */
+  function cardValue(c) {
+    const r = C.rank(c);
+    if (r === 12) return 1;
+    if (r >= 9) return 0;                 // 10, V, D, R
+    return r + 2;
+  }
+  const total = (cards) => cards.reduce((a, c) => a + cardValue(c), 0) % 10;
+  // La paire se lit toujours sur les DEUX PREMIÈRES cartes de la main (même si
+  // une troisième carte a été tirée : sinon la mise ne payait presque jamais).
+  const isPair = (cards) => cards.length >= 2 && C.rank(cards[0]) === C.rank(cards[1]);
+
+  function state(g) {
+    g.shoe = [];
+    g.player = [];
+    g.banker = [];
+    g.spots = {};                          // mise par case (en jetons)
+    g.chip = 100;
+    g.busyDeal = false;
+    g.phase = 'idle';                      // idle | deal | done
+    g.outcome = null;                      // 'joueur' | 'banque' | 'egalite'
+    g.reveal = [];                         // séquence de révélation
+    g.msg = '';
+    g.recent = [];                         // tableau d'affichage
+    g.lastSpots = null;
+    g.detail = '';
+    g.stats = g.stats || { rounds: 0, wagered: 0, net: 0, best: 0 };
+  }
+
+  function newShoe() {
+    const s = [];
+    for (let d = 0; d < DECKS; d++) s.push.apply(s, C.deck());
+    return C.shuffle(s);
+  }
+
+  /** Déroule une donne complète selon les règles officielles (sans animation). */
+  function playOut(shoe) {
+    const draw = () => shoe.pop();
+    const p = [draw(), draw()];
+    const b = [draw(), draw()];
+    let pThird = null, bThird = null;
+    const pt = total(p), bt = total(b);
+
+    if (pt < 8 && bt < 8) {                       // pas de naturel
+      if (pt <= 5) { pThird = draw(); p.push(pThird); }
+      const pTotal = total(p);
+      const drawBanker = (() => {
+        if (pThird === null) return bt <= 5;                    // le joueur a passé
+        const v = cardValue(pThird);
+        if (bt <= 2) return true;
+        if (bt === 3) return v !== 8;
+        if (bt === 4) return v >= 2 && v <= 7;
+        if (bt === 5) return v >= 4 && v <= 7;
+        if (bt === 6) return v === 6 || v === 7;
+        return false;                                            // bt === 7
+      })();
+      if (drawBanker) { bThird = draw(); b.push(bThird); }
+      void pTotal;
+    }
+    const finalP = total(p), finalB = total(b);
+    return {
+      player: p, banker: b, pThird, bThird,
+      pTotal: finalP, bTotal: finalB,
+      outcome: finalP > finalB ? 'joueur' : finalB > finalP ? 'banque' : 'egalite'
+    };
+  }
+
+  /* ---------------------------------------------------------------- RENDU */
+  function totals(g) {
+    let w = 0, spots = 0;
+    for (const k in g.spots) { w += g.spots[k]; spots++; }
+    return { w, spots, stake: w * g.chip };
+  }
+
+  /**
+   * Tire la donne complète à l'avance (le sabot est distribué dans l'ordre) :
+   * `r` porte les mains définitives, tandis que g.player / g.banker ne
+   * contiennent que les cartes déjà révélées pour l'animation.
+   */
+  function dealFull(g) {
+    if (g.shoe.length < RESHUFFLE_AT) g.shoe = newShoe();
+    const r = playOut(g.shoe);
+    g.pFull = r.player; g.bFull = r.banker;
+    g.player = []; g.banker = [];
+    g.outcome = r.outcome;
+    return r;
+  }
+
+  function paint(g) {
+    if (!g.pEl) return;
+    const pt = total(g.player), bt = total(g.banker);
+    const waiting = g.phase !== 'done';
+    g.pEl.innerHTML = g.player.map((c, i) => C.html(c, i >= 2 ? 'deal' : '')).join('');
+    g.bEl.innerHTML = g.banker.map((c, i) => C.html(c, i >= 2 ? 'deal' : '')).join('');
+    g.pScore.textContent = g.player.length ? (waiting && g.phase === 'deal' ? '…' : pt) : '—';
+    g.bScore.textContent = g.banker.length ? (waiting && g.phase === 'deal' ? '…' : bt) : '—';
+
+    // tableau d'affichage
+    g.marqueeEl.innerHTML = g.recent.slice(0, 16).map((o) =>
+      '<span class="bac-h ' + o + '">' + (o === 'joueur' ? 'J' : o === 'banque' ? 'B' : 'T') + '</span>').join('');
+
+    // zones de mise
+    KEYS.forEach((k) => {
+      const el = g.zoneEl.querySelector('[data-zone="' + k + '"]');
+      if (!el) return;
+      const w = g.spots[k] || 0;
+      el.classList.toggle('is-on', w > 0);
+      let badge = el.querySelector('.bac-w');
+      if (w > 0) {
+        if (!badge) { badge = document.createElement('span'); badge.className = 'bac-w'; el.appendChild(badge); }
+        badge.textContent = w + ' × ' + U.fmtK(g.chip);
+      } else if (badge) badge.remove();
+    });
+
+    // mises posées, avec retrait d'un jeton
+    g.listEl.innerHTML = Object.keys(g.spots).map((k) =>
+      '<button class="rui-bet" data-off="' + k + '"><b>' + SPOTS[k].label + '</b>' +
+      '<span class="mono">' + U.fmt(g.spots[k] * g.chip) + ' J · ' + SPOTS[k].mult.toString().replace('.', ',') + 'x</span><i>✕</i></button>').join('');
+    g.listEl.querySelectorAll('[data-off]').forEach((b) => { b.onclick = () => unplace(g, b.dataset.off); });
+
+    const t = totals(g);
+    const win = KEYS.filter((k) => g.spots[k] && wins(k, g));
+    g.infoEl.innerHTML = g.phase === 'done' && g.outcome
+      ? '<b class="' + (win.length ? 'up' : 'muted') + '">' + (g.msg || '') + '</b>' +
+        '<span class="sub"> · Joueur ' + pt + ' · Banque ' + bt + '</span>' +
+        (g.detail ? '<div class="sub mt-s">' + g.detail + '</div>' : '')
+      : '<b>' + (g.spots && t.spots ? t.spots + ' mise(s) · ' + U.fmt(t.stake) + ' J sur le tapis' : 'Place ta mise') + '</b>' +
+        '<span class="sub"> · ' + (waiting ? 'Distribution automatique' : '') + '</span>';
+
+    syncStake(g);
+    J.Games.renderActions(g);
+  }
+
+  /** La mise de la manche = total du tapis (ce que le moteur débitera). */
+  function syncStake(g) {
+    const t = totals(g);
+    if (t.stake > 0) J.Games.setBet(g, t.stake, true);
+    J.Games.updateHints(g);
+  }
+
+  const wins = (k, g) => {
+    if (!g.outcome) return false;
+    if (k === 'joueur') return g.outcome === 'joueur';
+    if (k === 'banque') return g.outcome === 'banque';
+    if (k === 'egalite') return g.outcome === 'egalite';
+    if (k === 'paireJ') return isPair(g.player);
+    if (k === 'paireB') return isPair(g.banker);
+    return false;
+  };
+
+  /* ------------------------------------------------------------- MOUVEMENTS */
+  function place(g, k, silent) {
+    const t = totals(g);
+    if (t.stake + g.chip > J.CONST.MAX_BET) { J.toast('Plafond de table atteint', 'ko'); return; }
+    if (t.stake + g.chip > J.Wallet.balance) { J.toast('Solde insuffisant', 'ko'); return; }
+    g.spots[k] = (g.spots[k] || 0) + 1;
+    if (!silent) { J.Sfx.chip(); J.haptic.tap(); }
+    paint(g);
+  }
+  function unplace(g, k) {
+    if (!g.spots[k]) return;
+    g.spots[k]--;
+    if (!g.spots[k]) delete g.spots[k];
+    J.Sfx.click();
+    paint(g);
+  }
+  function clearSpots(g) {
+    if (!Object.keys(g.spots).length) return;
+    g.lastSpots = Object.assign({}, g.spots);
+    g.spots = {};
+    J.Sfx.click();
+    paint(g);
+  }
+  function rebet(g) {
+    if (!g.lastSpots) { J.toast('Aucune mise à relancer', 'ko'); return; }
+    const w = Object.keys(g.lastSpots).reduce((a, k) => a + g.lastSpots[k], 0);
+    if (w * g.chip > J.Wallet.balance) { J.toast('Solde insuffisant', 'ko'); return; }
+    if (w * g.chip > J.CONST.MAX_BET) { J.toast('Plafond de table atteint', 'ko'); return; }
+    g.spots = Object.assign({}, g.lastSpots);
+    J.Sfx.chip();
+    paint(g);
+  }
+
+  /* ---------------------------------------------------------------- DONNE */
+  function start(g) {
+    const t = totals(g);
+    if (!t.spots) { J.Games.abort(g, 'Place ta mise'); return; }
+    if (t.stake !== g.bet) J.Games.setBet(g, t.stake, true);
+    g.phase = 'deal';
+    g.outcome = null;
+    g.msg = '';
+    g.detail = '';
+    g.player = [];
+    g.banker = [];
+    paint(g);
+
+    const r = dealFull(g);
+    // séquence de révélation : J, B, J, B puis les 3ᵉ cartes éventuelles
+    const seq = [
+      () => { g.player.push(r.player[0]); },
+      () => { g.banker.push(r.banker[0]); },
+      () => { g.player.push(r.player[1]); },
+      () => { g.banker.push(r.banker[1]); }
+    ];
+    if (r.pThird != null) seq.push(() => { g.player[2] = r.pThird; g.msg = 'Le Joueur tire une 3ᵉ carte'; });
+    if (r.bThird != null) seq.push(() => { g.banker[2] = r.bThird; g.msg = 'La Banque tire une 3ᵉ carte'; });
+
+    seq.forEach((fn, i) => J.Games.schedule(g, () => {
+      fn();
+      J.Sfx.tick(i);
+      // l'affichage interroge les tableaux complets : on montre carte par carte
+      paint(g);
+    }, 200 + i * 300));
+
+    J.Games.schedule(g, () => settle(g, r), 200 + seq.length * 300 + 260);
+  }
+
+  function settle(g, r) {
+    const t = totals(g);
+    const stake = g.ticket ? g.ticket.bet : t.stake;
+    let mult = 0;
+    const winning = [];
+    KEYS.forEach((k) => {
+      if (!g.spots[k]) return;
+      if (wins(k, g)) {
+        mult += (g.spots[k] / t.w) * SPOTS[k].mult;
+        winning.push(SPOTS[k].label + ' ' + SPOTS[k].mult.toFixed(2).replace('.', ',') + 'x');
+      }
+    });
+    g.phase = 'done';
+    g.recent.unshift(g.outcome);
+    if (g.recent.length > 40) g.recent.pop();
+    g.detail = 'Joueur ' + r.pTotal + ' (' + r.player.map(C.label).join(' ') + ')' +
+      ' · Banque ' + r.bTotal + ' (' + r.banker.map(C.label).join(' ') + ')' +
+      (r.pThird != null ? ' · 3ᵉ carte Joueur' : '') + (r.bThird != null ? ' · 3ᵉ carte Banque' : '') +
+      (winning.length ? ' · gagné : ' + winning.join(', ') : '');
+    g.msg = g.outcome === 'egalite' ? 'Égalité' : (g.outcome === 'joueur' ? 'Le Joueur gagne' : 'La Banque gagne');
+    paint(g);
+    if (mult > 2) { J.Sfx.bigwin(); J.haptic.big(); }
+    else if (mult > 0) { J.Sfx.win(mult); J.haptic.win(mult); }
+    else { J.Sfx.lose(); J.haptic.lose(); }
+    J.Games.finish(g, mult, { detail: g.detail });
+  }
+
+  /* ------------------------------------------------------------------- JEU */
+  J.Games.register({
+    id: 'baccarat',
+    name: 'Baccarat',
+    icon: 'baccarat',
+    color: '#8b5cf6',
+    rtp: 98.94,
+    category: 'classics',
+    tagline: 'Joueur, banquier ou égalité',
+    volatility: 'Volatilité faible',
+    hot: true,
+    rules:
+      'Baccarat <b>Punto Banco</b>, sabot de 8 jeux. Deux mains sont servies : le <b>Joueur</b> et la ' +
+      '<b>Banque</b>. La main la plus proche de <b>9</b> gagne (A = 1, 10/V/D/R = 0, on garde le chiffre des unités). ' +
+      '<b>Aucune décision</b> : le tableau officiel de la 3ᵉ carte décide de tout.<br><br>' +
+      '<b>Paiements</b> : Banque <b>0,95:1</b> (RTP 98,94 %) · Joueur <b>1:1</b> (RTP 98,76 %) · ' +
+      'Égalité <b>8:1</b> (RTP 85,64 %) · Paire <b>11:1</b> (RTP 89,64 %).<br>' +
+      'Tu peux cumuler plusieurs mises sur le même coup (par exemple Banque + Paire). ' +
+      'Une main qui fait 8 ou 9 d\'entrée est un <b>naturel</b> : plus de tirage.',
+    playLabel: 'Distribuer 🎴',
+
+    state, start,
+    stop(g) { g.phase = 'idle'; },
+
+    stage(g) {
+      return '' +
+        '<div class="bac-stage table-felt">' +
+          '<div class="bac-hands">' +
+            '<div class="bac-side">' +
+              '<div class="row between"><span class="tbl-label">Banque</span>' +
+                '<span class="bac-score bank" id="bacBScore">—</span></div>' +
+              '<div class="cards-row bac-cards" id="bacB"></div>' +
+            '</div>' +
+            '<div class="bac-side">' +
+              '<div class="row between"><span class="tbl-label">Joueur</span>' +
+                '<span class="bac-score player" id="bacPScore">—</span></div>' +
+              '<div class="cards-row bac-cards" id="bacP"></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="bac-info" id="bacInfo"></div>' +
+          '<div class="bac-marquee history-strip" id="bacMarquee"></div>' +
+          '<div class="bac-zones" id="bacZones">' +
+            '<button class="bac-zone bank" data-zone="banque"><b>BANQUE</b><span>0,95:1</span></button>' +
+            '<button class="bac-zone tie" data-zone="egalite"><b>ÉGALITÉ</b><span>8:1</span></button>' +
+            '<button class="bac-zone player" data-zone="joueur"><b>JOUEUR</b><span>1:1</span></button>' +
+            '<button class="bac-zone pair" data-zone="paireJ"><b>PAIRE JOUEUR</b><span>11:1</span></button>' +
+            '<button class="bac-zone pair" data-zone="paireB"><b>PAIRE BANQUE</b><span>11:1</span></button>' +
+          '</div>' +
+        '</div>';
+    },
+
+    controls(g) {
+      return '' +
+        '<div class="row between"><span class="bet-label">Jeton</span>' +
+          '<button class="link" id="bacClear">Effacer les mises</button></div>' +
+        '<div class="chips mt-s" id="bacChips">' +
+          [10, 50, 100, 500, 1000, 5000].map((v) =>
+            '<button class="chip' + (v === 100 ? ' is-on' : '') + '" data-chip-val="' + v + '">' + U.fmtK(v) + '</button>').join('') +
+        '</div>' +
+        '<div class="rui-betlist" id="bacList"></div>' +
+        '<div class="btn-row two mt-s">' +
+          '<button class="btn ghost" id="bacRebet">↻ Relancer la même mise</button>' +
+          '<button class="btn ghost" id="bacDouble">x2 toutes les mises</button>' +
+        '</div>' +
+        '<div class="sub mt-s">Banque 98,94 % · Joueur 98,76 % · Paire 89,64 % · Égalité 85,64 %. ' +
+        'Le tableau d\'affichage garde les 16 derniers coups (J / B / T).</div>';
+    },
+
+    actions(g) {
+      const t = totals(g);
+      return [{
+        label: g.phase === 'deal' ? 'Distribution…'
+          : (t.spots ? 'Distribuer · ' + U.fmtK(t.stake) + ' J 🎴' : 'Place une mise d\'abord'),
+        cls: 'primary wide-lg grow', act: 'play', disabled: g.phase === 'deal' || !t.spots
+      }];
+    },
+
+    payoutHint(g) {
+      const t = totals(g);
+      return t.spots ? t.spots + ' mise(s) · ' + U.fmt(t.stake) + ' J' : 'RTP jusqu\'à 98,94 %';
+    },
+
+    mount(g) {
+      g.pEl = g.viewEl.querySelector('#bacP');
+      g.bEl = g.viewEl.querySelector('#bacB');
+      g.pScore = g.viewEl.querySelector('#bacPScore');
+      g.bScore = g.viewEl.querySelector('#bacBScore');
+      g.infoEl = g.viewEl.querySelector('#bacInfo');
+      g.marqueeEl = g.viewEl.querySelector('#bacMarquee');
+      g.zoneEl = g.viewEl.querySelector('#bacZones');
+      g.listEl = g.panelEl.querySelector('#bacList');
+
+      g.zoneEl.querySelectorAll('[data-zone]').forEach((b) => {
+        b.onclick = () => { if (g.phase !== 'deal') place(g, b.dataset.zone); };
+      });
+      g.panelEl.querySelector('#bacChips').querySelectorAll('[data-chip-val]').forEach((b) => {
+        b.onclick = () => { g.chip = parseInt(b.dataset.chipVal, 10); J.Sfx.click(); paintChips(g); paint(g); };
+      });
+      g.panelEl.querySelector('#bacClear').onclick = () => clearSpots(g);
+      g.panelEl.querySelector('#bacRebet').onclick = () => rebet(g);
+      g.panelEl.querySelector('#bacDouble').onclick = () => {
+        const keys = Object.keys(g.spots);
+        if (!keys.length) { J.toast('Aucune mise à doubler', 'ko'); return; }
+        const w = keys.reduce((a, k) => a + g.spots[k], 0) * 2;
+        if (w * g.chip > J.CONST.MAX_BET) { J.toast('Plafond de table atteint', 'ko'); return; }
+        if (w * g.chip > J.Wallet.balance) { J.toast('Solde insuffisant', 'ko'); return; }
+        keys.forEach((k) => { g.spots[k] *= 2; });
+        J.Sfx.chip();
+        paint(g);
+      };
+      paintChips(g);
+      paint(g);
+    }
+  });
+
+  /* Exposé pour les tests : donne complète, valeurs de cartes, mises et sabots. */
+  J.__baccarat = { playOut, newShoe, cardValue, spotTotal: total, SPOTS, isPair, DECKS };
+
+  /** Met en évidence la valeur de jeton choisie. */
+  function paintChips(g) {
+    g.panelEl.querySelectorAll('#bacChips [data-chip-val]').forEach((b) => {
+      b.classList.toggle('is-on', parseInt(b.dataset.chipVal, 10) === g.chip);
+    });
+  }
+})();
+
+/* ===== 45-game-slots.js ================================================ */
+/* =========================================================================
+   JEU 14 — MACHINES À SOUS
+   Trois machines de 5 rouleaux × 3 lignes, jusqu'à 20 lignes de paiement.
+   Les bandes de rouleaux et les tables de gains viennent de
+   `src/40-slots-tables.js`, où le RTP est calculé de façon EXACTE
+   (voir `node tools/design-slots.mjs`) : 96,50 % pour les trois thèmes.
+
+   · Lignes : gain dès 3 symboles identiques alignés depuis le rouleau 1,
+     le joker 💎 remplaçant n'importe quel symbole (sauf le scatter).
+   · Scatter : 3 scatters et plus n'importe où sur l'écran paient 1× / 5× / 25×
+     la mise totale ET déclenchent 10 tours gratuits.
+   · Tours gratuits : multiplicateurs progressifs 1·1·1·2·2·2·3·3·3·4
+     (ils ne se redéclenchent pas : c'est ce qui rend l'espérance calculable
+     exactement). Gain maximal plafonné à 5 000× la mise.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+  const D = J.SLOTS_DATA;
+  const PAY_ORDER = ['W', 'A', 'P', 'C', 'K', 'J', 'T', 'F'];
+
+  const LINE_CHOICES = [5, 10, 15, 20];
+  const MAX_WIN_MULT = 5000;              // plafond de gain (multiples de la mise)
+
+  /* ------------------------------------------------------------------ ÉTAT */
+  function state(g) {
+    g.themeIdx = g.themeIdx || 0;
+    g.lines = 20;
+    g.grid = null;                        // [rouleau][ligne] → clé de symbole
+    g.display = null;                     // ce qui est à l'écran
+    g.spinning = false;
+    g.free = null;                        // { total, done, mult, won }
+    g.msg = '';
+    g.detail = '';
+    g.lastWin = 0;
+    g.highlight = [];                     // cases gagnantes [[rouleau, ligne]]
+    g.stats = g.stats || { rounds: 0, wagered: 0, net: 0, best: 0 };
+  }
+
+  const theme = (g) => D.THEMES[g.themeIdx];
+
+  /* -------------------------------------------------------------- TIRAGE */
+  /** Un arrêt aléatoire par rouleau ; les 3 symboles visibles sont consécutifs. */
+  function makeGrid(g) {
+    const t = theme(g);
+    return t.reels.map((strip) => {
+      const stop = J.Fair.int(0, strip.length - 1);
+      return [0, 1, 2].map((k) => strip[(stop + k) % strip.length]);
+    });
+  }
+
+  /** Symbole tiré au hasard hors provably fair : uniquement pour l'animation. */
+  function blurTriple(g) {
+    const t = theme(g);
+    return [0, 1, 2].map(() => {
+      const strip = t.reels[J.Fair.int(0, 4)];
+      return strip[J.Fair.int(0, strip.length - 1)];
+    });
+  }
+
+  /**
+   * Évalue une grille : gains de ligne (en multiples de la MISE DE LIGNE),
+   * scatters (en multiples de la MISE TOTALE) et nombre de tours gratuits.
+   */
+  function evaluate(g, grid) {
+    const t = theme(g);
+    const nbLines = g.lines;
+    const wins = [];
+    let lineWin = 0, bestWin = 0;
+
+    for (let L = 0; L < nbLines; L++) {
+      const rows = D.LINES[L];
+      const syms = grid.map((col, i) => col[rows[i]]);
+      let best = null;
+      for (let s = 0; s < PAY_ORDER.length; s++) {
+        const key = PAY_ORDER[s];
+        let n = 0;
+        for (let i = 0; i < 5; i++) {
+          const v = syms[i];
+          if (v === key || (v === 'W' && key !== 'W')) n++; else break;
+        }
+        if (n >= 3) {
+          const amount = t.pays[key][n];
+          if (!best || amount > best.amount) best = { key, count: n, amount };
+        }
+      }
+      if (best) {
+        const cells = [];
+        for (let i = 0; i < best.count; i++) cells.push([i, rows[i]]);
+        lineWin += best.amount;
+        bestWin = Math.max(bestWin, best.amount);
+        wins.push({ line: L + 1, key: best.key, count: best.count, amount: best.amount, cells });
+      }
+    }
+
+    // scatters : comptés sur les 15 cases visibles
+    let scatters = 0;
+    const scCells = [];
+    grid.forEach((col, i) => col.forEach((v, row) => {
+      if (v === 'S') { scatters++; scCells.push([i, row]); }
+    }));
+    const scatterWin = scatters >= 3 ? t.scatterPays[Math.min(5, scatters)] : 0;
+    return { wins, lineWin, bestWin, scatters, scatterWin, scCells, freeSpins: scatters >= 3 ? t.freeSpins : 0 };
+  }
+
+  /* ------------------------------------------------------------------ RENDU */
+  function cellHTML(k, g, extra) {
+    const s = theme(g).sym[k];
+    const cls = k === 'S' ? ' scatter' : k === 'W' ? ' wild' : (k === 'A' || k === 'P' ? ' high' : '');
+    return '<div class="sl-cell' + cls + (extra || '') + '" data-k="' + k + '">' +
+      '<span class="sl-e">' + (s ? s.e : '?') + '</span></div>';
+  }
+
+  function renderGrid(g, grid, spinFlags) {
+    if (!g.reelEls) return;
+    for (let i = 0; i < 5; i++) {
+      const el = g.reelEls[i];
+      el.classList.toggle('is-spinning', !!(spinFlags && spinFlags[i]));
+      el.innerHTML = (grid ? grid[i] : ['F', 'F', 'F']).map((k) => cellHTML(k, g)).join('');
+    }
+  }
+
+  function paint(g) {
+    if (!g.reelEls) return;
+    const t = theme(g);
+    renderGrid(g, g.display || g.grid, g.spinFlags);
+
+    // mise en avant des cases gagnantes
+    if (!g.spinning && g.highlight.length) {
+      g.highlight.forEach(([i, row]) => {
+        const el = g.reelEls[i].children[row];
+        if (el) el.classList.add('win');
+      });
+    }
+    if (!g.spinning && g.scatterCells) {
+      g.scatterCells.forEach(([i, row]) => {
+        const el = g.reelEls[i].children[row];
+        if (el) el.classList.add('scatter-win');
+      });
+    }
+
+    // bandeau de tours gratuits
+    g.freeEl.classList.toggle('is-on', !!g.free);
+    if (g.free) {
+      g.freeEl.innerHTML = '<b>TOURS GRATUITS</b> ' + (g.free.done + 1) + ' / ' + g.free.total +
+        ' · multiplicateur <b class="gold">x' + g.free.mult + '</b>' +
+        '<span class="sub"> · déjà gagné ' + U.fmt(g.free.won) + ' J</span>';
+    }
+
+    // tableau des gains du thème
+    g.payEl.innerHTML = PAY_ORDER.map((k) =>
+      '<div class="sl-pay-row"><span class="sl-pay-sym">' + t.sym[k].e + '</span>' +
+      '<span class="mono">' + t.pays[k][3] + ' · ' + t.pays[k][4] + ' · ' + t.pays[k][5] + '</span></div>').join('') +
+      '<div class="sl-pay-row scatter"><span class="sl-pay-sym">' + t.sym.S.e + '</span>' +
+      '<span class="mono">' + t.scatterPays[3] + ' · ' + t.scatterPays[4] + ' · ' + t.scatterPays[5] + ' × mise totale</span></div>' +
+      '<div class="note">Gains par ligne, en multiples de la mise de ligne (' + U.fmt(Math.round(g.bet / g.lines)) + ' J). ' +
+      '<b>3 scatters</b> = ' + t.freeSpins + ' tours gratuits. RTP exact 96,50 %.</div>';
+
+    g.linesRow.querySelectorAll('[data-lines]').forEach((b) => {
+      b.classList.toggle('is-on', parseInt(b.dataset.lines, 10) === g.lines);
+    });
+    g.themeRow.querySelectorAll('[data-theme]').forEach((b) => {
+      b.classList.toggle('is-on', parseInt(b.dataset.theme, 10) === g.themeIdx);
+    });
+
+    g.bannerEl.innerHTML = g.msg ? '<b>' + g.msg + '</b>' : '<span class="sub">Choisis ta machine et lance les rouleaux</span>';
+    J.Games.renderActions(g);
+  }
+
+  /* --------------------------------------------------------------- MANCHE */
+  function start(g) {
+    const stake = g.ticket.bet;
+    g.free = null;
+    g.highlight = [];
+    g.scatterCells = null;
+    g.lastWin = 0;
+    g.msg = 'Rouleaux…';
+    g.grid = makeGrid(g);
+    g.display = g.grid.map(() => ['F', 'F', 'F']);
+    g.spinFlags = [true, true, true, true, true];
+    g.spinning = true;
+    g.round = evaluate(g, g.grid);
+    paint(g);
+    J.Sfx.bet();
+
+    // arrêt progressif des rouleaux
+    for (let i = 0; i < 5; i++) blurReel(g, i, 520 + i * 170);
+  }
+
+  function blurReel(g, i, delay) {
+    const step = () => {
+      if (!g.spinFlags[i]) return;
+      const el = g.reelEls[i];
+      el.innerHTML = blurTriple(g).map((k) => cellHTML(k, g)).join('');
+      g._blur[i] = setTimeout(step, 55);
+    };
+    step();
+    J.Games.schedule(g, () => {
+      g.spinFlags[i] = false;
+      clearTimeout(g._blur[i]);
+      g.display[i] = g.grid[i];
+      J.Sfx.tick(i);
+      J.haptic.tap();
+      g.reelEls[i].classList.remove('is-spinning');
+      g.reelEls[i].innerHTML = g.grid[i].map((k) => cellHTML(k, g)).join('');
+      if (i === 4) afterReels(g, g.ticket.bet);   // la mise vient du ticket, pas de la portée de start()
+    }, delay);
+  }
+
+  function afterReels(g, stake) {
+    const r = g.round;
+    const lineBet = stake / g.lines;
+    const lineTokens = r.lineWin * lineBet;
+    const scatterTokens = r.scatterWin * stake;
+    const base = Math.round(lineTokens + scatterTokens);
+
+    g.highlight = r.wins.reduce((a, w) => a.concat(w.cells), []);
+    g.scatterCells = r.scatters >= 3 ? r.scCells : null;
+
+    if (base > 0) {
+      const mult = base / stake;
+      g.msg = 'Gagné ' + U.fmt(base) + ' J' + (r.wins.length ? ' · ' + r.wins.length + ' ligne(s)' : '') +
+        (r.scatters >= 3 ? ' · ' + r.scatters + ' scatters' : '');
+      g.lastWin = base;
+      J.Sfx.win(mult);
+      if (mult >= 20) J.Sfx.bigwin();
+      if (mult >= 20) J.FX.confetti ? J.FX.confetti() : null;
+    } else {
+      g.msg = 'Aucun gain sur ce tour';
+      J.Sfx.lose();
+    }
+    paint(g);
+
+    if (r.freeSpins) {
+      g.free = { total: r.freeSpins, done: 0, mult: theme(g).multSchedule[0], won: 0, base, stake };
+      g.msg = r.freeSpins + ' TOURS GRATUITS !';
+      J.toast('🎉 ' + r.freeSpins + ' tours gratuits déclenchés !', 'ok');
+      paint(g);
+      J.Games.schedule(g, () => freeSpin(g), 1600);
+      return;
+    }
+    finishRound(g, base);
+  }
+
+  /* --------------------------------------------------------- TOURS GRATUITS */
+  function freeSpin(g) {
+    const t = theme(g);
+    const f = g.free;
+    if (!f || f.done >= f.total) { finishRound(g, f ? f.base + f.won : g.lastWin); return; }
+    f.mult = t.multSchedule[Math.min(f.done, t.multSchedule.length - 1)];
+    g.highlight = [];
+    g.scatterCells = null;
+    g.grid = makeGrid(g);
+    g.display = g.grid.map(() => ['F', 'F', 'F']);
+    g.spinFlags = [true, true, true, true, true];
+    g.spinning = true;
+    g.msg = 'Tour gratuit ' + (f.done + 1) + ' / ' + f.total + ' · x' + f.mult;
+    paint(g);
+
+    for (let i = 0; i < 5; i++) blurReel(g, i, 420 + i * 140);
+    J.Games.schedule(g, () => {
+      const r = evaluate(g, g.grid);
+      const lineBet = f.stake / g.lines;
+      const win = Math.round(r.lineWin * lineBet * f.mult + r.scatterWin * f.stake);
+      f.won += win;
+      f.done++;
+      g.highlight = r.wins.reduce((a, w) => a.concat(w.cells), []);
+      g.scatterCells = r.scatters >= 3 ? r.scCells : null;
+      g.spinning = false;
+      g.msg = win > 0
+        ? 'Tour gratuit ' + f.done + ' : +' + U.fmt(win) + ' J (x' + f.mult + ')'
+        : 'Tour gratuit ' + f.done + ' : rien';
+      if (win > 0) { J.Sfx.win(win / f.stake); if (win / f.stake >= 10) J.Sfx.bigwin(); }
+      paint(g);
+      J.Games.schedule(g, () => freeSpin(g), win > 0 ? 1100 : 700);
+    }, 1200);
+  }
+
+  /* ------------------------------------------------------------- RÈGLEMENT */
+  function finishRound(g, total) {
+    const stake = g.ticket.bet;
+    const capped = Math.min(total, Math.round(stake * MAX_WIN_MULT));
+    const mult = stake > 0 ? capped / stake : 0;
+    g.spinning = false;
+    g.spinFlags = [false, false, false, false, false];
+    g.free = null;
+    g.detail = (g.round && g.round.wins.length ? g.round.wins.length + ' ligne(s)' : 'aucune ligne') +
+      (g.round && g.round.scatters ? ' · ' + g.round.scatters + ' scatter(s)' : '') +
+      (capped < total ? ' · plafond ' + MAX_WIN_MULT + 'x appliqué' : '');
+    g.paintInfo = g.msg;
+    paint(g);
+    J.Games.finish(g, mult, { detail: g.detail });
+  }
+
+  /* ------------------------------------------------------------------- JEU */
+  J.Games.register({
+    id: 'slots',
+    name: 'Machines à sous',
+    icon: 'slots',
+    color: '#ffc531',
+    rtp: 96.5,
+    category: 'classics',
+    tagline: '3 thèmes, 5 rouleaux, 20 lignes',
+    volatility: 'Volatilité élevée',
+    hot: true,
+    rules:
+      'Trois machines à sous de <b>5 rouleaux × 3 lignes</b> avec 5 à 20 lignes de paiement au choix. ' +
+      'Une ligne paie dès <b>3 symboles identiques</b> alignés à partir du rouleau de gauche ; ' +
+      'le <b>joker</b> 💎 remplace n\'importe quel symbole.<br><br>' +
+      '<b>Scatters</b> : 3 scatters ou plus n\'importe où rapportent 1× / 5× / 25× la mise totale et ' +
+      'déclenchent <b>10 tours gratuits</b> avec multiplicateurs progressifs ' +
+      '<b>1·1·1·2·2·2·3·3·3·4</b>.<br>' +
+      'Le gain est plafonné à <b>5 000×</b> la mise.<br><br>' +
+      'Les bandes de rouleaux et les tables de gains sont calibrées pour un <b>RTP exact de 96,50 %</b> ' +
+      'sur les trois thèmes (calcul analytique, pas une estimation) — ' +
+      'les 20 lignes sont affichées dans le tableau des gains du panneau.',
+    playLabel: 'Tourner 🎰',
+
+    state, start,
+    stop(g) {
+      g.spinning = false;
+      g.spinFlags = [false, false, false, false, false];
+      (g._blur || []).forEach(clearTimeout);
+    },
+
+    stage(g) {
+      const t = D.THEMES[0];
+      return '' +
+        '<div class="sl-stage" style="--sl-from:' + t.colors.from + ';--sl-to:' + t.colors.to + '">' +
+          '<div class="sl-freebar" id="slFree"></div>' +
+          '<div class="sl-machine">' +
+            '<div class="sl-banner" id="slBanner"></div>' +
+            '<div class="sl-reels" id="slReels">' +
+              [0, 1, 2, 3, 4].map((i) => '<div class="sl-reel" data-reel="' + i + '"></div>').join('') +
+            '</div>' +
+            '<div class="sl-pays" id="slPays"></div>' +
+          '</div>' +
+        '</div>';
+    },
+
+    controls(g) {
+      return '' +
+        '<div class="row between"><span class="bet-label">Machine</span>' +
+          '<span class="sub" id="slLinesInfo"></span></div>' +
+        '<div class="chips mt-s" id="slThemes">' +
+          D.THEMES.map((t, i) => '<button class="chip' + (i === 0 ? ' is-on' : '') + '" data-theme="' + i + '">' +
+            t.sym.A.e + ' ' + t.name + '</button>').join('') +
+        '</div>' +
+        '<div class="row between mt"><span class="bet-label">Lignes jouées</span></div>' +
+        '<div class="chips mt-s" id="slLines">' +
+          LINE_CHOICES.map((n) => '<button class="chip' + (n === 20 ? ' is-on' : '') + '" data-lines="' + n + '">' + n + ' lignes</button>').join('') +
+        '</div>';
+    },
+
+    actions(g) {
+      return [{
+        label: g.spinning ? (g.free ? 'Tours gratuits…' : 'Rouleaux…') : 'Tourner · ' + U.fmtK(g.bet) + ' J 🎰',
+        cls: 'primary wide-lg grow', act: 'play', disabled: g.spinning
+      }];
+    },
+
+    payoutHint(g) {
+      return g.lines + ' lignes · mise de ligne ' + U.fmt(Math.round(g.bet / g.lines)) + ' J · RTP 96,50 %';
+    },
+
+    mount(g) {
+      g.reelEls = [0, 1, 2, 3, 4].map((i) => g.viewEl.querySelector('.sl-reel[data-reel="' + i + '"]'));
+      g.freeEl = g.viewEl.querySelector('#slFree');
+      g.bannerEl = g.viewEl.querySelector('#slBanner');
+      g.payEl = g.viewEl.querySelector('#slPays');
+      g.themeRow = g.panelEl.querySelector('#slThemes');
+      g.linesRow = g.panelEl.querySelector('#slLines');
+      g.linesInfo = g.panelEl.querySelector('#slLinesInfo');
+      g._blur = [null, null, null, null, null];
+      g.spinFlags = [false, false, false, false, false];
+
+      g.themeRow.querySelectorAll('[data-theme]').forEach((b) => {
+        b.onclick = () => {
+          if (g.spinning) return;
+          g.themeIdx = parseInt(b.dataset.theme, 10);
+          const t = D.THEMES[g.themeIdx];
+          g.viewEl.querySelector('.sl-stage').style.setProperty('--sl-from', t.colors.from);
+          g.viewEl.querySelector('.sl-stage').style.setProperty('--sl-to', t.colors.to);
+          g.highlight = [];
+          g.grid = makeGrid(g);
+          g.display = g.grid;
+          J.Sfx.click();
+          J.toast(t.name + ' — ' + t.tagline, '');
+          paint(g);
+        };
+      });
+      g.linesRow.querySelectorAll('[data-lines]').forEach((b) => {
+        b.onclick = () => {
+          if (g.spinning) return;
+          g.lines = parseInt(b.dataset.lines, 10);
+          J.Sfx.click(); J.haptic.tap();
+          g.highlight = [];
+          paint(g);
+        };
+      });
+
+      g.linesInfo.textContent = 'RTP exact 96,50 %';
+      g.grid = makeGrid(g);
+      g.display = g.grid;
+      paint(g);
+    }
+  });
+})();
+
+/* ===== 46-game-videopoker.js =========================================== */
+/* =========================================================================
+   JEU 15 — VIDEO POKER (Jacks or Better 9/6)
+   Cinq cartes sont servies. Tu gardes celles que tu veux, les autres sont
+   remplacées : une seule décision, mais la plus importante du jeu.
+
+   Table de gains 9/6 « full pay » (multiples de la mise, paire de valets et
+   mieux — d'où le nom Jacks or Better) :
+     quinte flush royale 250 · quinte flush 50 · carré 25 · full 9 · couleur 6
+     quinte 4 · brelan 3 · deux paires 2 · paire de V/D/R/A 1
+
+   Avec le jeu optimal, cette table rapporte exactement 99,54 % — c'est la
+   référence du Video Poker. Le bouton <b>Conseil</b> calcule l'espérance
+   EXACTE des 32 gardes possibles (≈ 1,07 million de tirages évalués) et
+   propose la meilleure ; l'Auto-bet utilise ce même calcul.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+  const C = J.Cards;
+
+  /* Table de gains 9/6, indexée par catégorie d'évaluation. */
+  const PAY = [0, 0, 2, 3, 4, 6, 9, 25, 50, 250];
+  const CAT_NAMES = ['Rien', 'Paire de V+', 'Deux paires', 'Brelan', 'Quinte', 'Couleur', 'Full', 'Carré', 'Quinte flush', 'Royale'];
+  /* Espérance exacte de « tout défausser » : espérance d'une main de 5 cartes
+     au hasard, calculée sur les 2 598 960 mains possibles (voir tests). */
+  const DISCARD_ALL = 0.336021;
+
+  /** Gain (en multiples de la mise) d'un score d'évaluation. */
+  function payOf(score) {
+    if (score < 0) return 0;
+    const cat = Math.floor(score / C.TOP);
+    if (cat === 1) return ((score >> 16) & 15) >= 9 ? 1 : 0;    // paire de V, D, R ou A
+    return PAY[cat];
+  }
+
+  const BUF = new Int8Array(5);
+  const pay5 = () => payOf(C.eval5(BUF));
+
+  /**
+   * Espérance exacte d'une garde : `held` cartes conservées, on complète avec
+   * `need` cartes parmi `rest` (énumération complète, sans échantillonnage).
+   */
+  function evHold(held, rest, need) {
+    for (let i = 0; i < held.length; i++) BUF[i] = held[i];
+    if (need === 0) return pay5();
+    const L = rest.length, n = held.length;
+    let s = 0;
+    if (need === 1) {
+      for (let a = 0; a < L; a++) { BUF[n] = rest[a]; s += pay5(); }
+      return s / L;
+    }
+    if (need === 2) {
+      for (let a = 0; a < L - 1; a++) { BUF[n] = rest[a];
+        for (let b = a + 1; b < L; b++) { BUF[n + 1] = rest[b]; s += pay5(); } }
+      return s / (L * (L - 1) / 2);
+    }
+    if (need === 3) {
+      for (let a = 0; a < L - 2; a++) { BUF[n] = rest[a];
+        for (let b = a + 1; b < L - 1; b++) { BUF[n + 1] = rest[b];
+          for (let c = b + 1; c < L; c++) { BUF[n + 2] = rest[c]; s += pay5(); } } }
+      return s / (L * (L - 1) * (L - 2) / 6);
+    }
+    for (let a = 0; a < L - 3; a++) { BUF[n] = rest[a];
+      for (let b = a + 1; b < L - 2; b++) { BUF[n + 1] = rest[b];
+        for (let c = b + 1; c < L - 1; c++) { BUF[n + 2] = rest[c];
+          for (let d = c + 1; d < L; d++) { BUF[n + 3] = rest[d]; s += pay5(); } } } }
+    return s / (L * (L - 1) * (L - 2) * (L - 3) / 24);
+  }
+
+  /** Cartes non distribuées (le reste du jeu de 52). */
+  function restOf(hand) {
+    const out = [];
+    for (let c = 0; c < 52; c++) if (hand.indexOf(c) < 0) out.push(c);
+    return out;
+  }
+
+  /**
+   * Meilleure garde possible pour une main : énumère les 32 gardes.
+   * Renvoie { holds: [index…], ev } avec ev = espérance en multiples de mise.
+   */
+  function optimalHold(hand) {
+    const rest = restOf(hand);
+    let best = { holds: [], ev: DISCARD_ALL };
+    for (let mask = 1; mask < 32; mask++) {          // 1..31 : les 31 gardes non vides
+      const keep = [], cards = [];
+      for (let i = 0; i < 5; i++) if ((mask >> i) & 1) { keep.push(i); cards.push(hand[i]); }
+      const ev = evHold(cards, rest, 5 - keep.length);
+      if (ev > best.ev + 1e-12) best = { holds: keep.slice(), ev };
+    }
+    return best;
+  }
+
+  /* ------------------------------------------------------------------ ÉTAT */
+  function state(g) {
+    g.deck = [];
+    g.hand = [];
+    g.held = [false, false, false, false, false];
+    g.phase = 'idle';                    // idle | hold | drawn | done
+    g.result = null;
+    g.hint = null;                       // garde conseillée
+    g.hintEv = 0;
+    g.calc = false;
+    g.msg = '';
+    g.detail = '';
+    g.stats = g.stats || { rounds: 0, wagered: 0, net: 0, best: 0 };
+  }
+
+  function deal(g) {
+    g.deck = C.shuffle(C.deck());
+    g.hand = [];
+    for (let i = 0; i < 5; i++) g.hand.push(g.deck.pop());
+  }
+
+  /* ------------------------------------------------------------------ RENDU */
+  function paint(g) {
+    if (!g.handEl) return;
+    g.handEl.innerHTML = g.hand.map((c, i) => {
+      const hold = g.held[i];
+      const hint = g.hint && g.hint.indexOf(i) >= 0;
+      return '<button class="vp-card' + (hold ? ' is-hold' : '') + (hint && !hold ? ' is-hint' : '') + '" data-card="' + i + '">' +
+        C.html(c, 'lg' + (hold ? ' sel' : '')) +
+        '<span class="vp-hold">' + (hold ? 'GARDÉE' : (hint ? 'À GARDER' : '')) + '</span>' +
+      '</button>';
+    }).join('');
+
+    g.handEl.querySelectorAll('[data-card]').forEach((b) => {
+      b.onclick = () => {
+        if (g.phase !== 'hold') return;
+        const i = parseInt(b.dataset.card, 10);
+        g.held[i] = !g.held[i];
+        g.hint = null;
+        J.Sfx.click(); J.haptic.tap();
+        paint(g);
+      };
+    });
+
+    const heldCount = g.held.filter(Boolean).length;
+    g.statusEl.innerHTML = g.phase === 'hold'
+      ? '<b>' + (heldCount ? heldCount + ' carte(s) gardée(s) — ' + (5 - heldCount) + ' à remplacer' : 'Touche les cartes à garder, puis tire') + '</b>'
+      : g.phase === 'drawn' ? '<b>Main finale : ' + C.handName(C.eval5(g.hand)) + '</b>'
+        : '<b>' + (g.msg || 'Prêt') + '</b>' + (g.detail ? '<span class="sub"> · ' + g.detail + '</span>' : '');
+
+    // table de gains, la ligne gagnante est mise en avant
+    const cat = g.phase === 'drawn' || g.phase === 'done' ? Math.floor(C.eval5(g.hand) / C.TOP) : -1;
+    const pairRank = cat === 1 ? (C.eval5(g.hand) >> 16) & 15 : -1;
+    g.payEl.innerHTML = [9, 8, 7, 6, 5, 4, 3, 2, 1].map((c) => {
+      const win = (c === cat && (c !== 1 || pairRank >= 9));
+      return '<div class="vp-pay' + (win ? ' is-win' : '') + '"><span>' + CAT_NAMES[c] + '</span>' +
+        '<b class="mono">' + PAY[c] + 'x</b></div>';
+    }).join('');
+
+    J.Games.renderActions(g);
+  }
+
+  /* ------------------------------------------------------- CALCUL / CONSEIL */
+  function askAdvice(g, thenHold) {
+    if (g.calc || g.phase !== 'hold') return;
+    g.calc = true;
+    g.statusEl.innerHTML = '<b>Calcul de la meilleure garde…</b><span class="sub"> (1,07 million de tirages)</span>';
+    J.Games.renderActions(g);
+    // Le calcul (~150 ms) est différé d'une image pour laisser l'écran se rafraîchir
+    J.Games.schedule(g, () => {
+      const best = optimalHold(g.hand);
+      g.calc = false;
+      g.hint = best.holds;
+      g.hintEv = best.ev;
+      if (thenHold) {
+        g.held = [false, false, false, false, false];
+        best.holds.forEach((i) => { g.held[i] = true; });
+        paint(g);
+        J.Games.schedule(g, () => drawCards(g), 260);
+        return;
+      }
+      g.msg = 'Meilleure garde : ' + (best.holds.length ? best.holds.map((i) => C.label(g.hand[i])).join(' ') : 'tout remplacer') +
+        ' · espérance ' + best.ev.toFixed(4).replace('.', ',') + '×';
+      paint(g);
+    }, 40);
+  }
+
+  /* ---------------------------------------------------------------- MANCHE */
+  function start(g) {
+    deal(g);
+    g.held = [false, false, false, false, false];
+    g.phase = 'hold';
+    g.result = null;
+    g.hint = null;
+    g.msg = 'Choisis tes cartes';
+    g.detail = '';
+    paint(g);
+    J.Sfx.reveal(true);
+    if (g.auto.on) askAdvice(g, true);      // l'auto-bet joue la garde optimale
+  }
+
+  function drawCards(g) {
+    if (g.phase !== 'hold') return;
+    for (let i = 0; i < 5; i++) if (!g.held[i]) g.hand[i] = g.deck.pop();
+    g.phase = 'drawn';
+    g.hint = null;
+    paint(g);
+    J.Games.schedule(g, () => settle(g), 700);
+  }
+
+  function settle(g) {
+    const score = C.eval5(g.hand);
+    const mult = payOf(score);
+    const cat = Math.floor(score / C.TOP);
+    g.phase = 'done';
+    g.result = { score, mult, cat };
+    g.msg = mult > 0 ? C.handName(score) + ' — ' + mult + '×' : 'Perdu';
+    g.detail = U.fmt(g.ticket.bet) + ' J misés';
+    paint(g);
+    if (mult >= 25) { J.Sfx.bigwin(); J.haptic.big(); }
+    else if (mult > 0) { J.Sfx.win(mult); J.haptic.win(mult); }
+    else { J.Sfx.lose(); J.haptic.lose(); }
+    J.Games.finish(g, mult, { detail: C.handName(score) });
+  }
+
+  /* ------------------------------------------------------------------- JEU */
+  J.Games.register({
+    id: 'videopoker',
+    name: 'Video Poker',
+    icon: 'videopoker',
+    color: '#3b82f6',
+    rtp: 99.5,
+    category: 'classics',
+    tagline: 'Jacks or Better 9/6',
+    volatility: 'Volatilité moyenne',
+    hot: true,
+    rules:
+      'Video Poker <b>Jacks or Better 9/6</b>. Cinq cartes sont servies : touche celles que tu ' +
+      '<b>gardes</b>, les autres sont remplacées une seule fois.<br><br>' +
+      'Table de gains (multiples de la mise) : quinte flush royale <b>250</b> · quinte flush <b>50</b> · ' +
+      'carré <b>25</b> · full <b>9</b> · couleur <b>6</b> · quinte <b>4</b> · brelan <b>3</b> · ' +
+      'deux paires <b>2</b> · paire de <b>V/D/R/A</b> <b>1</b>. Une paire de 10 ou moins ne paie rien.<br><br>' +
+      'Avec le <b>jeu optimal</b>, cette table rend exactement <b>99,54 %</b>. ' +
+      'Le bouton <b>Conseil</b> calcule l\'espérance exacte des 32 gardes possibles ' +
+      '(1 065 000 tirages évalués) et surligne la meilleure ; l\'Auto-bet joue cette garde optimale.',
+    playLabel: 'Distribuer 🃏',
+
+    state, start,
+    stop(g) { g.phase = 'idle'; g.calc = false; },
+
+    stage(g) {
+      return '' +
+        '<div class="vp-stage table-felt">' +
+          '<div class="vp-status" id="vpStatus"><b>Prêt</b></div>' +
+          '<div class="vp-hand" id="vpHand"></div>' +
+        '</div>';
+    },
+
+    controls(g) {
+      return '' +
+        '<div class="row between"><span class="bet-label">Table de gains</span>' +
+          '<button class="link" id="vpAdvice">💡 Conseil (calcul exact)</button></div>' +
+        '<div class="vp-pays" id="vpPays"></div>' +
+        '<div class="sub mt-s">La paire ne paie qu\'à partir des valets. ' +
+        'RTP 99,54 % avec le jeu optimal.</div>';
+    },
+
+    actions(g) {
+      if (g.phase === 'hold') {
+        const n = g.held.filter(Boolean).length;
+        return [
+          { label: n === 5 ? 'Garder tout (aucun gain possible)' : 'Tirer · remplacer ' + (5 - n), cls: 'primary wide-lg grow', alsoWhenBusy: true, onClick: (gg) => drawCards(gg) },
+          { label: '💡', cls: 'ghost', alsoWhenBusy: true, onClick: (gg) => askAdvice(gg) }
+        ];
+      }
+      return [{
+        label: g.phase === 'drawn' ? 'Résultat…' : 'Nouvelle main 🃏',
+        cls: 'primary wide-lg grow', act: 'play', disabled: g.phase === 'drawn' || g.calc
+      }];
+    },
+
+    payoutHint() { return '9/6 · RTP 99,54 % au jeu optimal'; },
+
+    mount(g) {
+      g.handEl = g.viewEl.querySelector('#vpHand');
+      g.statusEl = g.viewEl.querySelector('#vpStatus');
+      g.payEl = g.panelEl.querySelector('#vpPays');
+      g.panelEl.querySelector('#vpAdvice').onclick = () => askAdvice(g);
+      paint(g);
+    }
+  });
+
+  /* Exposé pour les tests : gains, espérance exacte, meilleure garde. */
+  J.__vp = { payOf, optimalHold, evHold, DISCARD_ALL, PAY };
+})();
+
+/* ===== 47-game-poker.js ================================================ */
+/* =========================================================================
+   JEU 16 — TEXAS HOLD'EM (tête-à-tête contre un bot)
+   Une main de poker complète : blinds, relances, tapis, quatre tours
+   d'enchères (préflop, flop, turn, river) et abattage des cartes.
+
+   Économie : la mise de la manche est le tapis de départ des deux joueurs.
+   Le vainqueur empoche le pot moins une <b>commission de table de 2 %</b>
+   (plafonnée à 500 jetons) — c'est la seule marge du jeu, comme le rake d'un
+   vrai casino, et elle ramène le retour moyen autour de 98 %.
+   Les jetons non engagés sont toujours rendus : se passer au préflop ne coûte
+   que la blinde déjà postée.
+
+   Le bot joue une équité calculée par Monte-Carlo (250 tirages) face à une
+   main au hasard, comparée aux cotes du pot : passer, suivre ou relancer.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const J = window.JACKPOTLY;
+  const U = J.util;
+  const C = J.Cards;
+
+  const RAKE = 0.02;                 // commission de table
+  const RAKE_CAP = 500;              // plafond de commission par main
+  const MC_SAMPLES = 250;            // tirages Monte-Carlo pour l'équité
+
+  /* ------------------------------------------------------------------ ÉTAT */
+  function state(g) {
+    g.phase = 'idle';                // idle | preflop | flop | turn | river | showdown | done
+    g.myHole = [];
+    g.botHole = [];
+    g.board = [];
+    g.deck = [];
+    g.pot = 0;
+    g.myComm = 0; g.botComm = 0;     // engagé dans le pot (total main)
+    g.myBet = 0; g.botBet = 0;       // engagé sur le tour courant
+    g.actedMe = false; g.actedBot = false;
+    g.toAct = 'me';
+    g.lastRaise = 0;
+    g.raiseTo = 0;
+    g.raiseStep = 0;
+    g.msg = '';
+    g.detail = '';
+    g.logLines = [];
+    g.showdown = null;
+    g.handNo = (g.handNo || 0);
+    g.stats = g.stats || { rounds: 0, wagered: 0, net: 0, best: 0 };
+  }
+
+  const stack = (g) => g.ticket ? g.ticket.bet : g.bet;
+  const left = (who, g) => stack(g) - (who === 'me' ? g.myComm : g.botComm);
+  const pot = (g) => g.myComm + g.botComm;
+  const toCall = (g) => Math.max(0, g.botBet - g.myBet);
+  const botToCall = (g) => Math.max(0, g.myBet - g.botBet);
+
+  function log(g, txt) {
+    g.logLines.unshift(txt);
+    if (g.logLines.length > 4) g.logLines.pop();
+  }
+
+  /* ------------------------------------------------------------ DÉMARRAGE */
+  function start(g) {
+    const s = stack(g);
+    g.deck = C.shuffle(C.deck());
+    g.myHole = [g.deck.pop(), g.deck.pop()];
+    g.botHole = [g.deck.pop(), g.deck.pop()];
+    g.board = [];
+    g.pot = 0; g.myComm = 0; g.botComm = 0;
+    g.myBet = 0; g.botBet = 0;
+    g.actedMe = false; g.actedBot = false;
+    g.lastRaise = 0;
+    g.showdown = null;
+    g.logLines = [];
+    g.msg = '';
+    g.detail = '';
+    g.handNo++;
+
+    // blinds : 5 % et 10 % du tapis, le joueur est petite blinde une main sur deux
+    const bb = Math.max(2, Math.round(s / 10));
+    const sb = Math.max(1, Math.round(bb / 2));
+    const meSB = g.handNo % 2 === 1;
+    g.raiseStep = bb;
+    commit(g, meSB ? 'me' : 'bot', sb, 'petite blinde');
+    commit(g, meSB ? 'bot' : 'me', bb, 'grosse blinde');
+    g.myBet = meSB ? sb : bb;
+    g.botBet = meSB ? bb : sb;
+    g.actedMe = meSB ? false : true;      // la grosse blinde n'a pas encore parlé
+    g.actedBot = meSB ? true : false;
+    g.toAct = meSB ? 'me' : 'bot';
+    g.lastRaise = bb;
+    g.raiseTo = Math.min(stack(g), g.lastRaise * 2);
+    g.phase = 'preflop';
+    log(g, 'Blinds ' + sb + ' / ' + bb + ' — ' + (meSB ? 'tu es petite blinde' : 'tu es grosse blinde'));
+    paint(g);
+
+    if (g.auto.on) J.Games.schedule(g, () => autoPlay(g), 420);
+    else if (!meSB) botTurn(g);
+  }
+
+  function commit(g, who, amount, why) {
+    const max = left(who, g);
+    const amt = Math.max(0, Math.min(amount, max));
+    if (who === 'me') { g.myComm += amt; g.myBet += amt; }
+    else { g.botComm += amt; g.botBet += amt; }
+    if (why && amt > 0) log(g, (who === 'me' ? 'Toi' : 'Bot') + ' : ' + why + ' ' + amt + ' J');
+    return amt;
+  }
+
+  /* ------------------------------------------------------------- DÉCISIONS */
+  function streetDone(g) {
+    return g.myBet === g.botBet && g.actedMe && g.actedBot;
+  }
+
+  function nextStreet(g) {
+    g.myBet = 0; g.botBet = 0;
+    g.actedMe = false; g.actedBot = false;
+    g.toAct = 'bot';                       // le bot parle en premier après le flop
+    if (g.phase === 'preflop') { g.board.push(g.deck.pop(), g.deck.pop(), g.deck.pop()); g.phase = 'flop'; }
+    else if (g.phase === 'flop') { g.board.push(g.deck.pop()); g.phase = 'turn'; }
+    else if (g.phase === 'turn') { g.board.push(g.deck.pop()); g.phase = 'river'; }
+    else { showdown(g); return; }
+    g.msg = g.phase === 'flop' ? 'Flop' : g.phase === 'turn' ? 'Turn' : 'River';
+    J.Sfx.reveal(true);
+    paint(g);
+    J.Games.schedule(g, () => (g.auto.on ? autoPlay(g) : botTurn(g)), 620);
+  }
+
+  function fold(g, who) {
+    if (who === 'me') { log(g, 'Tu te passes'); g.msg = 'Tu passes'; J.Sfx.lose(); }
+    else { log(g, 'Le bot se passe'); g.msg = 'Le bot se passe — tu remportes le pot'; J.Sfx.win(2); }
+    g.showdown = { foldedBy: who };
+    endHand(g);
+  }
+
+  function meAct(g, kind, amount) {
+    if (g.phase === 'idle' || g.phase === 'done' || g.toAct !== 'me') return;
+    const need = toCall(g);
+    if (kind === 'fold') { g.actedMe = true; fold(g, 'me'); return; }
+    if (kind === 'call') {
+      const paid = commit(g, 'me', need, need ? 'suit' : 'check');
+      g.actedMe = true;
+      if (!need) log(g, 'Tu checkes');
+      if (paid < need) log(g, 'Tapis !');
+      J.Sfx.chip();
+    } else if (kind === 'raise') {
+      let target = Math.max(g.myBet + need + g.raiseStep, amount || g.raiseTo);
+      target = Math.min(target, g.myBet + left('me', g));            // plafonné au tapis
+      const paid = commit(g, 'me', target - g.myBet, 'relance à ' + target);
+      g.lastRaise = Math.max(g.raiseStep, target - g.botBet);
+      g.actedMe = true; g.actedBot = false;
+      J.Sfx.bet();
+      if (paid <= 0) { g.actedMe = true; }
+    }
+    g.toAct = 'bot';
+    paint(g);
+    if (streetDone(g)) J.Games.schedule(g, () => nextStreet(g), 500);
+    else J.Games.schedule(g, () => (g.auto.on ? autoPlay(g) : botTurn(g)), 520);
+  }
+
+  /* ---------------------------------------------------------- BOT / AUTO */
+  /** Équité Monte-Carlo d'une main face à une main au hasard. */
+  function equityOf(hole, board) {
+    let win = 0, tie = 0;
+    const full = [];
+    for (let c = 0; c < 52; c++) if (hole.indexOf(c) < 0 && board.indexOf(c) < 0) full.push(c);
+    const missing = 5 - board.length;          // cartes de tapis à venir
+    const toDraw = missing + 2;                // + les 2 cartes du bot
+    for (let s = 0; s < MC_SAMPLES; s++) {
+      // tirage sans remise : on échange avec la fin d'une COPIE du paquet
+      const deck = full.slice();
+      let n = deck.length;
+      const picks = [];
+      for (let k = 0; k < toDraw; k++) {
+        const idx = J.Fair.int(0, n - 1);
+        const t = deck[idx];
+        deck[idx] = deck[n - 1];
+        picks.push(t);
+        n--;
+      }
+      const extra = picks.slice(0, missing);          // tapis complété
+      const oppHole = picks.slice(missing);           // main du bot
+      const v1 = C.evalBest(hole.concat(board, extra)).score;
+      const v2 = C.evalBest(oppHole.concat(board, extra)).score;
+      if (v1 > v2) win++; else if (v1 === v2) tie++;
+    }
+    return (win + tie / 2) / MC_SAMPLES;
+  }
+
+  function botDecide(g) {
+    const eq = equityOf(g.botHole, g.board);
+    const need = botToCall(g);
+    const p = pot(g);
+    const rnd = J.Fair.float();
+    if (need <= 0) {
+      if (eq > 0.78 && rnd < 0.75) return { kind: 'raise', amount: g.botBet + Math.max(g.raiseStep, Math.round(p * 0.7)) };
+      if (eq > 0.6 && rnd < 0.4) return { kind: 'raise', amount: g.botBet + Math.max(g.raiseStep, Math.round(p * 0.5)) };
+      return { kind: 'call' };                       // check
+    }
+    const odds = need / (p + need);
+    if (eq > 0.74 && rnd < 0.6) return { kind: 'raise', amount: g.myBet + Math.max(g.raiseStep, Math.round(need * 2.5)) };
+    if (eq > odds + 0.12) return { kind: 'call' };
+    if (eq > odds + 0.02 && rnd < 0.35) return { kind: 'call' };
+    if (rnd < 0.06) return { kind: 'call' };         // bluff attrapé
+    return { kind: 'fold' };
+  }
+
+  function botTurn(g) {
+    if (g.phase === 'idle' || g.phase === 'done' || g.toAct !== 'bot') return;
+    const d = botDecide(g);
+    const need = botToCall(g);
+    if (d.kind === 'fold') { g.actedBot = true; fold(g, 'bot'); return; }
+    if (d.kind === 'raise') {
+      const paid = commit(g, 'bot', d.amount - g.botBet, 'relance à ' + (g.botBet + (d.amount - g.botBet)));
+      g.lastRaise = Math.max(g.raiseStep, (g.botBet) - g.myBet);
+      g.actedBot = true; g.actedMe = false;
+      if (paid > 0) J.Sfx.chip();
+    } else {
+      commit(g, 'bot', need, need ? 'suit' : 'check');
+      g.actedBot = true;
+    }
+    g.toAct = 'me';
+    paint(g);
+    if (streetDone(g)) J.Games.schedule(g, () => nextStreet(g), 620);
+    else if (g.auto.on) J.Games.schedule(g, () => autoPlay(g), 420);
+  }
+
+  /** Auto-bet : le joueur est joué par la même logique que le bot. */
+  function autoPlay(g) {
+    if (!g.auto.on || g.toAct !== 'me' || g.phase === 'idle' || g.phase === 'done') return;
+    const eq = equityOf(g.myHole, g.board);
+    const need = toCall(g);
+    const p = pot(g);
+    const rnd = J.Fair.float();
+    if (need <= 0) {
+      if (eq > 0.8 && rnd < 0.7) meAct(g, 'raise', g.myBet + Math.max(g.raiseStep, Math.round(p * 0.7)));
+      else meAct(g, 'call');
+      return;
+    }
+    const odds = need / (p + need);
+    if (eq > 0.76 && rnd < 0.55) meAct(g, 'raise', g.botBet + Math.max(g.raiseStep, Math.round(need * 2.5)));
+    else if (eq > odds + 0.1) meAct(g, 'call');
+    else if (eq > odds && rnd < 0.3) meAct(g, 'call');
+    else meAct(g, 'fold');
+  }
+
+  /* ----------------------------------------------------------- ABATTAGE */
+  function showdown(g) {
+    g.phase = 'showdown';
+    const me = C.evalBest(g.myHole.concat(g.board));
+    const bot = C.evalBest(g.botHole.concat(g.board));
+    g.showdown = { me, bot, winner: me.score > bot.score ? 'me' : bot.score > me.score ? 'bot' : 'tie' };
+    log(g, 'Abattage : ' + C.handName(me.score) + ' contre ' + C.handName(bot.score));
+    g.msg = g.showdown.winner === 'me' ? 'Tu gagnes au showdown !'
+      : g.showdown.winner === 'bot' ? 'Le bot gagne au showdown' : 'Égalité — pot partagé';
+    J.Sfx.reveal(true);
+    paint(g);
+    J.Games.schedule(g, () => endHand(g), 1100);
+  }
+
+  function endHand(g) {
+    const s = stack(g);
+    const p = pot(g);
+    const myLeft = s - g.myComm;
+    const sd = g.showdown || {};
+    let win = 0;
+    if (sd.foldedBy === 'bot') win = 1;
+    else if (sd.foldedBy === 'me') win = 0;
+    else if (sd.winner === 'me') win = 1;
+    else if (sd.winner === 'tie') win = 0.5;
+
+    let payout = myLeft + (win > 0 ? p * win : 0);
+    let rake = 0;
+    if (win > 0) {
+      rake = Math.min(RAKE_CAP, Math.round(p * win * RAKE));
+      payout -= rake;
+    }
+    payout = Math.max(0, Math.round(payout));
+    const mult = s > 0 ? payout / s : 0;
+    g.phase = 'done';
+    g.detail = 'Pot ' + U.fmt(p) + ' J · ta mise ' + U.fmt(g.myComm) + ' J' +
+      (rake ? ' · commission ' + U.fmt(rake) + ' J (2 %)' : '') +
+      (g.showdown && g.showdown.me ? ' · ' + C.handName(g.showdown.me.score) : '') +
+      (g.showdown && g.showdown.bot ? ' vs ' + C.handName(g.showdown.bot.score) : '');
+    paint(g);
+    J.Games.finish(g, mult, { detail: g.detail });
+  }
+
+  /* ------------------------------------------------------------------ RENDU */
+  function paint(g) {
+    if (!g.boardEl) return;
+    const sd = g.showdown || {};
+    g.botEl.innerHTML = g.botHole.map((c, i) =>
+      C.html(g.phase === 'showdown' || g.phase === 'done' ? c : null, i >= 2 ? 'deal' : '')).join('');
+    g.meEl.innerHTML = g.myHole.map((c) => C.html(c)).join('');
+    g.boardEl.innerHTML = [0, 1, 2, 3, 4].map((i) =>
+      g.board[i] != null ? C.html(g.board[i], 'deal') : '<span class="pcard back dim"></span>').join('');
+
+    g.potEl.innerHTML = '<b class="mono">' + U.fmt(pot(g)) + ' J</b> au pot' +
+      (g.phase === 'preflop' || g.phase === 'idle' ? '' : ' · ' + (g.phase === 'showdown' ? 'abattage' : g.phase));
+    g.stacksEl.innerHTML =
+      '<span class="pk-stack"><i>Toi</i> <b class="mono">' + U.fmt(left('me', g)) + '</b></span>' +
+      '<span class="pk-stack"><i>Bot</i> <b class="mono">' + U.fmt(left('bot', g)) + '</b></span>' +
+      '<span class="pk-stack"><i>Blinde</i> <b class="mono">' + U.fmt(g.raiseStep) + '</b></span>';
+
+    const need = toCall(g);
+    g.stateEl.innerHTML = '<b>' + (g.msg || (g.toAct === 'me' ? 'À toi de parler' : 'Le bot réfléchit…')) + '</b>' +
+      (g.phase !== 'idle' && g.phase !== 'done'
+        ? '<span class="sub"> · ' + (need > 0 ? 'à suivre : ' + U.fmt(need) + ' J' : 'tu peux checker') +
+          ' · tapis ' + U.fmt(left('me', g)) + ' J</span>'
+        : '') +
+      (g.detail && g.phase === 'done' ? '<div class="sub mt-s">' + g.detail + '</div>' : '');
+
+    g.logEl.innerHTML = g.logLines.map((l, i) => '<div class="pk-log-line' + (i ? ' old' : '') + '">' + l + '</div>').join('');
+
+    if (g.raiseRow) {
+      const p = Math.max(1, pot(g));
+      g.raiseRow.querySelectorAll('[data-raise]').forEach((b) => {
+        const k = b.dataset.raise;
+        const v = k === 'half' ? Math.round(p * 0.5) : k === 'pot' ? p : k === 'all' ? stack(g) : parseInt(k, 10);
+        b.disabled = g.toAct !== 'me' || g.phase === 'done' || g.phase === 'idle';
+        void v;
+      });
+    }
+    J.Games.renderActions(g);
+  }
+
+  /* ------------------------------------------------------------------- JEU */
+  J.Games.register({
+    id: 'poker',
+    name: 'Texas Hold\'em',
+    icon: 'poker',
+    color: '#34d399',
+    rtp: 98,
+    category: 'classics',
+    tagline: 'Tête-à-tête contre un bot',
+    volatility: 'Volatilité élevée',
+    hot: true,
+    rules:
+      'Texas Hold\'em <b>en tête-à-tête</b> contre un bot. Ta mise de manche est ton <b>tapis de départ</b> ' +
+      '(le bot a le même). Blinds de 5 % et 10 %, quatre tours d\'enchères : préflop, flop, turn, river.<br>' +
+      '<b>Actions</b> : Se passer, Checker/Suivre, Relancer (½ pot, pot, ×2, tapis). ' +
+      'Le bot joue une équité calculée par Monte-Carlo comparée aux cotes du pot.<br><br>' +
+      'À l\'abattage, la meilleure main de 5 cartes parmi 7 gagne. Le vainqueur paie une ' +
+      '<b>commission de table de 2 %</b> du pot (plafond 500 J) : c\'est la seule marge du jeu, ' +
+      'ce qui ramène le retour moyen autour de <b>98 %</b> — un bon joueur la surpasse largement. ' +
+      'Les jetons non engagés te sont toujours rendus : se passer au préflop ne coûte que la blinde.',
+    playLabel: 'Nouvelle main ♠',
+
+    state, start,
+    stop(g) { g.phase = 'idle'; },
+
+    stage(g) {
+      return '' +
+        '<div class="pk-stage table-felt">' +
+          '<div class="pk-seat">' +
+            '<div class="row between"><span class="tbl-label">Bot</span><span class="sub" id="pkStacks"></span></div>' +
+            '<div class="cards-row pk-cards" id="pkBot"></div>' +
+          '</div>' +
+          '<div class="pk-mid">' +
+            '<div class="pk-pot" id="pkPot"></div>' +
+            '<div class="cards-row pk-board" id="pkBoard"></div>' +
+          '</div>' +
+          '<div class="pk-seat me">' +
+            '<div class="tbl-label">Ta main</div>' +
+            '<div class="cards-row pk-cards" id="pkMe"></div>' +
+          '</div>' +
+          '<div class="pk-state" id="pkState"></div>' +
+          '<div class="pk-log" id="pkLog"></div>' +
+        '</div>';
+    },
+
+    controls(g) {
+      return '' +
+        '<div class="row between"><span class="bet-label">Relancer à</span>' +
+          '<span class="sub">pot ' + U.fmtK(pot(g)) + ' J · tapis ' + U.fmtK(left('me', g)) + ' J</span></div>' +
+        '<div class="chips mt-s" id="pkRaise">' +
+          '<button class="chip" data-raise="half">½ pot</button>' +
+          '<button class="chip" data-raise="pot">Pot</button>' +
+          '<button class="chip" data-raise="2">×2 relance</button>' +
+          '<button class="chip" data-raise="all">Tapis</button>' +
+        '</div>' +
+        '<div class="sub mt-s">Commission de table 2 % du pot (500 J max). ' +
+        'Le bot évalue son équité sur ' + MC_SAMPLES + ' tirages Monte-Carlo.</div>';
+    },
+
+    actions(g) {
+      if (g.phase === 'idle' || g.phase === 'done') {
+        return [{ label: 'Nouvelle main · ' + U.fmtK(g.bet) + ' J ♠', cls: 'primary wide-lg grow', act: 'play' }];
+      }
+      if (g.toAct !== 'me' || g.phase === 'showdown') {
+        return [
+          { label: g.phase === 'showdown' ? 'Abattage…' : 'Le bot réfléchit…', cls: 'primary wide-lg grow', disabled: true },
+          { label: 'Se passer', cls: 'ghost', alsoWhenBusy: true, onClick: (gg) => meAct(gg, 'fold') }
+        ];
+      }
+      const need = toCall(g);
+      return [
+        { label: 'Se passer', cls: 'ghost', alsoWhenBusy: true, onClick: (gg) => meAct(gg, 'fold') },
+        { label: need > 0 ? 'Suivre ' + U.fmtK(need) : 'Checker', cls: 'ghost', alsoWhenBusy: true, onClick: (gg) => meAct(gg, 'call') },
+        { label: 'Relancer', cls: 'primary', alsoWhenBusy: true, disabled: left('me', g) <= need, onClick: (gg) => meAct(gg, 'raise', gg.raiseTo) },
+        { label: 'Tapis', cls: 'ghost', alsoWhenBusy: true, disabled: left('me', g) <= need, onClick: (gg) => meAct(gg, 'raise', stack(gg)) }
+      ];
+    },
+
+    payoutHint(g) {
+      return 'Commission 2 % · RTP ≈ 98 %';
+    },
+
+    mount(g) {
+      g.botEl = g.viewEl.querySelector('#pkBot');
+      g.meEl = g.viewEl.querySelector('#pkMe');
+      g.boardEl = g.viewEl.querySelector('#pkBoard');
+      g.potEl = g.viewEl.querySelector('#pkPot');
+      g.stacksEl = g.viewEl.querySelector('#pkStacks');
+      g.stateEl = g.viewEl.querySelector('#pkState');
+      g.logEl = g.viewEl.querySelector('#pkLog');
+      g.raiseRow = g.panelEl.querySelector('#pkRaise');
+
+      g.raiseRow.querySelectorAll('[data-raise]').forEach((b) => {
+        b.onclick = () => {
+          if (g.toAct !== 'me' || g.phase === 'idle' || g.phase === 'done') return;
+          const p = Math.max(1, pot(g));
+          const base = g.botBet;
+          const k = b.dataset.raise;
+          const target = k === 'half' ? base + Math.round(p * 0.5)
+            : k === 'pot' ? base + p
+              : k === '2' ? base + Math.max(g.raiseStep, (base - g.myBet) * 2)
+                : stack(g);
+          g.raiseTo = Math.min(stack(g), Math.max(base + g.raiseStep, target));
+          J.Sfx.click(); J.haptic.tap();
+          J.toast('Relance réglée à ' + U.fmt(g.raiseTo) + ' J', '');
+          paint(g);
+        };
+      });
+      paint(g);
+    }
+  });
+
+  /* Exposé pour les tests : équité Monte-Carlo et détermination du vainqueur. */
+  J.__poker = { equityOf, RAKE, RAKE_CAP, MC_SAMPLES };
 })();
 
 /* ===== 50-boot.js ====================================================== */

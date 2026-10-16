@@ -56,6 +56,30 @@
       return ticket;
     },
 
+    /**
+     * Ajoute un enjeu à un ticket DÉJÀ ouvert : doubler, séparer, assurance…
+     * Le montant est débité et rattaché au ticket, donc remboursé à l'identique
+     * par refund() si la manche est interrompue, et le gain final reste calculé
+     * sur l'enjeu total (ticket.bet) — un seul mouvement de solde à la fin.
+     */
+    extendStake(ticket, amount) {
+      amount = U.tokens(amount);
+      if (!ticket || !ticket._open || amount <= 0) return false;
+      const st = J.Store.state;
+      if (amount > st.balance) return false;
+      st.balance -= amount;
+      st.stats.wagered += amount;
+      st.vip.wagered += amount;
+      const g = st.stats.perGame[ticket.game];
+      if (g) g.wagered += amount;
+      ticket.bet += amount;
+      J.Store.save();
+      W.renderBalance();
+      J.Bus.emit('stats:changed');
+      W.checkVip();
+      return true;
+    },
+
     /** Résout un ticket : multiplier renvoyé (0 = perte sèche). */
     settle(ticket, multiplier, extra) {
       if (!ticket || !ticket._open) return null;

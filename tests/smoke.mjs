@@ -81,7 +81,7 @@ step('navigation sur les 5 onglets (2 passes)', async () => {
 step('segments du catalogue et du classement', async () => {
   click('.nav-btn[data-go="originals"]');
   click('#originalsSeg button', true);
-  for (const f of ['all', 'originals', 'classics', 'soon']) {
+  for (const f of ['all', 'originals', 'classics']) {
     const b = $('#originalsSeg [data-filter="' + f + '"]');
     b.click(); await wait(20);
     if (!doc.querySelectorAll('#originalsGrid .game-tile').length) throw new Error('catalogue vide: ' + f);
@@ -277,15 +277,16 @@ step('les 10 jeux : ouverture, commandes, une partie', async () => {
   }
 });
 
-step('les 6 classiques restants s\'annoncent sans se lancer', async () => {
+step('les 6 classiques se lancent pour de vrai (vague 3)', async () => {
   const mounted = J.Games.instance();
   if (mounted) J.Games.close(true);                  // aucun jeu ne doit rester monté
   for (const id of ['roulette', 'blackjack', 'baccarat', 'slots', 'videopoker', 'poker']) {
     J.Games.open(id);
     const cur = J.Games.instance();
-    if (cur && cur.def.id === id) throw new Error(id + ' ne devrait pas être jouable (vague 3)');
-    if (!$('#modalRoot.is-on')) throw new Error(id + ' : aucune modale d\'information');
-    J.UI.closeModal();
+    if (!cur || cur.def.id !== id) throw new Error(id + ' ne se monte pas');
+    if (!$('#gameShell [data-act="play"]')) throw new Error(id + ' : bouton principal absent');
+    if (!$('#gStage.game-stage') || !$('#gStage').children.length) throw new Error(id + ' : scène absente');
+    J.Games.close(true); await wait(30);
   }
 });
 
@@ -324,12 +325,13 @@ step('modales de sécurité : pause, jeu responsable, mentions', async () => {
   J.UI.closeSheet();
 });
 
-step('catalogue : 10 jeux jouables, 6 en feuille de route', async () => {
+step('catalogue : 16 jeux jouables, feuille de route vide', async () => {
   const live = J.GAMES.filter((g) => g.status === 'live').map((g) => g.id);
   const soon = J.GAMES.filter((g) => g.status !== 'live').map((g) => g.id);
-  if (live.length !== 10) throw new Error('jeux jouables : ' + live.join(', '));
-  if (soon.length !== 6) throw new Error('feuille de route : ' + soon.join(', '));
-  const expectLive = ['crash', 'dice', 'mines', 'plinko', 'limbo', 'coinflip', 'hilo', 'keno', 'tower', 'wheel'];
+  if (live.length !== 16) throw new Error('jeux jouables : ' + live.join(', '));
+  if (soon.length !== 0) throw new Error('feuille de route : ' + soon.join(', '));
+  const expectLive = ['crash', 'dice', 'mines', 'plinko', 'limbo', 'coinflip', 'hilo', 'keno', 'tower', 'wheel',
+    'roulette', 'blackjack', 'baccarat', 'slots', 'videopoker', 'poker'];
   if (!expectLive.every((id) => live.includes(id))) throw new Error('jeu manquant : ' + expectLive.filter((i) => !live.includes(i)));
 });
 

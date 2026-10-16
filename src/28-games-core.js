@@ -38,15 +38,14 @@
       J.Sfx.error();
       J.UI.modal({
         title: def.name + ' — bientôt',
-        sub: 'Prévu dans la vague 3 du développement (jeux classiques)',
-        body: '<div class="note">Ce jeu fait partie de la feuille de route : les classiques ' +
-          '(Roulette européenne, Blackjack, Baccarat, Machines à sous, Video Poker, Texas Hold\'em). ' +
-          'Les 10 Originals sont déjà jouables dès maintenant.</div>' +
+        sub: 'Prévu dans une prochaine vague de développement',
+        body: '<div class="note">Ce jeu fait partie de la feuille de route de JACKPOTLY : ' +
+          'il rejoindra les 16 jeux déjà jouables (10 Originals et 6 classiques) dans une prochaine mise à jour.</div>' +
           '<div class="kv mt"><span class="k">RTP prévu</span><span class="v up">' + def.rtp + ' %</span></div>' +
           '<div class="kv"><span class="k">Catégorie</span><span class="v">' + (def.category === 'classics' ? 'Classique' : 'Original') + '</span></div>' +
           (def.hint ? '<div class="note mt-l">' + def.hint + '</div>' : ''),
         actions: [
-          { label: 'Voir les 10 jeux jouables', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
+          { label: 'Voir les 16 jeux jouables', cls: 'primary', onClick: () => { J.UI.go('originals'); } },
           { label: 'Fermer', cls: 'ghost' }
         ]
       });
@@ -173,7 +172,7 @@
         '<button data-bet="max">Max</button>' +
         '<button data-bet="custom">Perso</button>' +
       '</div>' +
-      '<div class="btn-row mt' + (def.actions && def.actions(g).length === 2 ? ' two' : def.actions && def.actions(g).length === 3 ? ' three' : '') + '" id="gActions"></div>' +
+      '<div class="btn-row mt' + ({ 2: ' two', 3: ' three', 4: ' four' }[(def.actions ? def.actions(g).length : 1)] || '') + '" id="gActions"></div>' +
       '<div class="row between mt-s" style="font-size:10.5px;color:var(--muted)">' +
         '<span>Session : <b class="mono" id="gStatRounds">0</b> parties · net ' +
           '<b class="mono" id="gStatNet">0</b> J</span>' +
@@ -453,6 +452,13 @@
     Games.pushHistory(g, mult);
     updateSessionLine(g);
     renderActions(g);
+
+    // Le solde a pu fondre pendant la manche : on remet la mise en phase pour
+    // la suivante (sinon le bouton principal refuserait de rejouer). L'auto-bet
+    // gère la sienne tout seul plus bas.
+    if (!g.auto.on && g.bet > J.Wallet.balance) {
+      setBet(g, Math.max(J.CONST.MIN_BET, Math.min(J.CONST.MAX_BET, Math.floor(J.Wallet.balance))), true);
+    }
 
     // Auto-bet : partie suivante
     if (g.auto.on) {

@@ -265,7 +265,7 @@
         'Aucun retrait, aucune conversion en argent ou en cadeaux, aucun échange entre joueurs. ' +
         'Les jetons ne peuvent pas être gagnés en argent réel et ne servent qu\'à jouer dans l\'application.' +
       '</div>' +
-      '<div class="sub center mt">Version ' + J.VERSION + ' · 10 jeux jouables</div>';
+      '<div class="sub center mt">Version ' + J.VERSION + ' · 16 jeux jouables</div>';
 
     /* --- Liaisons --- */
     $('shopBody').querySelectorAll('[data-shop]').forEach((b) => {

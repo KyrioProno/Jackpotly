@@ -7,7 +7,7 @@
 
   /** Espace de noms unique du jeu. Tous les modules s'y rattachent. */
   const J = (window.JACKPOTLY = window.JACKPOTLY || {});
-  J.VERSION = '0.2.0';           // vague 2 : 10 jeux jouables + boutique complète
+  J.VERSION = '0.3.0';           // vague 3 : 16 jeux jouables (10 Originals + 6 classiques)
   J.SAVE_KEY = 'jackpotly.state.v1';
 
   /* ------------------------------------------------------------------ UTIL */
@@ -27,6 +27,12 @@
       if (a >= 1e6) return (n / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace('.', ',') + ' M';
       if (a >= 1e4) return (n / 1e3).toFixed(a >= 1e5 ? 0 : 1).replace('.', ',') + ' k';
       return U.fmt(n);
+    },
+
+    /** Montant signé : 1200 → "+1 200 J", -340 → "−340 J" */
+    fmtSigned(n) {
+      n = Math.round(Number(n) || 0);
+      return (n >= 0 ? '+' : '−') + U.fmt(Math.abs(n)) + ' J';
     },
 
     /** Multiplicateur : 2 → "2,00x" ; 123.4 → "123,40x" */
