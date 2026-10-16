@@ -36,17 +36,17 @@ L'aperçu live d'Arena passe par le proxy du sandbox, qui **exige un jeton** : l
 (`https://<port>-<sandbox>.e2b.app`) affiche une demande de token si on l'ouvre directement.
 Le jeu n'ayant besoin d'aucun serveur, voici trois voies qui n'utilisent aucun jeton :
 
-**1. Rendu direct dans le navigateur (un tap, aucune installation)** — fichiers figés sur le tag `v0.3.1` :
+**1. Rendu direct dans le navigateur (un tap, aucune installation)** — fichiers figés sur le tag `v0.3.2` :
 
-- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.3.1/jackpotly.html
-- https://cdn.statically.io/gh/KyrioProno/Jackpotly/v0.3.1/jackpotly.html
-- https://raw.githack.com/KyrioProno/Jackpotly/v0.3.1/jackpotly.html
-- https://htmlpreview.github.io/?https://github.com/KyrioProno/Jackpotly/blob/v0.3.1/jackpotly.html
+- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.3.2/jackpotly.html
+- https://cdn.statically.io/gh/KyrioProno/Jackpotly/v0.3.2/jackpotly.html
+- https://raw.githack.com/KyrioProno/Jackpotly/v0.3.2/jackpotly.html
+- https://htmlpreview.github.io/?https://github.com/KyrioProno/Jackpotly/blob/v0.3.2/jackpotly.html
 
 **2. Téléchargement puis lecture hors ligne (le plus fiable sur mobile)**
 
-- Fichier : https://github.com/KyrioProno/Jackpotly/blob/v0.3.1/jackpotly.html → « Download raw file »
-- Archive complète : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.3.1
+- Fichier : https://github.com/KyrioProno/Jackpotly/blob/v0.3.2/jackpotly.html → « Download raw file »
+- Archive complète : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.3.2
 - Ensuite : ouvrir `jackpotly.html` dans le navigateur, ou « Ajouter à l'écran d'accueil »
   pour l'avoir en plein écran. Aucune connexion n'est nécessaire pour jouer.
 
@@ -69,9 +69,11 @@ src/01-styles.css       Design system (tokens → base → composants → animat
 src/10-body.html        Structure : splash, barre supérieure, 6 écrans, nav, calques
 src/20-core.js          Namespace JACKPOTLY, utilitaires, bus d'événements, Store (localStorage)
 src/21-fair.js          SHA-256 + HMAC-SHA256 en JS pur, générateur provably fair
-src/22-audio-fx.js      Audio synthétisé (WebAudio), vibrations, confettis, toasts
+src/22-audio-fx.js      Audio synthétisé : banque sonore par jeu, jingles de gain,
+                        vibrations, particules (confettis, jetons, étincelles), toasts
 src/23-wallet.js        Portefeuille : mise, résolution, stats, historique, VIP
-src/24-ui.js            Navigation, modales, feuilles, menu, réglages, Fair Play, jeu responsable
+src/24-ui.js            Navigation (glissement directionnel, cascade), modales, feuilles,
+                        montage des icônes SVG, menu, réglages, Fair Play, jeu responsable
 src/24b-cards.js        Cartes & évaluateur de poker (fréquences exactes des 2 598 960 mains)
 src/25-social.js        Quêtes du jour, classement de bots, faux flux de gros gains
 src/26-rewards.js       Bonus quotidien, roue de la chance, recharge gratuite
@@ -199,7 +201,7 @@ Vitesse de montée de Crash calibrée : 2x ≈ 4 s · 5x ≈ 9 s · 10x ≈ 13 s
 
 ## 6. Feuille de route
 
-**Vague 3 — livrée en 0.3.0.** Les 16 jeux demandés sont en ligne et jouables :
+**Vague 3 — livrée en 0.3.0, finie en 0.3.2.** Les 16 jeux demandés sont en ligne et jouables :
 Roulette européenne (toutes les mises), Blackjack (hit/stand/double/split/assurance),
 Baccarat, Machines à sous (3 thèmes), Video Poker Jacks or Better et Texas Hold'em contre un bot.
 La feuille de route du catalogue est **vide** : plus aucun jeu n'est annoncé « bientôt »
@@ -207,16 +209,19 @@ La feuille de route du catalogue est **vide** : plus aucun jeu n'est annoncé «
 
 Améliorations qui resteraient à faire (aucune n'est nécessaire pour jouer) :
 
-- **Sons** : les bruitages sont synthétisés en Web Audio ; des échantillons de meilleure qualité
-  seraient plus « premium » (mais casseraient l'absence de dépendance externe).
+- **Sons** : la banque sonore est désormais **par jeu** (chaque table a son timbre, son registre et
+  sa signature de 2 à 4 notes, jouée à l'ouverture) ; des échantillons enregistrés sonneraient
+  plus « premium » mais casseraient l'absence de dépendance externe (fichiers audio).
 - **Machines à sous** : les rouleaux utilisent des bandes virtuelles tirées après le clic ;
   une vraie animation de décélération par rouleau (comme la roulette) serait plus spectaculaire.
 - **Hold'em** : le bot joue correctement (équité vs cotes du pot) mais sans mémoire des mains
   passées ni position ; un adversaire plus varié demanderait un modèle de range.
 - **Blackjack** : S17 uniquement, pas de « surrender » ni de « double after split » réglables.
 - **Roulette** : cylindre européen seul (pas de mise « à cheval sur trois » atypique).
-- **Performance** : le fichier fait 469 Ko ; une minification sans perte le ramènerait à ~250 Ko.
+- **Performance** : le fichier fait 502 Ko ; une minification sans perte le ramènerait à ~260 Ko.
 - **Internationalisation** : tout est en français, aucune bascule multi-langue.
+- **Icônes** : les icônes d'interface sont des SVG internes (18 icônes ajoutées en 0.3.2) ; les
+  messages, gains et animations conservent volontairement leurs emojis, plus expressifs.
 
 ---
 

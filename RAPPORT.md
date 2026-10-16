@@ -1,16 +1,16 @@
-# JACKPOTLY — rapport de validation v0.3.1
+# JACKPOTLY — rapport de validation v0.3.2
 
-**Date :** 16 octobre 2026 · **Livrable :** `jackpotly.html` — 473,9 Ko · 10 552 lignes · un seul fichier,
+**Date :** 16 octobre 2026 · **Livrable :** `jackpotly.html` — 502,1 Ko · 11 025 lignes · un seul fichier,
 aucune dépendance, aucune requête réseau.
 
-Ce rapport clôt la **phase de validation finale** demandée avant toute finition visuelle ou sonore.
+Ce rapport clôt la **phase de validation** puis la **finition visuelle et sonore** (v0.3.2).
 Il répond à trois questions : les 16 jeux sont-ils réellement jouables sur un téléphone ?
 les taux de retour annoncés sont-ils ceux du moteur ? les jetons fictifs peuvent-ils être
 créés ou perdus par erreur ?
 
 ---
 
-## 1. Résultat des quatre suites de tests
+## 1. Résultat des suites de tests
 
 | Suite | Portée | Résultat |
 |---|---|---|
@@ -18,6 +18,7 @@ créés ou perdus par erreur ?
 | `npm test` → `tests/smoke.mjs` | parcours complet (écrans, modales, 16 jeux, boutique, roue, recharge) | **14 / 14 étapes, 0 problème** |
 | `npm test` → `tests/credits.mjs` | intégrité des crédits et RTP annoncés | **18 ✓ / 0 ✗** |
 | `npm run mobile` → `tests/mobile.mjs` | 6 formats de téléphone dans **Chromium réel**, doigt simulé | **49 ✓ / 0 ✗** |
+| `sfx.diag.mjs` (recette de finition, non versionnée) | banque sonore : timbre propre aux 16 jeux, signature à l'ouverture, retour au neutre | **33 ✓ / 0 ✗** |
 
 Total : **324 contrôles automatiques, 0 échec**. Les quatre suites sont reproductibles
 (`npm run test:all`) et documentées au § 8 du `README.md`.
@@ -51,6 +52,33 @@ qu'aucun test en DOM simulé ne pouvait voir :
 
 Aucun de ces points n'était visible dans les 243 contrôles historiques : c'est la valeur ajoutée
 des deux nouvelles suites.
+
+---
+
+## 2 bis. Finition v0.3.2 : ce qui a été ajouté et vérifié
+
+La phase de finition visuelle et sonore s'est appuyée sur les mêmes suites, rejouées après chaque
+lot. Quatre volets, tous validés en navigateur réel :
+
+1. **Célébrations de gain** — un seul chemin pour les 16 jeux (`J.FX.celebrate`), appelé par le
+   moteur : au-delà de ×2 confettis et texte, au-delà de ×5 bandeau « BIG WIN », jetons, secousse et
+   flash vert, au-delà de ×20 « JACKPOT » (150 confettis, 70 jetons, 34 étincelles, flash doré).
+   Chaque palier a été capturé et relu (`tests/screens/cel-*.png`) ; deux défauts réels corrigés :
+   sous-titre du bandeau qui doublait le « × » et montant flottant qui recouvrait le compteur de solde.
+2. **Transitions d'écran** — glissement directionnel déduit de l'ordre des onglets, cascade des blocs,
+   pop de l'onglet actif, entrée animée de la scène et du panneau de jeu.
+3. **Icônes SVG internes** — 18 icônes d'interface (`gift, fortune, cart, medal, target, shield, lock,
+   key, receipt, gamepad, money, chart, rotate, check, settings, refill, bolt, hourglass` + `info`)
+   remplacent les emojis dans les titres, cartes d'accueil, menus, boutons et pastilles. Les emojis
+   restent dans les messages, les gains et les animations. Motif : le rendu d'un emoji dépend de la
+   police du téléphone (et le sandbox de test n'en a aucune — les captures montraient des carrés).
+4. **Banque sonore par jeu** — chaque table a un timbre (forme d'onde), un registre (décalage en
+   demi-tons) et une signature de 2 à 4 notes jouée à l'ouverture ; mise, tick, révélation,
+   encaissement et perte passent par ce timbre, les jingles de gain restent communs. Vérifié sans
+   oreille : un espion d'`AudioContext` relève les formes d'onde réellement créées.
+
+Les quatre suites ont été rejouées après la finition (chiffres du tableau ci-dessus) et une recette
+sonore a été ajoutée pour prouver que le timbre change bien par jeu et revient au neutre à la sortie.
 
 ---
 
@@ -126,13 +154,9 @@ en un tap**, du panneau des gains et du RTP exact affiché.
 
 ## 7. Ce qu'il reste à améliorer (aucun blocage)
 
-1. **Finition visuelle et sonore** — c'était l'objet de la phase suivante : animations de gain
-   (explosion, confettis), transitions entre écrans, polices internes, musiques et bruitages plus
-   riches (le moteur audio est en place, la banque de sons est minimale). À prévoir aussi : les
-   icônes d'interface sont aujourd'hui des emojis (police système) ; sur un téléphone ils
-   s'affichent normalement, mais un jeu d'icônes SVG **internes** rendrait le rendu identique
-   partout — utile aussi pour les captures de tests, où le sandbox sans police emoji montre des
-   carrés vides.
+1. **Finition visuelle et sonore — faite en 0.3.2** (célébrations, transitions, icônes SVG internes,
+   banque sonore par jeu : voir §2 bis). Ce qui resterait : une musique d'ambiance **par thème** de
+   salon (une seule nappe aujourd'hui) et des échantillons audio enregistrés plutôt que synthétisés.
 2. **Historique** — 250 dernières manches conservées, sans filtres ni export ; les statistiques par
    jeu sont déjà en place.
 3. **Hold'em** — un seul adversaire bot, pas de tournoi ni de table à plusieurs.
@@ -144,8 +168,8 @@ en un tap**, du panneau des gains et du RTP exact affiché.
 
 ## 8. Où jouer tout de suite (sans jeton d'accès)
 
-- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.3.1/jackpotly.html
-- https://raw.githack.com/KyrioProno/Jackpotly/v0.3.1/jackpotly.html
-- Téléchargement : https://github.com/KyrioProno/Jackpotly/blob/v0.3.1/jackpotly.html
+- https://cdn.jsdelivr.net/gh/KyrioProno/Jackpotly@v0.3.2/jackpotly.html
+- https://raw.githack.com/KyrioProno/Jackpotly/v0.3.2/jackpotly.html
+- Téléchargement : https://github.com/KyrioProno/Jackpotly/blob/v0.3.2/jackpotly.html
   (« Download raw file ») puis ouverture dans le navigateur — aucune connexion requise ensuite.
-- Release : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.3.1
+- Release : https://github.com/KyrioProno/Jackpotly/releases/tag/v0.3.2

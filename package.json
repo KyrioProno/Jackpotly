@@ -1,6 +1,6 @@
 {
   "name": "jackpotly",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "JACKPOTLY — casino social de divertissement (jetons virtuels sans valeur monétaire, 18+) livré en un seul fichier HTML autonome.",
   "scripts": {

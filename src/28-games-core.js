@@ -102,12 +102,17 @@
     // 3) liaisons DOM propres au jeu
     if (def.mount) def.mount(g);
     J.UI.go('game');
+    /* Banque sonore : le jeu prend la main sur le timbre, puis joue sa
+       signature — deux ou trois notes qui identifient la table. */
+    J.Sfx.setGame(def.id);
+    J.Sfx.motif();
     J.Bus.emit('game:open', g);
     return g;
   };
 
   /** Ferme le jeu courant : stoppe les boucles, libère les timers. */
   Games.close = function (silent) {
+    J.Sfx.setGame(null);          // retour au timbre neutre hors partie
     if (!current) return;
     const g = current;
     try { if (g.def.stop) g.def.stop(g); } catch (e) { /* noop */ }
@@ -451,6 +456,7 @@
     g.lastMult = null;
     g.ticket = J.Wallet.stake(g.bet, g.def.id, opts && opts.meta);
     if (!g.ticket) { g.busy = false; return; }
+    J.Sfx.spinup();               // départ de manche, dans le timbre du jeu
     g.def.start(g);
   }
   Games.play = play;

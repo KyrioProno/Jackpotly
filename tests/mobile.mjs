@@ -32,6 +32,7 @@ import zlib from 'node:zlib';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SHOTS = process.argv.includes('--shots');
+const PKG_VERSION = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'package.json'), 'utf8')).version;
 const SHOT_DIR = join(root, 'tests', 'screens');
 
 let puppeteer, chromium;
@@ -387,7 +388,7 @@ section('1. Installation : fichier autonome, splash, solde');
     vpMeta: JSON.stringify(document.querySelector('meta[name=viewport]').content),
     dpr: devicePixelRatio, touch: navigator.maxTouchPoints
   }));
-  check('l\'application démarre hors ligne (fichier autonome)', info.version === '0.3.1' && info.games === 16 && info.live === 16,
+  check('l\'application démarre hors ligne (fichier autonome)', info.version === PKG_VERSION && info.games === 16 && info.live === 16,
     info.version + ' · ' + info.live + '/' + info.games + ' jeux jouables');
   check('aucune ressource externe : 1 script inline, 0 <link>, 0 <img>',
     info.scripts === 1 && info.links === 0 && info.imgs === 0, info.scripts + ' script(s) · ' + info.links + ' link · ' + info.imgs + ' img');

@@ -6,6 +6,10 @@ tests/screens/
 # Harnais de diagnostic jetables (créés puis supprimés au fil du travail)
 *.diag.mjs
 
+# Scripts de retouche ponctuelle (jetables)
+apply-*.py
+docs-update.py
+
 # Fichiers temporaires
 *.log
 .DS_Store

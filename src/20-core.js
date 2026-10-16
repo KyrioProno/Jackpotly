@@ -7,7 +7,7 @@
 
   /** Espace de noms unique du jeu. Tous les modules s'y rattachent. */
   const J = (window.JACKPOTLY = window.JACKPOTLY || {});
-  J.VERSION = '0.3.1';           // vague 3 : 16 jeux jouables (10 Originals + 6 classiques)
+  J.VERSION = '0.3.2';           // vague 3.2 : finition — célébrations, transitions, icônes, son
   J.SAVE_KEY = 'jackpotly.state.v1';
 
   /* ------------------------------------------------------------------ UTIL */
